@@ -1,0 +1,28 @@
+name: Sync to Target Repository
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  push-to-another-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to target repository
+        env:
+          # Assurez-vous de créer un secret nommé TARGET_REPO_PAT dans votre dépôt source
+          TARGET_REPO_URL: https://x-access-token:${{ secrets.TARGET_REPO_PAT }}@github.com/Elytra-consulting/new-frontend.git
+        run: |
+          # On ajoute le dépôt de destination comme remote
+          git remote add target "$TARGET_REPO_URL"
+          
+          # On pousse la branche courante vers la branche principale (main) du dépôt cible
+          # Utilisez ${GITHUB_REF#refs/heads/} à la place de HEAD:main si vous voulez garder le même nom de branche
+          git push target HEAD:main --force
