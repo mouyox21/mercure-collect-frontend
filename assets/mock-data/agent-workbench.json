@@ -1,0 +1,449 @@
+{
+  "header": {
+    "businessDate": "2026-08-02",
+    "agentName": "Marie Dupont",
+    "creditorId": "CRED-001",
+    "creditorLabel": "Banque Atlas",
+    "totalAssignedCases": 28,
+    "totalCasesToProcess": 24,
+    "portfolioOverdueAmount": 9809000
+  },
+  "categories": [
+    {
+      "categoryCode": "FIRST_CONTACT",
+      "categoryLabel": "Premier Contact",
+      "caseCount": 5,
+      "totalAmount": 960000,
+      "oldestAgeDays": 28,
+      "cases": [
+        {
+          "caseId": "CASE-001",
+          "caseReference": "MC-2026-001",
+          "customerName": "Atlas Retail SA",
+          "contractReference": "CTR-001-2024",
+          "overdueAmount": 185000,
+          "daysLate": 15,
+          "categoryAgeDays": 15,
+          "lastActionLabel": "Envoi courrier 1er rappel",
+          "mainPhone": "+212661234567",
+          "status": "OPEN",
+          "priority": "NORMAL"
+        },
+        {
+          "caseId": "CASE-002",
+          "caseReference": "MC-2026-002",
+          "customerName": "Maroc Digital SARL",
+          "contractReference": "CTR-002-2024",
+          "overdueAmount": 92000,
+          "daysLate": 22,
+          "categoryAgeDays": 22,
+          "lastActionLabel": "Appel téléphonique sortant",
+          "mainPhone": "+212662345678",
+          "status": "OPEN",
+          "priority": "NORMAL"
+        },
+        {
+          "caseId": "CASE-003",
+          "caseReference": "MC-2026-003",
+          "customerName": "Trans-Atlas Logistique SA",
+          "contractReference": "CTR-003-2023",
+          "overdueAmount": 340000,
+          "daysLate": 28,
+          "categoryAgeDays": 28,
+          "lastActionLabel": "Envoi courrier 1er rappel",
+          "mainPhone": "+212663456789",
+          "status": "OPEN",
+          "priority": "HIGH"
+        },
+        {
+          "caseId": "CASE-004",
+          "caseReference": "MC-2026-004",
+          "customerName": "Immobilière Horizons SAS",
+          "contractReference": "CTR-004-2024",
+          "overdueAmount": 128000,
+          "daysLate": 10,
+          "categoryAgeDays": 10,
+          "lastActionLabel": "Création dossier",
+          "mainPhone": "+212664567890",
+          "status": "OPEN",
+          "priority": "NORMAL"
+        },
+        {
+          "caseId": "CASE-005",
+          "caseReference": "MC-2026-005",
+          "customerName": "Sonatrach Maroc SA",
+          "contractReference": "CTR-005-2024",
+          "overdueAmount": 215000,
+          "daysLate": 18,
+          "categoryAgeDays": 18,
+          "lastActionLabel": "Envoi SMS rappel",
+          "mainPhone": "+212665678901",
+          "status": "OPEN",
+          "priority": "NORMAL"
+        }
+      ]
+    },
+    {
+      "categoryCode": "STANDARD",
+      "categoryLabel": "Relance Standard",
+      "caseCount": 4,
+      "totalAmount": 846000,
+      "oldestAgeDays": 52,
+      "cases": [
+        {
+          "caseId": "CASE-006",
+          "caseReference": "MC-2026-006",
+          "customerName": "Sonatrach Distribution SA",
+          "contractReference": "CTR-006-2023",
+          "overdueAmount": 178000,
+          "daysLate": 45,
+          "categoryAgeDays": 45,
+          "lastActionLabel": "Relance téléphonique",
+          "mainPhone": "+212666789012",
+          "status": "OPEN",
+          "priority": "NORMAL"
+        },
+        {
+          "caseId": "CASE-007",
+          "caseReference": "MC-2026-007",
+          "customerName": "Financière Atlas SA",
+          "contractReference": "CTR-007-2023",
+          "overdueAmount": 445000,
+          "daysLate": 52,
+          "categoryAgeDays": 52,
+          "lastActionLabel": "Email relance envoyé",
+          "mainPhone": "+212667890123",
+          "status": "OPEN",
+          "priority": "HIGH"
+        },
+        {
+          "caseId": "CASE-008",
+          "caseReference": "MC-2026-008",
+          "customerName": "Delta Commerce SARL",
+          "contractReference": "CTR-008-2023",
+          "overdueAmount": 67000,
+          "daysLate": 38,
+          "categoryAgeDays": 38,
+          "lastActionLabel": "Appel téléphonique sortant",
+          "mainPhone": "+212668901234",
+          "status": "OPEN",
+          "priority": "NORMAL"
+        },
+        {
+          "caseId": "CASE-009",
+          "caseReference": "MC-2026-009",
+          "customerName": "Agri-Maroc SA",
+          "contractReference": "CTR-009-2023",
+          "overdueAmount": 156000,
+          "daysLate": 41,
+          "categoryAgeDays": 41,
+          "lastActionLabel": "Courrier 2ème rappel",
+          "mainPhone": "+212669012345",
+          "status": "OPEN",
+          "priority": "NORMAL"
+        }
+      ]
+    },
+    {
+      "categoryCode": "PROMISE_ACTIVE",
+      "categoryLabel": "Promesse en Cours",
+      "caseCount": 4,
+      "totalAmount": 688000,
+      "oldestAgeDays": 80,
+      "cases": [
+        {
+          "caseId": "CASE-010",
+          "caseReference": "MC-2026-010",
+          "customerName": "Tech Innov SA",
+          "contractReference": "CTR-010-2024",
+          "overdueAmount": 89000,
+          "daysLate": 62,
+          "categoryAgeDays": 62,
+          "lastActionLabel": "Promesse de paiement obtenue",
+          "mainPhone": "+212670123456",
+          "status": "PENDING",
+          "priority": "NORMAL"
+        },
+        {
+          "caseId": "CASE-011",
+          "caseReference": "MC-2026-011",
+          "customerName": "Tech Innov SA",
+          "contractReference": "CTR-011-2023",
+          "overdueAmount": 134000,
+          "daysLate": 75,
+          "categoryAgeDays": 75,
+          "lastActionLabel": "Plan de remboursement accordé",
+          "mainPhone": "+212670123456",
+          "status": "PENDING",
+          "priority": "HIGH"
+        },
+        {
+          "caseId": "CASE-012",
+          "caseReference": "MC-2026-012",
+          "customerName": "Bâtir Ensemble SARL",
+          "contractReference": "CTR-012-2023",
+          "overdueAmount": 198000,
+          "daysLate": 58,
+          "categoryAgeDays": 58,
+          "lastActionLabel": "Promesse reçue par email",
+          "mainPhone": "+212671234567",
+          "status": "PENDING",
+          "priority": "NORMAL"
+        },
+        {
+          "caseId": "CASE-013",
+          "caseReference": "MC-2026-013",
+          "customerName": "Bâtir Ensemble SARL",
+          "contractReference": "CTR-013-2022",
+          "overdueAmount": 267000,
+          "daysLate": 80,
+          "categoryAgeDays": 80,
+          "lastActionLabel": "Accord de règlement",
+          "mainPhone": "+212671234567",
+          "status": "PENDING",
+          "priority": "HIGH"
+        }
+      ]
+    },
+    {
+      "categoryCode": "PROMISE_BROKEN",
+      "categoryLabel": "Promesse Rompue",
+      "caseCount": 4,
+      "totalAmount": 978000,
+      "oldestAgeDays": 110,
+      "cases": [
+        {
+          "caseId": "CASE-014",
+          "caseReference": "MC-2026-014",
+          "customerName": "Maroc Pétrole SA",
+          "contractReference": "CTR-014-2023",
+          "overdueAmount": 385000,
+          "daysLate": 95,
+          "categoryAgeDays": 95,
+          "lastActionLabel": "Promesse non honorée",
+          "mainPhone": "+212672345678",
+          "status": "OPEN",
+          "priority": "HIGH"
+        },
+        {
+          "caseId": "CASE-015",
+          "caseReference": "MC-2026-015",
+          "customerName": "Maroc Pétrole SA",
+          "contractReference": "CTR-015-2022",
+          "overdueAmount": 124000,
+          "daysLate": 110,
+          "categoryAgeDays": 110,
+          "lastActionLabel": "Relance post-rupture promesse",
+          "mainPhone": "+212672345678",
+          "status": "OPEN",
+          "priority": "HIGH"
+        },
+        {
+          "caseId": "CASE-016",
+          "caseReference": "MC-2026-016",
+          "customerName": "Distribution Plus SARL",
+          "contractReference": "CTR-016-2023",
+          "overdueAmount": 291000,
+          "daysLate": 88,
+          "categoryAgeDays": 88,
+          "lastActionLabel": "2ème promesse rompue",
+          "mainPhone": "+212673456789",
+          "status": "OPEN",
+          "priority": "HIGH"
+        },
+        {
+          "caseId": "CASE-017",
+          "caseReference": "MC-2026-017",
+          "customerName": "Distribution Plus SARL",
+          "contractReference": "CTR-017-2022",
+          "overdueAmount": 178000,
+          "daysLate": 102,
+          "categoryAgeDays": 102,
+          "lastActionLabel": "Mise en demeure envoyée",
+          "mainPhone": "+212673456789",
+          "status": "OPEN",
+          "priority": "CRITICAL"
+        }
+      ]
+    },
+    {
+      "categoryCode": "URGENT",
+      "categoryLabel": "Action Urgente",
+      "caseCount": 3,
+      "totalAmount": 1307000,
+      "oldestAgeDays": 168,
+      "cases": [
+        {
+          "caseId": "CASE-018",
+          "caseReference": "MC-2026-018",
+          "customerName": "Auto Maroc SA",
+          "contractReference": "CTR-018-2022",
+          "overdueAmount": 567000,
+          "daysLate": 145,
+          "categoryAgeDays": 145,
+          "lastActionLabel": "Escalade superviseur demandée",
+          "mainPhone": "+212674567890",
+          "status": "OPEN",
+          "priority": "CRITICAL"
+        },
+        {
+          "caseId": "CASE-019",
+          "caseReference": "MC-2026-019",
+          "customerName": "Auto Maroc SA",
+          "contractReference": "CTR-019-2022",
+          "overdueAmount": 328000,
+          "daysLate": 130,
+          "categoryAgeDays": 130,
+          "lastActionLabel": "Tentative accord amiable",
+          "mainPhone": "+212674567890",
+          "status": "OPEN",
+          "priority": "CRITICAL"
+        },
+        {
+          "caseId": "CASE-020",
+          "caseReference": "MC-2026-020",
+          "customerName": "Auto Maroc SA",
+          "contractReference": "CTR-020-2021",
+          "overdueAmount": 412000,
+          "daysLate": 168,
+          "categoryAgeDays": 168,
+          "lastActionLabel": "Mise en demeure 2",
+          "mainPhone": "+212674567890",
+          "status": "OPEN",
+          "priority": "CRITICAL"
+        }
+      ]
+    },
+    {
+      "categoryCode": "PRE_LEGAL",
+      "categoryLabel": "Pré-Contentieux",
+      "caseCount": 3,
+      "totalAmount": 1976000,
+      "oldestAgeDays": 210,
+      "cases": [
+        {
+          "caseId": "CASE-021",
+          "caseReference": "MC-2026-021",
+          "customerName": "Médina Invest SA",
+          "contractReference": "CTR-021-2022",
+          "overdueAmount": 890000,
+          "daysLate": 210,
+          "categoryAgeDays": 210,
+          "lastActionLabel": "Mise en demeure AR envoyée",
+          "mainPhone": "+212675678901",
+          "status": "OPEN",
+          "priority": "CRITICAL"
+        },
+        {
+          "caseId": "CASE-022",
+          "caseReference": "MC-2026-022",
+          "customerName": "Médina Invest SA",
+          "contractReference": "CTR-022-2021",
+          "overdueAmount": 654000,
+          "daysLate": 185,
+          "categoryAgeDays": 185,
+          "lastActionLabel": "Notification huissier prévue",
+          "mainPhone": "+212675678901",
+          "status": "OPEN",
+          "priority": "CRITICAL"
+        },
+        {
+          "caseId": "CASE-023",
+          "caseReference": "MC-2026-023",
+          "customerName": "Médina Invest SA",
+          "contractReference": "CTR-023-2021",
+          "overdueAmount": 432000,
+          "daysLate": 195,
+          "categoryAgeDays": 195,
+          "lastActionLabel": "Dernier accord amiable tenté",
+          "mainPhone": "+212675678901",
+          "status": "OPEN",
+          "priority": "HIGH"
+        }
+      ]
+    },
+    {
+      "categoryCode": "LEGAL",
+      "categoryLabel": "Contentieux",
+      "caseCount": 3,
+      "totalAmount": 2986000,
+      "oldestAgeDays": 320,
+      "cases": [
+        {
+          "caseId": "CASE-024",
+          "caseReference": "MC-2026-024",
+          "customerName": "Atlas Retail SA",
+          "contractReference": "CTR-024-2020",
+          "overdueAmount": 1250000,
+          "daysLate": 280,
+          "categoryAgeDays": 280,
+          "lastActionLabel": "Audience tribunal prévue",
+          "mainPhone": "+212661234567",
+          "status": "OPEN",
+          "priority": "CRITICAL"
+        },
+        {
+          "caseId": "CASE-025",
+          "caseReference": "MC-2026-025",
+          "customerName": "Financière Atlas SA",
+          "contractReference": "CTR-025-2020",
+          "overdueAmount": 980000,
+          "daysLate": 320,
+          "categoryAgeDays": 320,
+          "lastActionLabel": "Saisie conservatoire demandée",
+          "mainPhone": "+212667890123",
+          "status": "OPEN",
+          "priority": "CRITICAL"
+        },
+        {
+          "caseId": "CASE-026",
+          "caseReference": "MC-2026-026",
+          "customerName": "Immobilière Horizons SAS",
+          "contractReference": "CTR-026-2021",
+          "overdueAmount": 756000,
+          "daysLate": 265,
+          "categoryAgeDays": 265,
+          "lastActionLabel": "Jugement en attente",
+          "mainPhone": "+212664567890",
+          "status": "OPEN",
+          "priority": "CRITICAL"
+        }
+      ]
+    },
+    {
+      "categoryCode": "SUSPENDED",
+      "categoryLabel": "Suspendu / Inactif",
+      "caseCount": 2,
+      "totalAmount": 68000,
+      "oldestAgeDays": 220,
+      "cases": [
+        {
+          "caseId": "CASE-027",
+          "caseReference": "MC-2026-027",
+          "customerName": "Delta Commerce SARL",
+          "contractReference": "CTR-027-2022",
+          "overdueAmount": 23000,
+          "daysLate": 150,
+          "categoryAgeDays": 150,
+          "lastActionLabel": "Suspension accordée",
+          "mainPhone": "+212668901234",
+          "status": "SUSPENDED",
+          "priority": "LOW"
+        },
+        {
+          "caseId": "CASE-028",
+          "caseReference": "MC-2026-028",
+          "customerName": "Agri-Maroc SA",
+          "contractReference": "CTR-028-2021",
+          "overdueAmount": 45000,
+          "daysLate": 220,
+          "categoryAgeDays": 220,
+          "lastActionLabel": "Dossier suspendu – accord judiciaire",
+          "mainPhone": "+212669012345",
+          "status": "SUSPENDED",
+          "priority": "LOW"
+        }
+      ]
+    }
+  ]
+}

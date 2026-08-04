@@ -1,0 +1,286 @@
+<div class="econsole">
+
+    @switch (viewState()) {
+      @case ('loading') {
+        <div class="econsole__state-wrap"><mc-skeleton-loader /></div>
+      }
+      @case ('error') {
+        <div class="econsole__state-wrap"><mc-error-state (retry)="load()" /></div>
+      }
+      @case ('forbidden') {
+        <div class="econsole__state-wrap"><mc-forbidden-state /></div>
+      }
+      @case ('success') {
+
+        <!-- Header -->
+        <div class="econsole__header">
+          <div>
+            <h1 class="econsole__page-title">Console des escalades</h1>
+            <p class="econsole__page-sub">
+              {{ sorted().length }} escalade(s) — {{ countPending() }} en attente de décision
+            </p>
+          </div>
+          <button class="econsole__refresh-btn" type="button" (click)="load()">↺ Actualiser</button>
+        </div>
+
+        <!-- Filter tabs -->
+        <div class="econsole__tabs" role="tablist" aria-label="Filtrer par statut">
+          <button
+            class="econsole__tab"
+            [class.econsole__tab--active]="filterStatus() === 'ALL'"
+            role="tab"
+            type="button"
+            (click)="filterStatus.set('ALL')">
+            Toutes
+            <span class="econsole__tab-count">{{ escalations().length }}</span>
+          </button>
+          <button
+            class="econsole__tab"
+            [class.econsole__tab--active]="filterStatus() === 'PENDING'"
+            role="tab"
+            type="button"
+            (click)="filterStatus.set('PENDING')">
+            En attente
+            <span class="econsole__tab-count econsole__tab-count--pending">{{ countPending() }}</span>
+          </button>
+          <button
+            class="econsole__tab"
+            [class.econsole__tab--active]="filterStatus() === 'APPROVED'"
+            role="tab"
+            type="button"
+            (click)="filterStatus.set('APPROVED')">
+            Approuvées
+            <span class="econsole__tab-count">{{ countApproved() }}</span>
+          </button>
+          <button
+            class="econsole__tab"
+            [class.econsole__tab--active]="filterStatus() === 'REJECTED'"
+            role="tab"
+            type="button"
+            (click)="filterStatus.set('REJECTED')">
+            Rejetées
+            <span class="econsole__tab-count">{{ countRejected() }}</span>
+          </button>
+          <button
+            class="econsole__tab"
+            [class.econsole__tab--active]="filterStatus() === 'ESCALATED'"
+            role="tab"
+            type="button"
+            (click)="filterStatus.set('ESCALATED')">
+            Escaladées
+            <span class="econsole__tab-count">{{ countEscalated() }}</span>
+          </button>
+        </div>
+
+        <!-- Workspace: prioritised table + optional detail panel -->
+        <div class="econsole__workspace" [class.econsole__workspace--split]="selected() !== null">
+
+          <!-- Prioritised DataGrid -->
+          <div class="econsole__table-wrap">
+            <table class="econsole__table" aria-label="Liste des escalades">
+              <thead>
+                <tr>
+                  <th scope="col">Priorité</th>
+                  <th scope="col">Dossier</th>
+                  <th scope="col">Client</th>
+                  <th scope="col" class="econsole__th--right">Montant</th>
+                  <th scope="col">Motif</th>
+                  <th scope="col">Agent</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (esc of sorted(); track esc.escalationId) {
+                  <tr
+                    class="econsole__row"
+                    [class.econsole__row--selected]="selected()?.escalationId === esc.escalationId"
+                    [class.econsole__row--critical]="esc.priority === 'CRITICAL' && esc.status === 'PENDING'"
+                    (click)="selectRow(esc)"
+                    tabindex="0"
+                    (keydown.enter)="selectRow(esc)"
+                    [attr.aria-selected]="selected()?.escalationId === esc.escalationId">
+                    <td>
+                      <span
+                        class="econsole__priority"
+                        [class.econsole__priority--critical]="esc.priority === 'CRITICAL'"
+                        [class.econsole__priority--high]="esc.priority === 'HIGH'">
+                        {{ priorityLabel(esc.priority) }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="econsole__ref">{{ esc.caseReference }}</span>
+                    </td>
+                    <td class="econsole__debtor">{{ esc.debtorName }}</td>
+                    <td class="econsole__td--right econsole__amount">{{ formatAmount(esc.overdueAmount) }}</td>
+                    <td class="econsole__reason-cell" [title]="esc.reason">{{ esc.reason }}</td>
+                    <td>{{ esc.agentName }}</td>
+                    <td class="econsole__date">{{ formatDate(esc.createdAt) }}</td>
+                    <td>
+                      <span
+                        class="econsole__status"
+                        [class.econsole__status--pending]="esc.status === 'PENDING'"
+                        [class.econsole__status--approved]="esc.status === 'APPROVED'"
+                        [class.econsole__status--rejected]="esc.status === 'REJECTED'"
+                        [class.econsole__status--escalated]="esc.status === 'ESCALATED'">
+                        {{ statusLabel(esc.status) }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+                @empty {
+                  <tr>
+                    <td colspan="8" class="econsole__empty">Aucune escalade pour ce filtre.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Detail + Decision panel -->
+          @if (selected(); as esc) {
+            <aside class="econsole__detail" aria-label="Détail et décision escalade">
+
+              <button
+                class="econsole__detail-close"
+                type="button"
+                (click)="closeDetail()"
+                aria-label="Fermer le panneau">×</button>
+
+              <!-- Identity header -->
+              <div class="econsole__detail-head">
+                <span class="econsole__detail-ref">{{ esc.caseReference }}</span>
+                <span
+                  class="econsole__priority econsole__priority--sm"
+                  [class.econsole__priority--critical]="esc.priority === 'CRITICAL'"
+                  [class.econsole__priority--high]="esc.priority === 'HIGH'">
+                  {{ priorityLabel(esc.priority) }}
+                </span>
+                <span
+                  class="econsole__status econsole__status--sm"
+                  [class.econsole__status--pending]="esc.status === 'PENDING'"
+                  [class.econsole__status--approved]="esc.status === 'APPROVED'"
+                  [class.econsole__status--rejected]="esc.status === 'REJECTED'"
+                  [class.econsole__status--escalated]="esc.status === 'ESCALATED'">
+                  {{ statusLabel(esc.status) }}
+                </span>
+              </div>
+              <p class="econsole__detail-debtor">{{ esc.debtorName }}</p>
+              <p class="econsole__detail-amount">{{ formatAmount(esc.overdueAmount) }}</p>
+
+              <!-- Motif de demande -->
+              <div class="econsole__detail-section">
+                <h3 class="econsole__section-title">Motif de demande</h3>
+                <p class="econsole__detail-reason">{{ esc.reason }}</p>
+              </div>
+
+              <!-- Agent + date -->
+              <div class="econsole__detail-meta-row">
+                <span class="econsole__detail-meta-item">👤 {{ esc.agentName }}</span>
+                <span class="econsole__detail-meta-item">📅 {{ formatDate(esc.createdAt) }}</span>
+              </div>
+
+              <!-- Recommandation DMN/IA -->
+              @if (esc.dmnRecommendation) {
+                <div class="econsole__dmn">
+                  <p class="econsole__dmn-header">
+                    <span class="econsole__dmn-label">🤖 IA recommande :</span>
+                    <strong class="econsole__dmn-value">{{ dmnLabel(esc.dmnRecommendation) }}</strong>
+                  </p>
+                  @if (esc.dmnRecommendationReason) {
+                    <p class="econsole__dmn-reason">{{ esc.dmnRecommendationReason }}</p>
+                  }
+                </div>
+              }
+
+              <!-- Historique décision (pour les escalades déjà décidées) -->
+              @if (esc.decidedAt) {
+                <div class="econsole__history">
+                  <h3 class="econsole__section-title">Historique décision</h3>
+                  <div class="econsole__history-row">
+                    <span class="econsole__history-by">{{ esc.decidedBy ?? 'Superviseur' }}</span>
+                    <span class="econsole__history-date">{{ formatDate(esc.decidedAt) }}</span>
+                  </div>
+                  @if (esc.decisionComment) {
+                    <p class="econsole__history-comment">{{ esc.decisionComment }}</p>
+                  }
+                </div>
+              }
+
+              <!-- Formulaire de décision (PENDING uniquement) -->
+              @if (esc.status === 'PENDING') {
+                <div class="econsole__form">
+                  <h3 class="econsole__section-title">Décision</h3>
+
+                  <label class="econsole__form-label" for="motif-input">
+                    Motif de décision
+                    <span class="econsole__form-required" aria-hidden="true">*</span>
+                  </label>
+                  <textarea
+                    id="motif-input"
+                    class="econsole__form-textarea"
+                    [class.econsole__form-textarea--error]="motifError()"
+                    rows="3"
+                    placeholder="Saisir le motif de votre décision…"
+                    [value]="motif()"
+                    (input)="setMotif($any($event.target).value)"
+                    [disabled]="deciding()">
+                  </textarea>
+                  @if (motifError()) {
+                    <p class="econsole__form-error" role="alert">Le motif est obligatoire.</p>
+                  }
+
+                  <div class="econsole__form-actions">
+                    <button
+                      class="econsole__action-btn econsole__action-btn--approve"
+                      type="button"
+                      [disabled]="deciding()"
+                      (click)="onDecide('APPROVE')">
+                      ✓ Approuver
+                    </button>
+                    <button
+                      class="econsole__action-btn econsole__action-btn--reject"
+                      type="button"
+                      [disabled]="deciding()"
+                      (click)="onDecide('REJECT')">
+                      ✗ Refuser
+                    </button>
+                    <button
+                      class="econsole__action-btn econsole__action-btn--complement"
+                      type="button"
+                      [disabled]="deciding()"
+                      (click)="onDecide('COMPLEMENT')">
+                      ↩ Demander complément
+                    </button>
+                    <button
+                      class="econsole__action-btn econsole__action-btn--reassign"
+                      type="button"
+                      [disabled]="deciding()"
+                      (click)="onDecide('REASSIGN')">
+                      ↪ Réaffecter
+                    </button>
+                  </div>
+                </div>
+              }
+
+              <!-- Lien dossier (toujours visible) -->
+              <button
+                class="econsole__dossier-link"
+                type="button"
+                (click)="navigateToDossier(esc.caseId)">
+                Voir le dossier complet ↗
+              </button>
+
+            </aside>
+          }
+
+        </div><!-- /.econsole__workspace -->
+
+      }
+    }
+
+</div><!-- /.econsole -->
+
+@if (showToast()) {
+  <mc-success-toast [message]="toastMsg()" (dismissed)="showToast.set(false)" />
+}

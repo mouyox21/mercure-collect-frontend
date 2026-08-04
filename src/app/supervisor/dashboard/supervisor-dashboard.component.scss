@@ -1,0 +1,470 @@
+// ── Variables ──────────────────────────────────────────────────────────────────
+$border:     #e5e7eb;
+$bg-page:    #f9fafb;
+$text-muted: #6b7280;
+$blue:       #2563eb;
+$blue-dark:  #1d4ed8;
+$red:        #dc2626;
+$orange:     #f59e0b;
+$green:      #16a34a;
+$green-dark: #15803d;
+$gray-dark:  #1f2937;
+$gray-mid:   #374151;
+
+// ── Root layout ────────────────────────────────────────────────────────────────
+.sdash {
+  display: block;
+  min-height: 100%;
+
+  // ── Main body ─────────────────────────────────────────────────────────────────
+  &__body {
+    min-width: 0;
+    background: $bg-page;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    overflow-y: auto;
+  }
+
+  &__state-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    padding: 3rem 0;
+  }
+
+  // ── Page header ───────────────────────────────────────────────────────────────
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  &__page-title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+  }
+
+  &__page-sub {
+    font-size: 0.875rem;
+    color: $text-muted;
+    margin: 0.25rem 0 0;
+  }
+
+  &__refresh-btn {
+    height: 2.25rem;
+    padding: 0 0.875rem;
+    border: 1px solid $border;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    background: #fff;
+    color: $text-muted;
+    cursor: pointer;
+    flex-shrink: 0;
+
+    &:hover {
+      background: #f3f4f6;
+      color: $gray-mid;
+    }
+  }
+
+  // ── KPI bar ───────────────────────────────────────────────────────────────────
+  &__kpis {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+  }
+
+  // ── 2-col layout ─────────────────────────────────────────────────────────────
+  &__two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  // ── Panel ─────────────────────────────────────────────────────────────────────
+  &__panel {
+    background: #fff;
+    border: 1px solid $border;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    min-width: 0;
+  }
+
+  &__panel-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 0.875rem;
+    padding-bottom: 0.625rem;
+    border-bottom: 1px solid $border;
+  }
+
+  // ── Table ─────────────────────────────────────────────────────────────────────
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+
+    th {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: $text-muted;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+      border-bottom: 1px solid $border;
+    }
+
+    td {
+      padding: 0.5625rem 0.5rem;
+      border-bottom: 1px solid #f3f4f6;
+      color: $gray-mid;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover td {
+      background: #f9fafb;
+    }
+  }
+
+  &__th--right {
+    text-align: right !important;
+  }
+
+  &__td--right {
+    text-align: right !important;
+  }
+
+  &__td--mono {
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__td-label {
+    font-weight: 500;
+    color: #111827;
+  }
+
+  // Aging bar cell
+  &__td--bar {
+    min-width: 150px;
+  }
+
+  &__bar-track {
+    height: 6px;
+    background: #f3f4f6;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+  }
+
+  &__bar-fill {
+    height: 100%;
+    background: $blue;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  &__bar-amount {
+    font-size: 0.75rem;
+    color: $text-muted;
+  }
+
+  &__table-total {
+    td {
+      font-weight: 700;
+      color: #111827;
+      border-top: 2px solid $border !important;
+      background: #f9fafb;
+      border-bottom: none !important;
+    }
+  }
+
+  // ── Agent row ─────────────────────────────────────────────────────────────────
+  &__agent-name {
+    font-weight: 500;
+    color: #111827;
+  }
+
+  &__row--absent {
+    opacity: 0.65;
+  }
+
+  &__badge {
+    display: inline-block;
+    padding: 0.1rem 0.4rem;
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    margin-left: 0.375rem;
+    vertical-align: middle;
+
+    &--absent {
+      background: #fef3c7;
+      color: #92400e;
+    }
+  }
+
+  &__rate {
+    font-weight: 600;
+    font-size: 0.8125rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 0.25rem;
+    display: inline-block;
+
+    &--good {
+      background: #dcfce7;
+      color: $green;
+    }
+
+    &--medium {
+      background: #fef9c3;
+      color: #92400e;
+    }
+
+    &--low {
+      background: #fee2e2;
+      color: $red;
+    }
+  }
+
+  // ── Alerts ───────────────────────────────────────────────────────────────────
+  &__alerts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  &__alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.375rem;
+    border-left: 3px solid $border;
+    background: #f9fafb;
+    font-size: 0.8125rem;
+
+    &--critical {
+      border-left-color: $red;
+      background: #fef2f2;
+    }
+
+    &--warning {
+      border-left-color: $orange;
+      background: #fffbeb;
+    }
+  }
+
+  &__alert-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 0.0625rem;
+  }
+
+  &__alert-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__alert-msg {
+    margin: 0;
+    color: $gray-mid;
+    line-height: 1.45;
+  }
+
+  &__alert-link {
+    margin-top: 0.25rem;
+    display: inline-block;
+    font-size: 0.75rem;
+    color: $blue;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+
+    &:hover {
+      color: $blue-dark;
+    }
+  }
+
+  &__severity-badge {
+    flex-shrink: 0;
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.15rem 0.4rem;
+    border-radius: 0.25rem;
+    background: #e5e7eb;
+    color: $text-muted;
+    white-space: nowrap;
+
+    &--critical {
+      background: #fee2e2;
+      color: $red;
+    }
+
+    &--warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+  }
+
+  &__alerts-empty {
+    font-size: 0.875rem;
+    color: $text-muted;
+    text-align: center;
+    padding: 1.5rem 0;
+  }
+
+  // ── Decisions ────────────────────────────────────────────────────────────────
+  &__decisions {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+
+  &__decision {
+    background: #f9fafb;
+    border: 1px solid $border;
+    border-radius: 0.375rem;
+    padding: 0.875rem;
+  }
+
+  &__decision-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.25rem;
+  }
+
+  &__decision-ref {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: $blue;
+  }
+
+  &__decision-agent {
+    font-size: 0.75rem;
+    color: $text-muted;
+  }
+
+  &__decision-amount {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: $red;
+    margin-left: auto;
+  }
+
+  &__decision-debtor {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 0.25rem;
+  }
+
+  &__decision-reason {
+    font-size: 0.8125rem;
+    color: $gray-mid;
+    margin: 0 0 0.5rem;
+    line-height: 1.45;
+  }
+
+  // DMN recommendation block
+  &__dmn {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 0.25rem;
+    padding: 0.5rem 0.625rem;
+    margin-bottom: 0.625rem;
+  }
+
+  &__dmn-header {
+    margin: 0;
+  }
+
+  &__dmn-label {
+    font-size: 0.75rem;
+    color: $blue-dark;
+    margin-right: 0.375rem;
+  }
+
+  &__dmn-value {
+    font-size: 0.8125rem;
+    color: $blue-dark;
+    font-weight: 700;
+  }
+
+  &__dmn-reason {
+    font-size: 0.75rem;
+    color: $gray-mid;
+    margin: 0.25rem 0 0;
+    line-height: 1.4;
+  }
+
+  // Action buttons
+  &__decision-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  &__btn {
+    flex: 1;
+    height: 2rem;
+    border-radius: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background 0.15s, opacity 0.15s;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &--validate {
+      background: $green;
+      color: #fff;
+
+      &:not(:disabled):hover {
+        background: $green-dark;
+      }
+    }
+
+    &--last-call {
+      background: #fff;
+      color: $orange;
+      border: 1px solid $orange;
+
+      &:not(:disabled):hover {
+        background: #fffbeb;
+      }
+    }
+  }
+
+  &__no-decision {
+    font-size: 0.875rem;
+    color: $text-muted;
+    text-align: center;
+    padding: 2rem 0;
+  }
+}

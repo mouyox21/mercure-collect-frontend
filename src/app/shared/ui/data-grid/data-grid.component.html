@@ -1,0 +1,223 @@
+<div class="grid">
+
+  <!-- ── Toolbar ──────────────────────────────────────────────────────────── -->
+  <div class="grid__toolbar">
+    <div class="grid__search-wrap">
+      <input
+        class="grid__search"
+        type="search"
+        placeholder="Rechercher…"
+        [value]="globalFilter()"
+        (input)="globalFilter.set(($any($event.target)).value)"
+        aria-label="Rechercher dans le tableau"
+      />
+    </div>
+
+    @if (selectedCount() > 0) {
+      <span class="grid__selection-badge">
+        {{ selectedCount() }} sélectionné{{ selectedCount() > 1 ? 's' : '' }}
+      </span>
+    }
+
+    <div class="grid__col-toggle-wrap">
+      <button
+        class="grid__col-btn"
+        type="button"
+        (click)="showColumnMenu.set(!showColumnMenu())"
+        [attr.aria-expanded]="showColumnMenu()"
+        aria-label="Afficher ou masquer des colonnes"
+      >
+        <span aria-hidden="true">⊞</span> Colonnes
+      </button>
+
+      @if (showColumnMenu()) {
+        <div class="grid__col-menu" role="menu" aria-label="Visibilité des colonnes">
+          @for (col of columns(); track col.key) {
+            <label class="grid__col-item" role="menuitemcheckbox" [attr.aria-checked]="isColumnVisible(col.key)">
+              <input
+                type="checkbox"
+                [checked]="isColumnVisible(col.key)"
+                (change)="toggleColumn(col.key)"
+              />
+              {{ col.label }}
+            </label>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- ── Table ────────────────────────────────────────────────────────────── -->
+  <div class="grid__scroll" role="region" aria-label="Tableau de données">
+    <table class="grid__table" [attr.aria-rowcount]="totalItems()">
+      <thead>
+        <tr class="grid__head-row">
+          <th class="grid__th grid__th--check" scope="col">
+            <input
+              type="checkbox"
+              [checked]="allVisibleSelected()"
+              (change)="toggleSelectAll()"
+              aria-label="Sélectionner toutes les lignes"
+            />
+          </th>
+          @for (col of activeColumns(); track col.key) {
+            <th
+              class="grid__th"
+              [class.grid__th--sorted]="isSorted(col.key)"
+              [class.grid__th--right]="col.align === 'right'"
+              [class.grid__th--center]="col.align === 'center'"
+              scope="col"
+              [attr.aria-sort]="isSorted(col.key) ? (sortState()?.dir === 'asc' ? 'ascending' : 'descending') : 'none'"
+              [style.width]="col.width ?? null"
+            >
+              @if (col.sortable) {
+                <button
+                  class="grid__sort-btn"
+                  type="button"
+                  (click)="onSort(col.key)"
+                  [attr.aria-label]="sortAriaLabel(col)"
+                >
+                  {{ col.label }}
+                  <span
+                    class="grid__sort-icon"
+                    [class.grid__sort-icon--active]="isSorted(col.key)"
+                    aria-hidden="true"
+                  >{{ sortIcon(col.key) }}</span>
+                </button>
+              } @else {
+                {{ col.label }}
+              }
+            </th>
+          }
+        </tr>
+      </thead>
+
+      <tbody>
+        @if (loading()) {
+          @for (i of [1, 2, 3, 4, 5]; track i) {
+            <tr class="grid__row grid__row--skeleton" aria-hidden="true">
+              <td class="grid__td">
+                <div class="grid__skeleton grid__skeleton--sm"></div>
+              </td>
+              @for (col of activeColumns(); track col.key) {
+                <td class="grid__td">
+                  <div class="grid__skeleton" [class.grid__skeleton--sm]="col.align === 'center'"></div>
+                </td>
+              }
+            </tr>
+          }
+        } @else if (noResults()) {
+          <tr>
+            <td class="grid__empty" [attr.colspan]="colspanFull()">
+              Aucun résultat
+            </td>
+          </tr>
+        } @else {
+          @for (group of renderedGroups(); track group.key) {
+            @if (group.key !== '__default__') {
+              <tr class="grid__group-row">
+                <td class="grid__group-cell" [attr.colspan]="colspanFull()">
+                  <button
+                    class="grid__group-btn"
+                    type="button"
+                    (click)="toggleGroup(group.key)"
+                    [attr.aria-expanded]="!group.collapsed"
+                    [attr.aria-label]="group.label + ', ' + group.count + ' dossier' + (group.count > 1 ? 's' : '')"
+                  >
+                    <span
+                      class="grid__group-chevron"
+                      [class.grid__group-chevron--collapsed]="group.collapsed"
+                      aria-hidden="true"
+                    >▾</span>
+                    <span class="grid__group-label">{{ group.label }}</span>
+                    <span class="grid__group-count">
+                      {{ group.count }}&nbsp;dossier{{ group.count > 1 ? 's' : '' }}
+                    </span>
+                    @if (group.totalAmount !== undefined) {
+                      <span class="grid__group-total">{{ formatCurrency(group.totalAmount) }}</span>
+                    }
+                  </button>
+                </td>
+              </tr>
+            }
+
+            @if (!group.collapsed) {
+              @for (row of group.rows; track trackRow($index, row)) {
+                <tr
+                  class="grid__row"
+                  [class.grid__row--selected]="isSelected(row)"
+                  [class.grid__row--clickable]="rowClickable()"
+                  [attr.tabindex]="rowClickable() ? 0 : null"
+                  (click)="rowClickable() && rowClick.emit(row)"
+                  (keydown)="rowClickable() && onRowKeydown($event, row)"
+                >
+                  <td class="grid__td grid__td--check" (click)="$event.stopPropagation()">
+                    <input
+                      type="checkbox"
+                      [checked]="isSelected(row)"
+                      (change)="toggleRow(row)"
+                      [attr.aria-label]="'Sélectionner le dossier ' + row['id']"
+                    />
+                  </td>
+                  @for (col of activeColumns(); track col.key) {
+                    <td
+                      class="grid__td"
+                      [class.grid__td--right]="col.align === 'right'"
+                      [class.grid__td--center]="col.align === 'center'"
+                    >{{ getCellValue(row, col) }}</td>
+                  }
+                </tr>
+              }
+            }
+          }
+        }
+      </tbody>
+
+      @if (grandTotalAmount() !== undefined) {
+        <tfoot>
+          <tr class="grid__foot-row">
+            <td class="grid__foot-cell" [attr.colspan]="colspanFull()">
+              <span class="grid__grand-label">Total général</span>
+              <span class="grid__grand-value">{{ formatCurrency(grandTotalAmount()!) }}</span>
+            </td>
+          </tr>
+        </tfoot>
+      }
+    </table>
+  </div>
+
+  <!-- ── Pagination ───────────────────────────────────────────────────────── -->
+  <div class="grid__pagination" role="navigation" aria-label="Pagination du tableau">
+    <span class="grid__pagination-info">{{ paginationInfo() }}</span>
+
+    <div class="grid__pagination-controls">
+      <button
+        class="grid__page-btn"
+        type="button"
+        (click)="goToPage(pageIndex() - 1)"
+        [disabled]="pageIndex() === 0"
+        aria-label="Page précédente"
+      >‹</button>
+
+      @for (page of pageNumbers(); track page) {
+        <button
+          class="grid__page-btn"
+          [class.grid__page-btn--active]="page === pageIndex()"
+          type="button"
+          (click)="goToPage(page)"
+          [attr.aria-label]="'Page ' + (page + 1)"
+          [attr.aria-current]="page === pageIndex() ? 'page' : null"
+        >{{ page + 1 }}</button>
+      }
+
+      <button
+        class="grid__page-btn"
+        type="button"
+        (click)="goToPage(pageIndex() + 1)"
+        [disabled]="pageIndex() >= totalPages() - 1"
+        aria-label="Page suivante"
+      >›</button>
+    </div>
+  </div>
+
+</div>

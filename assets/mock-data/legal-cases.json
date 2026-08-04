@@ -1,0 +1,134 @@
+{
+  "items": [
+    {
+      "legalCaseId": "LEGAL-001",
+      "caseId": "CASE-024", "caseReference": "MC-2026-024",
+      "debtorId": "DBT-001", "debtorName": "Atlas Retail SA",
+      "phase": "EXECUTION",
+      "status": "IN_PROGRESS",
+      "lawyerId": "LAW-001", "lawyerName": "Me. Hamid Tazi",
+      "bailiffId": "BAI-001", "bailiffName": "Huissier Bensouda",
+      "courtName": "Tribunal de Commerce de Casablanca",
+      "filingDate": "2026-03-10",
+      "hearingDate": "2026-09-15",
+      "debtAmount": 1250000,
+      "legalFees": 45000,
+      "createdAt": "2026-03-10T09:00:00",
+      "updatedAt": "2026-07-20T14:30:00",
+      "events": [
+        {
+          "eventId": "EVT-L001-01",
+          "eventType": "FILING",
+          "eventLabel": "Dépôt de la plainte",
+          "eventDate": "2026-03-10",
+          "description": "Assignation en justice déposée au Tribunal de Commerce de Casablanca",
+          "performedBy": "Me. Hamid Tazi",
+          "documentId": "DOC-L001-01"
+        },
+        {
+          "eventId": "EVT-L001-02",
+          "eventType": "HEARING_SCHEDULED",
+          "eventLabel": "Audience fixée",
+          "eventDate": "2026-04-05",
+          "description": "1ère audience fixée au 15/09/2026",
+          "performedBy": "Tribunal de Commerce de Casablanca"
+        },
+        {
+          "eventId": "EVT-L001-03",
+          "eventType": "SEIZURE_ORDER",
+          "eventLabel": "Ordonnance de saisie conservatoire",
+          "eventDate": "2026-06-10",
+          "description": "Saisie conservatoire accordée sur les comptes bancaires du débiteur",
+          "performedBy": "Me. Hamid Tazi",
+          "documentId": "DOC-L001-02"
+        }
+      ]
+    },
+    {
+      "legalCaseId": "LEGAL-002",
+      "caseId": "CASE-025", "caseReference": "MC-2026-025",
+      "debtorId": "DBT-007", "debtorName": "Financière Atlas SA",
+      "phase": "JUDGMENT",
+      "status": "PENDING_JUDGMENT",
+      "lawyerId": "LAW-002", "lawyerName": "Me. Leila Ouazzani",
+      "courtName": "Tribunal de Commerce de Casablanca",
+      "filingDate": "2025-12-01",
+      "hearingDate": "2026-07-08",
+      "judgmentDate": "2026-09-01",
+      "debtAmount": 980000,
+      "legalFees": 38000,
+      "createdAt": "2025-12-01T10:00:00",
+      "updatedAt": "2026-07-08T17:00:00",
+      "events": [
+        {
+          "eventId": "EVT-L002-01",
+          "eventType": "FILING",
+          "eventLabel": "Dépôt de la plainte",
+          "eventDate": "2025-12-01",
+          "description": "Assignation déposée",
+          "performedBy": "Me. Leila Ouazzani"
+        },
+        {
+          "eventId": "EVT-L002-02",
+          "eventType": "HEARING",
+          "eventLabel": "Audience tenue",
+          "eventDate": "2026-07-08",
+          "description": "Audience tenue – jugement mis en délibéré au 01/09/2026",
+          "performedBy": "Tribunal de Commerce de Casablanca"
+        }
+      ]
+    },
+    {
+      "legalCaseId": "LEGAL-003",
+      "caseId": "CASE-026", "caseReference": "MC-2026-026",
+      "debtorId": "DBT-004", "debtorName": "Immobilière Horizons SAS",
+      "phase": "EXECUTION",
+      "status": "JUDGMENT_OBTAINED",
+      "lawyerId": "LAW-001", "lawyerName": "Me. Hamid Tazi",
+      "bailiffId": "BAI-002", "bailiffName": "Huissier Alaoui",
+      "courtName": "Tribunal de Commerce de Marrakech",
+      "filingDate": "2025-09-15",
+      "hearingDate": "2026-02-20",
+      "judgmentDate": "2026-03-15",
+      "debtAmount": 756000,
+      "legalFees": 29000,
+      "createdAt": "2025-09-15T09:30:00",
+      "updatedAt": "2026-07-01T11:00:00",
+      "events": [
+        {
+          "eventId": "EVT-L003-01",
+          "eventType": "FILING",
+          "eventLabel": "Dépôt de la plainte",
+          "eventDate": "2025-09-15",
+          "description": "Assignation déposée",
+          "performedBy": "Me. Hamid Tazi"
+        },
+        {
+          "eventId": "EVT-L003-02",
+          "eventType": "HEARING",
+          "eventLabel": "Audience de jugement",
+          "eventDate": "2026-02-20",
+          "description": "Jugement prononcé en faveur de la banque",
+          "performedBy": "Tribunal de Commerce de Marrakech"
+        },
+        {
+          "eventId": "EVT-L003-03",
+          "eventType": "JUDGMENT",
+          "eventLabel": "Jugement rendu",
+          "eventDate": "2026-03-15",
+          "description": "Condamnation du débiteur à payer 756 000 MAD + frais",
+          "performedBy": "Tribunal de Commerce de Marrakech",
+          "documentId": "DOC-L003-01"
+        },
+        {
+          "eventId": "EVT-L003-04",
+          "eventType": "SEIZURE_INITIATED",
+          "eventLabel": "Procédure de saisie initiée",
+          "eventDate": "2026-05-10",
+          "description": "Saisie des avoirs immobiliers initiée par huissier",
+          "performedBy": "Huissier Alaoui"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+<div class="equipe">
+
+  @switch (viewState()) {
+    @case ('loading') {
+      <div class="equipe__state-wrap"><mc-skeleton-loader /></div>
+    }
+    @case ('error') {
+      <div class="equipe__state-wrap"><mc-error-state (retry)="load()" /></div>
+    }
+    @case ('forbidden') {
+      <div class="equipe__state-wrap"><mc-forbidden-state /></div>
+    }
+    @case ('success') {
+
+      <!-- Header -->
+      <div class="equipe__header">
+        <div>
+          <h1 class="equipe__page-title">Équipe</h1>
+          <p class="equipe__page-sub">
+            {{ totalAgents() }} agent(s) — {{ activeAgents() }} actif(s)
+          </p>
+        </div>
+        <button class="equipe__refresh-btn" type="button" (click)="load()">↺ Actualiser</button>
+      </div>
+
+      <!-- Filters -->
+      <div class="equipe__filters">
+
+        <!-- Period pills -->
+        <div class="equipe__periods" role="group" aria-label="Filtrer par période">
+          @for (p of PERIODS; track p) {
+            <button
+              class="equipe__period-btn"
+              [class.equipe__period-btn--active]="period() === p"
+              type="button"
+              (click)="period.set(p)">
+              {{ p }}
+            </button>
+          }
+        </div>
+
+        <!-- Portfolio selector -->
+        <select
+          class="equipe__portfolio-select"
+          [value]="portfolio()"
+          (change)="portfolio.set($any($event.target).value)"
+          aria-label="Filtrer par portefeuille">
+          <option value="all">Tous les portefeuilles</option>
+          @for (pf of portfolioOptions(); track pf) {
+            <option [value]="pf">{{ pf }}</option>
+          }
+        </select>
+
+      </div>
+
+      <!-- Workspace: DataGrid + optional detail drawer -->
+      <div class="equipe__workspace" [class.equipe__workspace--split]="selected() !== null">
+
+        <!-- DataGrid -->
+        <div class="equipe__grid-wrap">
+          <mc-data-grid
+            [rows]="gridRows()"
+            [columns]="COLUMNS"
+            [totalItems]="filtered().length"
+            [rowClickable]="true"
+            (rowClick)="openDrawer($event)"
+          />
+        </div>
+
+        <!-- Agent detail drawer -->
+        @if (selected(); as agent) {
+          <aside class="equipe__drawer" aria-label="Détail agent">
+
+            <button
+              class="equipe__drawer-close"
+              type="button"
+              (click)="closeDrawer()"
+              aria-label="Fermer le détail">×</button>
+
+            <!-- Identity -->
+            <div class="equipe__drawer-head">
+              <div class="equipe__drawer-avatar" aria-hidden="true">{{ initials(agent.agentName) }}</div>
+              <div class="equipe__drawer-identity">
+                <h2 class="equipe__drawer-name">{{ agent.agentName }}</h2>
+                <span class="equipe__drawer-portfolio">{{ agent.portfolio }}</span>
+              </div>
+              @if (agent.status === 'ON_LEAVE') {
+                <span class="equipe__badge equipe__badge--absent">Absent</span>
+              } @else {
+                <span class="equipe__badge equipe__badge--actif">Actif</span>
+              }
+            </div>
+
+            <!-- KPIs -->
+            <div class="equipe__drawer-kpis">
+              <div class="equipe__drawer-kpi">
+                <span class="equipe__drawer-kpi-value">{{ agent.assignedCases }}</span>
+                <span class="equipe__drawer-kpi-label">Charge dossiers</span>
+              </div>
+              <div class="equipe__drawer-kpi">
+                <span class="equipe__drawer-kpi-value">{{ agent.actionsToday }}</span>
+                <span class="equipe__drawer-kpi-label">Dossiers actifs</span>
+              </div>
+              <div class="equipe__drawer-kpi">
+                <span class="equipe__drawer-kpi-value">{{ agent.promisesObtained }}</span>
+                <span class="equipe__drawer-kpi-label">Promesses en cours</span>
+              </div>
+            </div>
+
+            <!-- Performance detail -->
+            <div class="equipe__drawer-section">
+              <h3 class="equipe__section-title">Performance</h3>
+
+              <div class="equipe__perf-row">
+                <span class="equipe__perf-label">Recouvré</span>
+                <span class="equipe__perf-value">{{ formatAmountM(agent.collectedAmount) }}</span>
+              </div>
+
+              <div class="equipe__perf-row">
+                <span class="equipe__perf-label">SLA (taux recouvrement)</span>
+                <span
+                  class="equipe__sla-badge"
+                  [class.equipe__sla-badge--good]="agent.recoveryRate >= 70"
+                  [class.equipe__sla-badge--medium]="agent.recoveryRate >= 60 && agent.recoveryRate < 70"
+                  [class.equipe__sla-badge--low]="agent.recoveryRate < 60">
+                  {{ agent.recoveryRate }} %
+                </span>
+              </div>
+
+              <div class="equipe__perf-row">
+                <span class="equipe__perf-label">Taux d'impayés</span>
+                <span class="equipe__perf-value">{{ agent.overdueRatio }} %</span>
+              </div>
+            </div>
+
+            <!-- Action -->
+            <button
+              class="equipe__drawer-link-btn"
+              type="button"
+              (click)="navigateToDossiers(agent.agentId)">
+              Voir les dossiers de l'agent ↗
+            </button>
+
+          </aside>
+        }
+
+      </div><!-- /.equipe__workspace -->
+
+    }
+  }
+
+</div><!-- /.equipe -->

@@ -1,0 +1,195 @@
+@if (open()) {
+  <div
+    class="pm-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="pm-title"
+    (click)="onOverlayClick($event)"
+  >
+    <div class="pm" #dialogEl>
+
+      <!-- Header -->
+      <div class="pm__header">
+        <h2 class="pm__title" id="pm-title">Nouvelle promesse de paiement</h2>
+        <button
+          type="button"
+          class="pm__close"
+          (click)="closeModal()"
+          aria-label="Fermer la modale"
+        >✕</button>
+      </div>
+
+      <!-- Read-only context -->
+      <div class="pm__ctx">
+        <div class="pm__ctx-item">
+          <span class="pm__ctx-label">Référence</span>
+          <span class="pm__ctx-value">{{ caseContext().caseReference }}</span>
+        </div>
+        <div class="pm__ctx-item">
+          <span class="pm__ctx-label">Débiteur</span>
+          <span class="pm__ctx-value">{{ caseContext().debtorName }}</span>
+        </div>
+        <div class="pm__ctx-item">
+          <span class="pm__ctx-label">Impayé</span>
+          <span class="pm__ctx-value pm__ctx-amount">{{ formatOverdueAmount() }}</span>
+        </div>
+        <div class="pm__ctx-item">
+          <span class="pm__ctx-label">Retard</span>
+          <span class="pm__ctx-value">{{ caseContext().daysLate }} j</span>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="pm__form" novalidate>
+
+        <!-- Row 1: Amount + Currency -->
+        <div class="pm__row">
+          <div class="pm__field pm__field--lg">
+            <label class="pm__label" for="pm-amount">
+              Montant promis <span class="pm__req" aria-hidden="true">*</span>
+            </label>
+            <input
+              id="pm-amount"
+              type="number"
+              class="pm__input"
+              [class.pm__input--error]="hasError('promiseAmount')"
+              formControlName="promiseAmount"
+              min="0.01"
+              step="0.01"
+              placeholder="0,00"
+              aria-required="true"
+              [attr.aria-describedby]="hasError('promiseAmount') ? 'err-amount' : null"
+            />
+            @if (hasError('promiseAmount')) {
+              <p id="err-amount" class="pm__error" role="alert">{{ getError('promiseAmount') }}</p>
+            }
+          </div>
+
+          <div class="pm__field">
+            <label class="pm__label" for="pm-currency">
+              Devise <span class="pm__req" aria-hidden="true">*</span>
+            </label>
+            <select
+              id="pm-currency"
+              class="pm__select"
+              formControlName="currency"
+              aria-required="true"
+            >
+              @for (opt of currencyOptions; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 2: Date + Channel -->
+        <div class="pm__row">
+          <div class="pm__field pm__field--lg">
+            <label class="pm__label" for="pm-date">
+              Date prévue <span class="pm__req" aria-hidden="true">*</span>
+            </label>
+            <input
+              id="pm-date"
+              type="date"
+              class="pm__input"
+              [class.pm__input--error]="hasError('promiseDate')"
+              formControlName="promiseDate"
+              [min]="isHistoricalReg ? '' : todayIso()"
+              aria-required="true"
+              [attr.aria-describedby]="hasError('promiseDate') ? 'err-date' : null"
+            />
+            @if (hasError('promiseDate')) {
+              <p id="err-date" class="pm__error" role="alert">{{ getError('promiseDate') }}</p>
+            }
+          </div>
+
+          <div class="pm__field">
+            <label class="pm__label" for="pm-channel">
+              Canal <span class="pm__req" aria-hidden="true">*</span>
+            </label>
+            <select
+              id="pm-channel"
+              class="pm__select"
+              formControlName="channel"
+              aria-required="true"
+            >
+              @for (opt of channelOptions; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Derogation -->
+        <div class="pm__check-row">
+          <label class="pm__check-label">
+            <input
+              type="checkbox"
+              class="pm__checkbox"
+              formControlName="derogation"
+            />
+            Dérogation accordée — montant supérieur à l'impayé autorisé
+          </label>
+        </div>
+
+        @if (isDerogation) {
+          <div class="pm__field pm__field--full pm__field--derog">
+            <label class="pm__label" for="pm-derog-reason">
+              Motif de dérogation <span class="pm__req" aria-hidden="true">*</span>
+            </label>
+            <textarea
+              id="pm-derog-reason"
+              class="pm__textarea"
+              [class.pm__textarea--error]="hasError('derogationReason')"
+              formControlName="derogationReason"
+              rows="2"
+              placeholder="Justification de la dérogation…"
+              [attr.aria-describedby]="hasError('derogationReason') ? 'err-derog' : null"
+            ></textarea>
+            @if (hasError('derogationReason')) {
+              <p id="err-derog" class="pm__error" role="alert">{{ getError('derogationReason') }}</p>
+            }
+          </div>
+        }
+
+        <!-- Historical regularization -->
+        <div class="pm__check-row">
+          <label class="pm__check-label">
+            <input
+              type="checkbox"
+              class="pm__checkbox"
+              formControlName="historicalRegularization"
+            />
+            Régularisation historique — date antérieure à aujourd'hui acceptée
+          </label>
+        </div>
+
+        <!-- Notes -->
+        <div class="pm__field pm__field--full">
+          <label class="pm__label" for="pm-notes">Commentaire</label>
+          <textarea
+            id="pm-notes"
+            class="pm__textarea"
+            formControlName="notes"
+            rows="3"
+            placeholder="Informations complémentaires sur cette promesse…"
+          ></textarea>
+        </div>
+
+        <!-- Sticky footer -->
+        <div class="pm__footer">
+          <button
+            type="button"
+            class="pm__btn pm__btn--outline"
+            (click)="closeModal()"
+          >Annuler</button>
+          <button
+            type="submit"
+            class="pm__btn pm__btn--primary"
+          >Enregistrer la promesse</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+}

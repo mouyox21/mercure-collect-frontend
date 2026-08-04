@@ -1,0 +1,603 @@
+<div class="cd">
+
+  @switch (viewState()) {
+
+    @case ('loading') {
+      <div class="cd__state-wrap">
+        <mc-skeleton-loader variant="list" [rows]="8" />
+      </div>
+    }
+
+    @case ('error') {
+      <div class="cd__state-wrap">
+        <mc-error-state
+          message="Impossible de charger le dossier."
+          (retry)="load()"
+        />
+      </div>
+    }
+
+    @case ('forbidden') {
+      <div class="cd__state-wrap">
+        <mc-forbidden-state />
+      </div>
+    }
+
+    @case ('success') {
+
+      <!-- Breadcrumb ─────────────────────────────────────────────────────── -->
+      <nav class="cd__breadcrumb" aria-label="Navigation">
+        <button type="button" class="cd__back-btn" (click)="goBack()">
+          ← Retour aux dossiers
+        </button>
+        <span class="cd__breadcrumb-sep" aria-hidden="true">/</span>
+        <span class="cd__breadcrumb-current">{{ caseDetail()!.caseReference }}</span>
+      </nav>
+
+      <!-- Banner (header band) ────────────────────────────────────────────── -->
+      <div
+        class="cd__banner"
+        [class]="'cd__banner cd__banner--' + priorityModifier(caseDetail()!.priority)"
+        role="banner"
+      >
+        <div class="cd__banner-main">
+
+          <div class="cd__banner-identity">
+            <span class="cd__banner-ref">{{ caseDetail()!.caseReference }}</span>
+            <span class="cd__banner-sep" aria-hidden="true">·</span>
+            <span class="cd__banner-debtor">{{ caseDetail()!.debtorName }}</span>
+          </div>
+
+          <div class="cd__banner-badges" aria-label="Caractéristiques du dossier">
+            <span class="cd__badge cd__badge--phase">{{ phaseLabel(caseDetail()!.phase) }}</span>
+            <span class="cd__badge cd__badge--status-{{ statusModifier(caseDetail()!.status) }}">
+              {{ statusLabel(caseDetail()!.status) }}
+            </span>
+            <span class="cd__badge cd__badge--priority-{{ priorityModifier(caseDetail()!.priority) }}">
+              {{ priorityLabel(caseDetail()!.priority) }}
+            </span>
+            <span class="cd__badge cd__badge--category">{{ caseDetail()!.categoryLabel }}</span>
+          </div>
+
+          <div class="cd__banner-amounts" aria-label="Montants">
+            <div class="cd__amount-item">
+              <span class="cd__amount-label">Montant impayé</span>
+              <span class="cd__amount-value cd__amount-value--overdue">
+                {{ formatAmount(caseDetail()!.overdueAmount) }}
+              </span>
+            </div>
+            <div class="cd__amount-sep" aria-hidden="true"></div>
+            <div class="cd__amount-item">
+              <span class="cd__amount-label">Retard</span>
+              <span
+                class="cd__amount-value"
+                [class.cd__amount-value--critical]="caseDetail()!.daysLate > 60"
+              >
+                {{ caseDetail()!.daysLate }}&nbsp;jour{{ caseDetail()!.daysLate > 1 ? 's' : '' }}
+              </span>
+            </div>
+            <div class="cd__amount-sep" aria-hidden="true"></div>
+            <div class="cd__amount-item">
+              <span class="cd__amount-label">Total dette</span>
+              <span class="cd__amount-value">{{ formatAmount(caseDetail()!.totalDebtAmount) }}</span>
+            </div>
+          </div>
+
+          <div class="cd__banner-meta">
+            <span>Agent&nbsp;: <strong>{{ caseDetail()!.agentName }}</strong></span>
+            <span>Contrat&nbsp;: {{ caseDetail()!.contractReference }}</span>
+            <span>Ouvert le&nbsp;: {{ formatDate(caseDetail()!.openDate) }}</span>
+            @if (caseDetail()!.lastActionDate) {
+              <span>Dernière action&nbsp;: {{ formatDate(caseDetail()!.lastActionDate) }}</span>
+            }
+          </div>
+
+        </div>
+
+        <!-- Quick actions (permission-gated) ──────────────────────────────── -->
+        <div class="cd__quick-actions" role="toolbar" aria-label="Actions rapides">
+          @if (canAction()) {
+            <button
+              type="button"
+              class="cd__qa-btn"
+              title="Enregistrer un appel"
+              (click)="preselectedType.set('PHONE_CALL'); activeTab.set('actions'); actionModalOpen.set(true)"
+            >📞 Appel</button>
+            <button
+              type="button"
+              class="cd__qa-btn"
+              title="Envoyer un SMS"
+              (click)="preselectedType.set('SMS'); activeTab.set('actions'); actionModalOpen.set(true)"
+            >💬 SMS</button>
+            <button
+              type="button"
+              class="cd__qa-btn"
+              title="Envoyer un e-mail"
+              (click)="preselectedType.set('EMAIL'); activeTab.set('actions'); actionModalOpen.set(true)"
+            >📧 Email</button>
+          }
+          @if (canAction()) {
+            <button
+              type="button"
+              class="cd__qa-btn"
+              title="Enregistrer l'envoi d'un courrier"
+              (click)="preselectedType.set('LETTER'); activeTab.set('actions'); actionModalOpen.set(true)"
+            >✉️ Lettre</button>
+          }
+          @if (canPromise()) {
+            <button
+              type="button"
+              class="cd__qa-btn"
+              title="Aller à l'onglet Promesses"
+              (click)="activeTab.set('promesses')"
+            >🤝 Promesse</button>
+          }
+          @if (canPaymentPlan()) {
+            <button
+              type="button"
+              class="cd__qa-btn"
+              title="Créer un échéancier de paiement"
+              (click)="navigateToSchedule()"
+            >📅 Échéancier</button>
+          }
+          @if (canEscalate()) {
+            <button
+              type="button"
+              class="cd__qa-btn cd__qa-btn--escalate"
+              title="Escalader ce dossier"
+              (click)="onEscalate()"
+            >⬆️ Escalade</button>
+          }
+          @if (canClose()) {
+            <button
+              type="button"
+              class="cd__qa-btn cd__qa-btn--close"
+              [class.cd__qa-btn--blocked]="closureBlocked()"
+              title="Clôturer le dossier"
+              (click)="onCloseCase()"
+            >🔒 Clôturer</button>
+          }
+        </div>
+
+      </div>
+
+      <!-- Closure blocked warning ──────────────────────────────────────────── -->
+      @if (closureBlocked()) {
+        <div class="cd__closure-warn" role="alert" aria-live="assertive">
+          <span>
+            ⚠️ Clôture impossible : ce dossier a
+            @if (caseDetail()!.hasActivePromise) { une promesse active }
+            @if (caseDetail()!.hasActivePromise && caseDetail()!.hasActivePaymentPlan) { et }
+            @if (caseDetail()!.hasActivePaymentPlan) { un échéancier actif }
+            . Seul un superviseur peut forcer la clôture.
+          </span>
+          <button
+            type="button"
+            class="cd__closure-warn-close"
+            aria-label="Fermer le message"
+            (click)="closureBlocked.set(false)"
+          >✕</button>
+        </div>
+      }
+
+      <!-- DMN decision block (CA-CAS-01 + CA-CAS-02) ───────────────────────── -->
+      <div class="cd__dmn" aria-label="Décision DMN">
+        <div class="cd__dmn-header">
+          <span class="cd__dmn-title">⚡ Prochaine action recommandée</span>
+          <span class="cd__dmn-ts">
+            Calculé le {{ formatDateTime(caseDetail()!.dmnDecision.computedAt) }}
+          </span>
+        </div>
+        <div class="cd__dmn-body">
+          <div class="cd__dmn-nba">
+            <span class="cd__dmn-nba-label">
+              {{ nbaLabel(caseDetail()!.dmnDecision.nextBestAction) }}
+            </span>
+            <span class="cd__dmn-segment">
+              Segment&nbsp;: {{ segmentLabel(caseDetail()!.dmnDecision.segment) }}
+            </span>
+          </div>
+          <p class="cd__dmn-reason" aria-label="Justification DMN">
+            "{{ caseDetail()!.dmnDecision.nextBestActionReason }}"
+          </p>
+          <div class="cd__dmn-score" aria-label="Score IA">
+            <span class="cd__dmn-score-label">Score IA</span>
+            <div class="cd__dmn-score-track" role="progressbar"
+                 [attr.aria-valuenow]="caseDetail()!.dmnDecision.score"
+                 aria-valuemin="0" aria-valuemax="100">
+              <div
+                class="cd__dmn-score-fill"
+                [style.width.%]="caseDetail()!.dmnDecision.score"
+              ></div>
+            </div>
+            <span class="cd__dmn-score-value">
+              {{ caseDetail()!.dmnDecision.score }}/100
+            </span>
+          </div>
+          @if (canAction()) {
+            <button
+              type="button"
+              class="cd__dmn-treat-btn"
+              (click)="onTreatAction()"
+              aria-label="Traiter la prochaine action recommandée"
+            >Traiter cette action →</button>
+          }
+        </div>
+      </div>
+
+      <!-- Tab navigation ────────────────────────────────────────────────────── -->
+      <div class="cd__tab-bar" role="tablist" aria-label="Sections du dossier">
+        @for (tab of tabs; track tab.id) {
+          <button
+            type="button"
+            role="tab"
+            class="cd__tab-btn"
+            [class.cd__tab-btn--active]="activeTab() === tab.id"
+            [attr.aria-selected]="activeTab() === tab.id"
+            (click)="activeTab.set(tab.id)"
+          >{{ tab.label }}</button>
+        }
+      </div>
+
+      <!-- Tab content ───────────────────────────────────────────────────────── -->
+      <div class="cd__tab-content" role="tabpanel">
+
+        @switch (activeTab()) {
+
+          <!-- Synthèse ──────────────────────────────────────────────────────── -->
+          @case ('synthese') {
+            <div class="cd__synthese">
+              <div class="cd__info-grid">
+
+                <div class="cd__info-card">
+                  <h4 class="cd__info-card-title">Débiteur</h4>
+                  <dl class="cd__dl">
+                    <dt>Nom</dt>         <dd>{{ caseDetail()!.debtorName }}</dd>
+                    <dt>ID débiteur</dt> <dd>{{ caseDetail()!.debtorId }}</dd>
+                  </dl>
+                </div>
+
+                <div class="cd__info-card">
+                  <h4 class="cd__info-card-title">Créancier</h4>
+                  <dl class="cd__dl">
+                    <dt>Nom</dt>           <dd>{{ caseDetail()!.creditorLabel }}</dd>
+                    <dt>ID créancier</dt>  <dd>{{ caseDetail()!.creditorId }}</dd>
+                  </dl>
+                </div>
+
+                <div class="cd__info-card">
+                  <h4 class="cd__info-card-title">Finances</h4>
+                  <dl class="cd__dl">
+                    <dt>Montant impayé</dt> <dd>{{ formatAmount(caseDetail()!.overdueAmount) }}</dd>
+                    <dt>Total dette</dt>    <dd>{{ formatAmount(caseDetail()!.totalDebtAmount) }}</dd>
+                    <dt>Retard</dt>         <dd>{{ caseDetail()!.daysLate }} jours</dd>
+                  </dl>
+                </div>
+
+                <div class="cd__info-card">
+                  <h4 class="cd__info-card-title">Dossier</h4>
+                  <dl class="cd__dl">
+                    <dt>Référence</dt>    <dd>{{ caseDetail()!.caseReference }}</dd>
+                    <dt>Contrat</dt>      <dd>{{ caseDetail()!.contractReference }}</dd>
+                    <dt>Phase</dt>        <dd>{{ phaseLabel(caseDetail()!.phase) }}</dd>
+                    <dt>Statut</dt>       <dd>{{ statusLabel(caseDetail()!.status) }}</dd>
+                    <dt>Priorité</dt>     <dd>{{ priorityLabel(caseDetail()!.priority) }}</dd>
+                    <dt>Catégorie</dt>    <dd>{{ caseDetail()!.categoryLabel }}</dd>
+                    <dt>Ouvert le</dt>    <dd>{{ formatDate(caseDetail()!.openDate) }}</dd>
+                    <dt>Agent</dt>        <dd>{{ caseDetail()!.agentName }}</dd>
+                  </dl>
+                </div>
+
+                <div class="cd__info-card">
+                  <h4 class="cd__info-card-title">Engagements actifs</h4>
+                  <dl class="cd__dl">
+                    <dt>Promesse active</dt>
+                    <dd>
+                      @if (caseDetail()!.hasActivePromise) {
+                        <span class="cd__pill cd__pill--warn">Oui</span>
+                      } @else {
+                        <span class="cd__pill cd__pill--ok">Non</span>
+                      }
+                    </dd>
+                    <dt>Échéancier actif</dt>
+                    <dd>
+                      @if (caseDetail()!.hasActivePaymentPlan) {
+                        <span class="cd__pill cd__pill--warn">Oui</span>
+                      } @else {
+                        <span class="cd__pill cd__pill--ok">Non</span>
+                      }
+                    </dd>
+                  </dl>
+                </div>
+
+                @if (caseDetail()!.nextActionLabel) {
+                  <div class="cd__info-card">
+                    <h4 class="cd__info-card-title">Prochaine action</h4>
+                    <dl class="cd__dl">
+                      <dt>Libellé</dt> <dd>{{ caseDetail()!.nextActionLabel }}</dd>
+                      @if (caseDetail()!.nextActionDate) {
+                        <dt>Date</dt>  <dd>{{ formatDate(caseDetail()!.nextActionDate!) }}</dd>
+                      }
+                    </dl>
+                  </div>
+                }
+
+              </div>
+            </div>
+          }
+
+          <!-- Actions (CA-CAS-03: timeline mise à jour sans rechargement) ────── -->
+          @case ('actions') {
+            <div class="cd__actions-tab">
+              <div class="cd__tab-toolbar">
+                @if (canAction()) {
+                  <button
+                    type="button"
+                    class="cd__tab-new-btn"
+                    (click)="preselectedType.set(null); actionModalOpen.set(true)"
+                  >+ Nouvelle action</button>
+                }
+              </div>
+              @if (timeline().length === 0) {
+                <div class="cd__tab-empty">
+                  Aucune action enregistrée pour ce dossier.
+                  Cliquez sur "Nouvelle action" ou utilisez le bouton "Traiter cette action" dans le bloc DMN.
+                </div>
+              } @else {
+                <mc-timeline [events]="timeline()" />
+              }
+            </div>
+          }
+
+          <!-- Promesses ─────────────────────────────────────────────────────── -->
+          @case ('promesses') {
+            @if (caseContext()) {
+              <mc-promise-list
+                [caseContext]="caseContext()!"
+                (promiseCreated)="timeline.update(t => [$event, ...t])"
+              />
+            }
+          }
+
+          <!-- Dette ─────────────────────────────────────────────────────────── -->
+          @case ('dette') {
+            <div class="cd__dette-tab">
+              @if (!caseDetail()!.debts?.length) {
+                <div class="cd__tab-empty">Aucune dette enregistrée pour ce dossier.</div>
+              } @else {
+                <table class="cd__table">
+                  <thead>
+                    <tr>
+                      <th>Contrat</th>
+                      <th>Montant</th>
+                      <th>Échéance</th>
+                      <th>Retard (j.)</th>
+                      <th>Statut</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (debt of caseDetail()!.debts; track debt.debtId) {
+                      <tr>
+                        <td class="cd__mono">{{ debt.contractReference }}</td>
+                        <td class="cd__amount-cell">{{ formatAmount(debt.amount) }}</td>
+                        <td>{{ formatDate(debt.dueDate) }}</td>
+                        <td [class.cd__late-critical]="debt.daysLate > 60">{{ debt.daysLate }}</td>
+                        <td>
+                          <span class="cd__badge cd__badge--debt-{{ debtStatusModifier(debt.status) }}">
+                            {{ debtStatusLabel(debt.status) }}
+                          </span>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              }
+            </div>
+          }
+
+          <!-- Interactions ───────────────────────────────────────────────────── -->
+          @case ('interactions') {
+            <div class="cd__interactions-tab">
+              @if (!caseDetail()!.interactions?.length) {
+                <div class="cd__tab-empty">Aucune interaction enregistrée.</div>
+              } @else {
+                <ul class="cd__interaction-list">
+                  @for (inter of caseDetail()!.interactions; track inter.interactionId) {
+                    <li class="cd__interaction-item">
+                      <span class="cd__interaction-icon" aria-hidden="true">{{ channelIcon(inter.channel) }}</span>
+                      <div class="cd__interaction-body">
+                        <div class="cd__interaction-header">
+                          <span class="cd__interaction-label">{{ inter.actionLabel }}</span>
+                          <span class="cd__interaction-date">{{ formatDate(inter.interactionDate) }}</span>
+                        </div>
+                        <div class="cd__interaction-meta">
+                          <span>{{ inter.agentName }}</span>
+                          <span class="cd__interaction-sep" aria-hidden="true">·</span>
+                          <span>{{ inter.outcome }}</span>
+                          @if (inter.hasPromise) {
+                            <span class="cd__badge cd__badge--promise">
+                              Promesse {{ formatAmount(inter.promiseAmount!) }} — {{ formatDate(inter.promiseDate!) }}
+                            </span>
+                          }
+                        </div>
+                      </div>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          }
+
+          <!-- Échéancier ─────────────────────────────────────────────────────── -->
+          @case ('echeancier') {
+            <div class="cd__echeancier-tab">
+              @if (!caseDetail()!.paymentPlan) {
+                <div class="cd__tab-empty">Aucun échéancier actif pour ce dossier.</div>
+              } @else {
+                <div class="cd__echeancier-header">
+                  <div class="cd__info-card cd__echeancier-summary">
+                    <h4 class="cd__info-card-title">Résumé de l'échéancier</h4>
+                    <dl class="cd__dl">
+                      <dt>Montant total</dt>    <dd>{{ formatAmount(caseDetail()!.paymentPlan!.totalAmount) }}</dd>
+                      <dt>Nb versements</dt>    <dd>{{ caseDetail()!.paymentPlan!.installmentCount }}</dd>
+                      <dt>Fréquence</dt>        <dd>{{ caseDetail()!.paymentPlan!.frequency === 'MONTHLY' ? 'Mensuelle' : caseDetail()!.paymentPlan!.frequency }}</dd>
+                      <dt>1er versement</dt>    <dd>{{ formatDate(caseDetail()!.paymentPlan!.firstInstallmentDate) }}</dd>
+                    </dl>
+                    @if (caseDetail()!.paymentPlan!.derogation) {
+                      <p class="cd__derogation-note">
+                        ⚠️ Dérogation&nbsp;: {{ caseDetail()!.paymentPlan!.derogationReason }}
+                      </p>
+                    }
+                  </div>
+                </div>
+                <table class="cd__table cd__table--echeancier">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Date échéance</th>
+                      <th>Montant</th>
+                      <th>Statut</th>
+                      <th>Date paiement</th>
+                      <th>Montant payé</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (inst of caseDetail()!.paymentPlan!.installments; track inst.installmentNumber) {
+                      <tr [class.cd__row--paid]="inst.status === 'PAID'" [class.cd__row--late]="inst.status === 'LATE'">
+                        <td class="cd__inst-num">{{ inst.installmentNumber }}</td>
+                        <td>{{ formatDate(inst.dueDate) }}</td>
+                        <td class="cd__amount-cell">{{ formatAmount(inst.amount) }}</td>
+                        <td>
+                          <span class="cd__badge cd__badge--inst-{{ installmentStatusModifier(inst.status) }}">
+                            {{ installmentStatusLabel(inst.status) }}
+                          </span>
+                        </td>
+                        <td>{{ inst.paidDate ? formatDate(inst.paidDate) : '—' }}</td>
+                        <td class="cd__amount-cell">{{ inst.paidAmount != null ? formatAmount(inst.paidAmount) : '—' }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              }
+            </div>
+          }
+
+          <!-- Documents ──────────────────────────────────────────────────────── -->
+          @case ('documents') {
+            <div class="cd__documents-tab">
+              @if (!caseDetail()!.documents?.length) {
+                <div class="cd__tab-empty">Aucun document attaché à ce dossier.</div>
+              } @else {
+                <ul class="cd__doc-list">
+                  @for (doc of caseDetail()!.documents; track doc.documentId) {
+                    <li class="cd__doc-item">
+                      <span class="cd__doc-icon" aria-hidden="true">📄</span>
+                      <div class="cd__doc-body">
+                        <span class="cd__doc-label">{{ doc.documentLabel }}</span>
+                        <div class="cd__doc-meta">
+                          <span class="cd__badge cd__badge--doc-type">{{ docTypeLabel(doc.documentType) }}</span>
+                          <span>{{ formatDate(doc.uploadedAt) }}</span>
+                          <span>{{ formatFileSize(doc.fileSize) }}</span>
+                        </div>
+                      </div>
+                      <button type="button" class="cd__doc-download-btn" title="Télécharger">⬇</button>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          }
+
+          <!-- Contentieux ────────────────────────────────────────────────────── -->
+          @case ('contentieux') {
+            <div class="cd__contentieux-tab">
+              @if (!caseDetail()!.legalInfo) {
+                <div class="cd__tab-empty">Ce dossier n'est pas en phase contentieuse.</div>
+              } @else {
+                <div class="cd__legal-summary">
+                  <div class="cd__info-card">
+                    <h4 class="cd__info-card-title">Procédure</h4>
+                    <dl class="cd__dl">
+                      <dt>Phase</dt>         <dd>{{ legalPhaseLabel(caseDetail()!.legalInfo!.legalPhase) }}</dd>
+                      <dt>Statut</dt>        <dd>{{ caseDetail()!.legalInfo!.status }}</dd>
+                      <dt>Avocat</dt>        <dd>{{ caseDetail()!.legalInfo!.lawyerName }}</dd>
+                      <dt>Tribunal</dt>      <dd>{{ caseDetail()!.legalInfo!.courtName }}</dd>
+                      <dt>Date dépôt</dt>    <dd>{{ formatDate(caseDetail()!.legalInfo!.filingDate) }}</dd>
+                      @if (caseDetail()!.legalInfo!.hearingDate) {
+                        <dt>Audience</dt>    <dd class="cd__hearing-date">{{ formatDate(caseDetail()!.legalInfo!.hearingDate!) }}</dd>
+                      }
+                      <dt>Montant réclamé</dt> <dd>{{ formatAmount(caseDetail()!.legalInfo!.debtAmount) }}</dd>
+                      <dt>Frais juridiques</dt> <dd>{{ formatAmount(caseDetail()!.legalInfo!.legalFees) }}</dd>
+                    </dl>
+                  </div>
+                </div>
+                <h4 class="cd__legal-events-title">Chronologie procédurale</h4>
+                <ul class="cd__legal-events">
+                  @for (ev of caseDetail()!.legalInfo!.events; track ev.eventId) {
+                    <li class="cd__legal-event">
+                      <span class="cd__legal-event-dot" aria-hidden="true"></span>
+                      <div class="cd__legal-event-body">
+                        <div class="cd__legal-event-header">
+                          <span class="cd__legal-event-label">{{ ev.eventLabel }}</span>
+                          <span class="cd__legal-event-date">{{ formatDate(ev.eventDate) }}</span>
+                        </div>
+                        <p class="cd__legal-event-desc">{{ ev.description }}</p>
+                        <span class="cd__legal-event-by">{{ ev.performedBy }}</span>
+                      </div>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          }
+
+          <!-- Historique ─────────────────────────────────────────────────────── -->
+          @case ('historique') {
+            <div class="cd__historique-tab">
+              @if (!caseDetail()!.history?.length) {
+                <div class="cd__tab-empty">Aucune entrée dans l'historique.</div>
+              } @else {
+                <ul class="cd__history-list">
+                  @for (entry of caseDetail()!.history; track entry.entryId) {
+                    <li class="cd__history-item">
+                      <span class="cd__history-date">{{ formatDateTime(entry.entryDate) }}</span>
+                      <span class="cd__history-actor">{{ entry.actor }}</span>
+                      <span class="cd__history-action">{{ entry.action }}</span>
+                      @if (entry.details) {
+                        <span class="cd__history-details">{{ entry.details }}</span>
+                      }
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          }
+
+        }
+
+      </div>
+
+    }
+
+  }
+
+  <!-- Action modal (inlined here so it sits above all other content) ──────── -->
+  @if (caseContext()) {
+    <mc-action-modal
+      [open]="actionModalOpen()"
+      [caseContext]="caseContext()!"
+      [preselectedType]="preselectedType()"
+      (submitted)="onActionSubmitted($event)"
+      (closed)="actionModalOpen.set(false)"
+    />
+  }
+
+  <!-- Toast ──────────────────────────────────────────────────────────────── -->
+  @if (showToast()) {
+    <mc-success-toast
+      [message]="toastMsg()"
+      (dismissed)="showToast.set(false)"
+    />
+  }
+
+</div>

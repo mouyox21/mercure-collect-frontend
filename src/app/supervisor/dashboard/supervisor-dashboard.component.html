@@ -1,0 +1,245 @@
+<div class="sdash">
+
+  <!-- ── Main content body ── -->
+  <div class="sdash__body">
+
+    @switch (viewState()) {
+      @case ('loading') {
+        <div class="sdash__state-wrap"><mc-skeleton-loader /></div>
+      }
+      @case ('error') {
+        <div class="sdash__state-wrap"><mc-error-state (retry)="load()" /></div>
+      }
+      @case ('forbidden') {
+        <div class="sdash__state-wrap"><mc-forbidden-state /></div>
+      }
+      @case ('success') {
+
+        <!-- Page header -->
+        <div class="sdash__header">
+          <div class="sdash__header-text">
+            <h1 class="sdash__page-title">{{ pageTitle() }}</h1>
+            <p class="sdash__page-sub">{{ supervisorName() }} — {{ businessDate() }}</p>
+          </div>
+          <button class="sdash__refresh-btn" type="button" (click)="load()">↺ Actualiser</button>
+        </div>
+
+        <!-- CA-SUP-01: KPI bar ×5 -->
+        @if (kpis(); as k) {
+          <div class="sdash__kpis">
+            <mc-kpi-card
+              title="Encours total"
+              [value]="formatAmountM(k.totalOverdueAmount)"
+              variant="critical"
+              subtitle="montant en retard"
+            />
+            <mc-kpi-card
+              title="Dossiers actifs"
+              [value]="k.totalActiveCases"
+              variant="standard"
+              subtitle="en cours de traitement"
+            />
+            <mc-kpi-card
+              title="Escalades en attente"
+              [value]="k.pendingEscalations"
+              variant="warning"
+              subtitle="à décider"
+            />
+            <mc-kpi-card
+              title="Promesses tenues"
+              [value]="k.promisesKeptThisMonth"
+              variant="success"
+              subtitle="ce mois"
+            />
+            <mc-kpi-card
+              title="Recouvré ce mois"
+              [value]="formatAmountM(totalCollected())"
+              variant="success"
+              subtitle="total équipe"
+            />
+          </div>
+        }
+
+        <!-- CA-SUP-01: 2 tables côte à côte -->
+        <div class="sdash__two-col">
+
+          <!-- Table Portefeuille par aging -->
+          <section class="sdash__panel" aria-label="Portefeuille par aging">
+            <h2 class="sdash__panel-title">Portefeuille par aging</h2>
+            <table class="sdash__table">
+              <thead>
+                <tr>
+                  <th scope="col">Tranche</th>
+                  <th scope="col" class="sdash__th--right">Dossiers</th>
+                  <th scope="col">Montant</th>
+                  <th scope="col" class="sdash__th--right">Part</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (bucket of aging(); track bucket.bucketCode) {
+                  <tr>
+                    <td class="sdash__td-label">{{ bucket.bucketLabel }}</td>
+                    <td class="sdash__td--right sdash__td--mono">{{ bucket.caseCount }}</td>
+                    <td class="sdash__td--bar">
+                      <div class="sdash__bar-track">
+                        <div class="sdash__bar-fill" [style.width.%]="agingBarPct(bucket)"></div>
+                      </div>
+                      <span class="sdash__bar-amount">{{ formatAmount(bucket.totalAmount) }}</span>
+                    </td>
+                    <td class="sdash__td--right sdash__td--mono">{{ bucket.percentage.toFixed(1) }} %</td>
+                  </tr>
+                }
+              </tbody>
+              <tfoot>
+                <tr class="sdash__table-total">
+                  <td>Total</td>
+                  <td class="sdash__td--right sdash__td--mono">{{ kpis()?.totalActiveCases }}</td>
+                  <td colspan="2" class="sdash__td--right sdash__td--mono">{{ formatAmountM(kpis()?.totalOverdueAmount ?? 0) }}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </section>
+
+          <!-- Table Performance équipe -->
+          <section class="sdash__panel" aria-label="Performance équipe">
+            <h2 class="sdash__panel-title">Performance équipe</h2>
+            <table class="sdash__table">
+              <thead>
+                <tr>
+                  <th scope="col">Agent</th>
+                  <th scope="col" class="sdash__th--right">Portef.</th>
+                  <th scope="col" class="sdash__th--right">Actions</th>
+                  <th scope="col" class="sdash__th--right">Promesses</th>
+                  <th scope="col" class="sdash__th--right">Recouvré</th>
+                  <th scope="col" class="sdash__th--right">Taux</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (agent of team(); track agent.agentId) {
+                  <tr [class.sdash__row--absent]="agent.status === 'ON_LEAVE'">
+                    <td>
+                      <span class="sdash__agent-name">{{ agent.agentName }}</span>
+                      @if (agent.status === 'ON_LEAVE') {
+                        <span class="sdash__badge sdash__badge--absent">Absent</span>
+                      }
+                    </td>
+                    <td class="sdash__td--right sdash__td--mono">{{ agent.assignedCases }}</td>
+                    <td class="sdash__td--right sdash__td--mono">{{ agent.actionsToday }}</td>
+                    <td class="sdash__td--right sdash__td--mono">{{ agent.promisesObtained }}</td>
+                    <td class="sdash__td--right sdash__td--mono">{{ formatAmountM(agent.collectedAmount) }}</td>
+                    <td class="sdash__td--right">
+                      <span
+                        class="sdash__rate"
+                        [class.sdash__rate--good]="agent.recoveryRate >= 70"
+                        [class.sdash__rate--medium]="agent.recoveryRate >= 60 && agent.recoveryRate < 70"
+                        [class.sdash__rate--low]="agent.recoveryRate < 60">
+                        {{ agent.recoveryRate }} %
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </section>
+
+        </div>
+
+        <!-- CA-SUP-02: Alertes + Décisions -->
+        <div class="sdash__two-col">
+
+          <!-- Alertes prioritaires -->
+          <section class="sdash__panel" aria-label="Alertes prioritaires">
+            <h2 class="sdash__panel-title">Alertes prioritaires</h2>
+            <ul class="sdash__alerts" role="list">
+              @for (alert of alerts(); track alert.alertId) {
+                <li
+                  class="sdash__alert"
+                  [class.sdash__alert--critical]="isCritical(alert.severity)"
+                  [class.sdash__alert--warning]="isWarning(alert.severity)">
+                  <span class="sdash__alert-icon" aria-hidden="true">{{ alertIcon(alert.alertType) }}</span>
+                  <div class="sdash__alert-body">
+                    <p class="sdash__alert-msg">{{ alert.message }}</p>
+                    @if (alert.relatedEntityId) {
+                      <button
+                        type="button"
+                        class="sdash__alert-link"
+                        (click)="navigateToDossier(alert.relatedEntityId!)">
+                        {{ alert.relatedEntityLabel }} <span aria-hidden="true">↗</span>
+                      </button>
+                    }
+                  </div>
+                  <span
+                    class="sdash__severity-badge"
+                    [class.sdash__severity-badge--critical]="isCritical(alert.severity)"
+                    [class.sdash__severity-badge--warning]="isWarning(alert.severity)">
+                    {{ alert.severity }}
+                  </span>
+                </li>
+              }
+              @empty {
+                <li class="sdash__alerts-empty">Aucune alerte active.</li>
+              }
+            </ul>
+          </section>
+
+          <!-- Décisions superviseur -->
+          <section class="sdash__panel" aria-label="Décisions superviseur">
+            <h2 class="sdash__panel-title">Décisions superviseur</h2>
+            @if (pendingEscalations().length === 0) {
+              <p class="sdash__no-decision">Aucune escalade en attente de décision.</p>
+            } @else {
+              <ul class="sdash__decisions" role="list">
+                @for (esc of pendingEscalations(); track esc.escalationId) {
+                  <li class="sdash__decision">
+                    <div class="sdash__decision-meta">
+                      <span class="sdash__decision-ref">{{ esc.caseReference }}</span>
+                      <span class="sdash__decision-agent">{{ esc.agentName }}</span>
+                      <span class="sdash__decision-amount">{{ formatAmount(esc.overdueAmount) }}</span>
+                    </div>
+                    <p class="sdash__decision-debtor">{{ esc.debtorName }}</p>
+                    <p class="sdash__decision-reason">{{ esc.reason }}</p>
+                    @if (esc.dmnRecommendation) {
+                      <div class="sdash__dmn">
+                        <p class="sdash__dmn-header">
+                          <span class="sdash__dmn-label">🤖 IA recommande :</span>
+                          <strong class="sdash__dmn-value">{{ dmnLabel(esc.dmnRecommendation) }}</strong>
+                        </p>
+                        @if (esc.dmnRecommendationReason) {
+                          <p class="sdash__dmn-reason">{{ esc.dmnRecommendationReason }}</p>
+                        }
+                      </div>
+                    }
+                    <div class="sdash__decision-actions">
+                      <button
+                        class="sdash__btn sdash__btn--validate"
+                        type="button"
+                        [disabled]="decidingId() === esc.escalationId"
+                        (click)="onValidateEscalation(esc)">
+                        ✓ Valider escalade
+                      </button>
+                      <button
+                        class="sdash__btn sdash__btn--last-call"
+                        type="button"
+                        [disabled]="decidingId() === esc.escalationId"
+                        (click)="onDernierAppel(esc)">
+                        📞 Dernier appel
+                      </button>
+                    </div>
+                  </li>
+                }
+              </ul>
+            }
+          </section>
+
+        </div>
+
+      }
+    }
+
+  </div><!-- /.sdash__body -->
+
+</div><!-- /.sdash -->
+
+@if (showToast()) {
+  <mc-success-toast [message]="toastMsg()" (dismissed)="showToast.set(false)" />
+}

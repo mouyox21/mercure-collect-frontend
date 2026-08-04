@@ -1,0 +1,191 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.48);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+  padding: var(--space-5);
+  animation: overlay-appear var(--transition-fast) ease-out;
+}
+
+.modal {
+  background: var(--color-surface-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-modal);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  animation: modal-appear var(--transition-normal) ease-out;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    background: var(--color-surface-card);
+    z-index: 1;
+  }
+
+  &__title {
+    font-size: var(--font-size-heading-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+  }
+
+  &__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-btn);
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-subtitle);
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast);
+    outline-offset: 2px;
+    flex-shrink: 0;
+
+    &:hover {
+      background: var(--color-surface);
+      color: var(--color-text-primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-action);
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding: var(--space-6);
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  &__label {
+    font-size: var(--font-size-body-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  &__input,
+  &__select,
+  &__textarea {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-input);
+    font-family: var(--font-family);
+    font-size: var(--font-size-body);
+    color: var(--color-text-primary);
+    background: var(--color-surface-card);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    outline: none;
+
+    &::placeholder {
+      color: var(--color-text-muted);
+    }
+
+    &:focus {
+      border-color: var(--color-action);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    &--error {
+      border-color: var(--color-critical);
+
+      &:focus {
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+      }
+    }
+  }
+
+  &__textarea {
+    resize: vertical;
+    min-height: 96px;
+  }
+
+  &__error {
+    font-size: var(--font-size-body-sm);
+    color: var(--color-critical);
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    padding: var(--space-5) var(--space-6);
+    border-top: 1px solid var(--color-border);
+    position: sticky;
+    bottom: 0;
+    background: var(--color-surface-card);
+  }
+
+  &__btn {
+    padding: var(--space-2) var(--space-5);
+    border-radius: var(--radius-btn);
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    border: none;
+    transition: background var(--transition-fast);
+    outline-offset: 2px;
+
+    &:focus-visible {
+      outline: 2px solid var(--color-action);
+    }
+
+    &--primary {
+      background: var(--color-action);
+      color: var(--color-surface-card);
+
+      &:hover {
+        background: var(--color-action-hover);
+      }
+
+      &:disabled {
+        background: var(--color-text-muted);
+        cursor: not-allowed;
+      }
+    }
+
+    &--secondary {
+      background: var(--color-surface);
+      color: var(--color-text-primary);
+      border: 1px solid var(--color-border);
+
+      &:hover {
+        background: var(--color-border);
+      }
+    }
+  }
+}
+
+@keyframes overlay-appear {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes modal-appear {
+  from { opacity: 0; transform: translateY(-16px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)     scale(1); }
+}

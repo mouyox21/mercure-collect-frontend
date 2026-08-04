@@ -1,0 +1,162 @@
+{
+  "items": [
+    {
+      "id": "RV-CRED-001", "code": "CRED-001", "label": "Banque Atlas",
+      "domain": "CREDITOR", "active": true, "sortOrder": 1,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-CRED-002", "code": "CRED-002", "label": "Crédit Maghrébin",
+      "domain": "CREDITOR", "active": true, "sortOrder": 2,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-CAT-001", "code": "FIRST_CONTACT", "label": "Premier Contact",
+      "domain": "ACTION_CATEGORY", "active": true, "sortOrder": 1,
+      "description": "Dossiers entrants – 1ère action de contact",
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-CAT-002", "code": "STANDARD", "label": "Relance Standard",
+      "domain": "ACTION_CATEGORY", "active": true, "sortOrder": 2,
+      "description": "Relances en phase amiable standard (J+31 à J+60)",
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-CAT-003", "code": "PROMISE_ACTIVE", "label": "Promesse en Cours",
+      "domain": "ACTION_CATEGORY", "active": true, "sortOrder": 3,
+      "description": "Dossiers avec promesse de paiement active",
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-CAT-004", "code": "PROMISE_BROKEN", "label": "Promesse Rompue",
+      "domain": "ACTION_CATEGORY", "active": true, "sortOrder": 4,
+      "description": "Dossiers avec promesse(s) non honorée(s)",
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-CAT-005", "code": "URGENT", "label": "Action Urgente",
+      "domain": "ACTION_CATEGORY", "active": true, "sortOrder": 5,
+      "description": "Dossiers urgents nécessitant intervention immédiate",
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-CAT-006", "code": "PRE_LEGAL", "label": "Pré-Contentieux",
+      "domain": "ACTION_CATEGORY", "active": true, "sortOrder": 6,
+      "description": "Phase pré-contentieuse – mise en demeure et préparation judiciaire",
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-CAT-007", "code": "LEGAL", "label": "Contentieux",
+      "domain": "ACTION_CATEGORY", "active": true, "sortOrder": 7,
+      "description": "Dossiers en procédure judiciaire active",
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-CAT-008", "code": "SUSPENDED", "label": "Suspendu / Inactif",
+      "domain": "ACTION_CATEGORY", "active": true, "sortOrder": 8,
+      "description": "Dossiers suspendus ou en attente de reprise",
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-STA-001", "code": "OPEN", "label": "Ouvert",
+      "domain": "CASE_STATUS", "active": true, "sortOrder": 1,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-STA-002", "code": "PENDING", "label": "En attente",
+      "domain": "CASE_STATUS", "active": true, "sortOrder": 2,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-STA-003", "code": "SUSPENDED", "label": "Suspendu",
+      "domain": "CASE_STATUS", "active": true, "sortOrder": 3,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-STA-004", "code": "CLOSED", "label": "Clôturé",
+      "domain": "CASE_STATUS", "active": true, "sortOrder": 4,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-STA-005", "code": "CANCELLED", "label": "Annulé",
+      "domain": "CASE_STATUS", "active": true, "sortOrder": 5,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-PRI-001", "code": "LOW", "label": "Faible",
+      "domain": "PRIORITY", "active": true, "sortOrder": 1,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-PRI-002", "code": "NORMAL", "label": "Normal",
+      "domain": "PRIORITY", "active": true, "sortOrder": 2,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-PRI-003", "code": "HIGH", "label": "Élevé",
+      "domain": "PRIORITY", "active": true, "sortOrder": 3,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-PRI-004", "code": "CRITICAL", "label": "Critique",
+      "domain": "PRIORITY", "active": true, "sortOrder": 4,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-PHA-001", "code": "AMIABLE", "label": "Phase Amiable",
+      "domain": "PHASE", "active": true, "sortOrder": 1,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-PHA-002", "code": "PRE_LEGAL", "label": "Pré-Contentieux",
+      "domain": "PHASE", "active": true, "sortOrder": 2,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-PHA-003", "code": "LEGAL", "label": "Contentieux",
+      "domain": "PHASE", "active": true, "sortOrder": 3,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-PHA-004", "code": "CLOSED", "label": "Clôturé",
+      "domain": "PHASE", "active": true, "sortOrder": 4,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-CHN-001", "code": "PHONE", "label": "Téléphone",
+      "domain": "CHANNEL", "active": true, "sortOrder": 1,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-CHN-002", "code": "EMAIL", "label": "Email",
+      "domain": "CHANNEL", "active": true, "sortOrder": 2,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-CHN-003", "code": "SMS", "label": "SMS",
+      "domain": "CHANNEL", "active": true, "sortOrder": 3,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-CHN-004", "code": "LETTER", "label": "Courrier",
+      "domain": "CHANNEL", "active": true, "sortOrder": 4,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-CHN-005", "code": "LETTER_AR", "label": "Courrier AR",
+      "domain": "CHANNEL", "active": true, "sortOrder": 5,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-CHN-006", "code": "FIELD_VISIT", "label": "Visite terrain",
+      "domain": "CHANNEL", "active": true, "sortOrder": 6,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    },
+    {
+      "id": "RV-CHN-007", "code": "ESCALATION", "label": "Escalade",
+      "domain": "CHANNEL", "active": true, "sortOrder": 7,
+      "createdAt": "2025-01-01T00:00:00", "updatedAt": "2025-01-01T00:00:00"
+    }
+  ]
+}

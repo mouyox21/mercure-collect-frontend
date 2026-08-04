@@ -1,0 +1,42 @@
+<div class="notif-panel" role="dialog" aria-label="Centre de notifications" aria-modal="false">
+  <div class="notif-panel__head">
+    <h2 class="notif-panel__title">Notifications</h2>
+    <div class="notif-panel__head-actions">
+      @if (unreadCount() > 0) {
+        <button class="notif-panel__read-all" type="button" (click)="markAllRead()">
+          Tout marquer lu
+        </button>
+      }
+      <button class="notif-panel__close" type="button" aria-label="Fermer" (click)="closed.emit()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="notif-panel__body">
+    @if (groups().length === 0) {
+      <p class="notif-panel__empty">Aucune notification.</p>
+    } @else {
+      @for (group of groups(); track group.id) {
+        <section class="notif-group">
+          <h3 class="notif-group__label">{{ group.label }}</h3>
+          <ul class="notif-group__list" role="list">
+            @for (item of group.items; track item.id) {
+              <li class="notif-item notif-item--{{ item.severity }}">
+                <div class="notif-item__dot" aria-hidden="true"></div>
+                <div class="notif-item__content">
+                  <p class="notif-item__desc">{{ item.description }}</p>
+                  <time class="notif-item__time" [dateTime]="item.date.toISOString()">
+                    {{ item.date | date:'d MMM, HH:mm' }}
+                  </time>
+                </div>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    }
+  </div>
+</div>

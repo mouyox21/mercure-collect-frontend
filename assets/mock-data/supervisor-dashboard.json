@@ -1,0 +1,135 @@
+{
+  "businessDate": "2026-08-02",
+  "supervisorName": "Jean Martin",
+  "creditorId": "CRED-001",
+  "creditorLabel": "Banque Atlas",
+  "kpis": {
+    "totalActiveCases": 2504,
+    "totalOverdueAmount": 20500000,
+    "averageRecoveryRate": 68,
+    "pendingEscalations": 36,
+    "brokenPromisesToday": 18,
+    "promisesKeptThisMonth": 156,
+    "newCasesThisWeek": 47,
+    "closedCasesThisWeek": 23
+  },
+  "portfolioByAging": [
+    {
+      "bucketLabel": "0 – 30 jours",
+      "bucketCode": "D0_30",
+      "caseCount": 450,
+      "totalAmount": 2300000,
+      "percentage": 11.2
+    },
+    {
+      "bucketLabel": "31 – 60 jours",
+      "bucketCode": "D31_60",
+      "caseCount": 680,
+      "totalAmount": 4100000,
+      "percentage": 20.0
+    },
+    {
+      "bucketLabel": "61 – 90 jours",
+      "bucketCode": "D61_90",
+      "caseCount": 620,
+      "totalAmount": 4800000,
+      "percentage": 23.4
+    },
+    {
+      "bucketLabel": "91 – 180 jours",
+      "bucketCode": "D91_180",
+      "caseCount": 504,
+      "totalAmount": 5200000,
+      "percentage": 25.4
+    },
+    {
+      "bucketLabel": "180+ jours",
+      "bucketCode": "D180_PLUS",
+      "caseCount": 250,
+      "totalAmount": 4100000,
+      "percentage": 20.0
+    }
+  ],
+  "teamPerformance": [
+    {
+      "agentId": "AGT-001", "agentName": "Marie Dupont",
+      "assignedCases": 520, "actionsToday": 14,
+      "promisesObtained": 38, "collectedAmount": 1800000,
+      "recoveryRate": 72, "overdueRatio": 28,
+      "status": "ACTIVE"
+    },
+    {
+      "agentId": "AGT-002", "agentName": "Karim Hassan",
+      "assignedCases": 480, "actionsToday": 11,
+      "promisesObtained": 29, "collectedAmount": 1600000,
+      "recoveryRate": 65, "overdueRatio": 35,
+      "status": "ACTIVE"
+    },
+    {
+      "agentId": "AGT-003", "agentName": "Nadia Benali",
+      "assignedCases": 510, "actionsToday": 16,
+      "promisesObtained": 41, "collectedAmount": 1900000,
+      "recoveryRate": 74, "overdueRatio": 26,
+      "status": "ACTIVE"
+    },
+    {
+      "agentId": "AGT-004", "agentName": "Omar Tazi",
+      "assignedCases": 490, "actionsToday": 9,
+      "promisesObtained": 31, "collectedAmount": 1700000,
+      "recoveryRate": 67, "overdueRatio": 33,
+      "status": "ACTIVE"
+    },
+    {
+      "agentId": "AGT-005", "agentName": "Fatima Alami",
+      "assignedCases": 504, "actionsToday": 12,
+      "promisesObtained": 35, "collectedAmount": 1500000,
+      "recoveryRate": 61, "overdueRatio": 39,
+      "status": "ON_LEAVE"
+    }
+  ],
+  "priorityAlerts": [
+    {
+      "alertId": "ALT-001",
+      "alertType": "ESCALATION_PENDING",
+      "severity": "CRITICAL",
+      "message": "Auto Maroc SA (CASE-018) : Encours 567 000 MAD – escalade en attente depuis 3 jours",
+      "relatedEntityId": "CASE-018",
+      "relatedEntityLabel": "MC-2026-018",
+      "createdAt": "2026-07-30T08:00:00"
+    },
+    {
+      "alertId": "ALT-002",
+      "alertType": "BROKEN_PROMISE_SPIKE",
+      "severity": "WARNING",
+      "message": "18 promesses rompues aujourd'hui – supérieur à la moyenne de la semaine (12/j)",
+      "createdAt": "2026-08-02T07:00:00"
+    },
+    {
+      "alertId": "ALT-003",
+      "alertType": "ESCALATION_PENDING",
+      "severity": "CRITICAL",
+      "message": "Bâtir Ensemble SARL (CASE-033) : Escalade critique – aucune action depuis 8 jours",
+      "relatedEntityId": "CASE-033",
+      "relatedEntityLabel": "MC-2026-033",
+      "createdAt": "2026-07-25T09:15:00"
+    },
+    {
+      "alertId": "ALT-004",
+      "alertType": "AGENT_PERFORMANCE",
+      "severity": "WARNING",
+      "message": "Fatima Alami (AGT-005) : Taux de recouvrement en baisse à 61 % ce mois",
+      "relatedEntityId": "AGT-005",
+      "relatedEntityLabel": "Fatima Alami",
+      "createdAt": "2026-08-01T08:30:00"
+    },
+    {
+      "alertId": "ALT-005",
+      "alertType": "LEGAL_HEARING",
+      "severity": "NORMAL",
+      "message": "Audience tribunal Casablanca le 15/09/2026 – dossier Atlas Retail SA (CASE-024)",
+      "relatedEntityId": "CASE-024",
+      "relatedEntityLabel": "MC-2026-024",
+      "createdAt": "2026-08-01T10:00:00"
+    }
+  ]
+}

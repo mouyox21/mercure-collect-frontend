@@ -1,0 +1,274 @@
+@if (open()) {
+  <div
+    class="am-overlay"
+    role="presentation"
+    (click)="onOverlayClick($event)"
+  >
+    <div
+      #dialogEl
+      class="am"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Nouvelle action de recouvrement"
+    >
+
+      <!-- ── Header ─────────────────────────────────────────────────────── -->
+      <header class="am__header">
+        <h2 class="am__title">Nouvelle action de recouvrement</h2>
+        <button
+          type="button"
+          class="am__close"
+          aria-label="Fermer"
+          (click)="closeModal()"
+        >✕</button>
+      </header>
+
+      <!-- ── Dossier context (read-only) ────────────────────────────────── -->
+      <div class="am__ctx" role="region" aria-label="Contexte du dossier">
+        <div class="am__ctx-item">
+          <span class="am__ctx-label">Dossier</span>
+          <span class="am__ctx-val am__ctx-val--ref">{{ caseContext().caseReference }}</span>
+        </div>
+        <div class="am__ctx-item am__ctx-item--grow">
+          <span class="am__ctx-label">Client</span>
+          <span class="am__ctx-val">{{ caseContext().debtorName }}</span>
+        </div>
+        <div class="am__ctx-item">
+          <span class="am__ctx-label">Impayé</span>
+          <span class="am__ctx-val am__ctx-val--danger">{{ formatAmount(caseContext().overdueAmount) }}</span>
+        </div>
+        <div class="am__ctx-item">
+          <span class="am__ctx-label">Retard</span>
+          <span class="am__ctx-val">{{ caseContext().daysLate }} j</span>
+        </div>
+        <div class="am__ctx-item">
+          <span class="am__ctx-label">Statut</span>
+          <span class="am__ctx-val">{{ statusLabel(caseContext().status) }}</span>
+        </div>
+      </div>
+
+      <!-- ── Type d'action ──────────────────────────────────────────────── -->
+      <div class="am__type-row">
+        <span class="am__section-lbl" id="am-type-label">
+          Type d'action <span aria-hidden="true">*</span>
+        </span>
+        <div
+          class="am__type-grid"
+          role="group"
+          aria-labelledby="am-type-label"
+        >
+          @for (type of allTypes; track type) {
+            <button
+              type="button"
+              class="am__type-btn"
+              [class.am__type-btn--active]="selectedType() === type"
+              [attr.aria-pressed]="selectedType() === type"
+              (click)="selectType(type)"
+            >
+              <span class="am__type-icon" aria-hidden="true">{{ typeIcons[type] }}</span>
+              <span class="am__type-lbl">{{ typeLabels[type] }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- ── Form body (shown once type is selected) ────────────────────── -->
+      @if (selectedType()) {
+        <form
+          class="am__form"
+          [formGroup]="form"
+          (ngSubmit)="onSubmit()"
+          novalidate
+        >
+
+          <!-- Row: date + optional duration -->
+          <div class="am__row">
+            <div class="am__field">
+              <label class="am__label" for="am-date">
+                Date <span aria-hidden="true">*</span>
+              </label>
+              <input
+                id="am-date"
+                type="date"
+                class="am__input"
+                [class.am__input--err]="hasError('scheduledDate')"
+                formControlName="scheduledDate"
+                aria-required="true"
+              />
+              @if (hasError('scheduledDate')) {
+                <span class="am__err" role="alert">La date est requise.</span>
+              }
+            </div>
+
+            @if (showDuration) {
+              <div class="am__field am__field--sm">
+                <label class="am__label" for="am-duration">Durée (min)</label>
+                <input
+                  id="am-duration"
+                  type="number"
+                  class="am__input"
+                  min="1"
+                  step="1"
+                  formControlName="durationMinutes"
+                  placeholder="ex : 15"
+                />
+              </div>
+            }
+          </div>
+
+          <!-- Compte-rendu -->
+          <fieldset class="am__cr">
+            <legend class="am__cr-legend">Compte-rendu</legend>
+
+            <!-- Résultat -->
+            <div class="am__field">
+              <label class="am__label" for="am-outcome">
+                Résultat <span aria-hidden="true">*</span>
+              </label>
+              <select
+                id="am-outcome"
+                class="am__select"
+                [class.am__select--err]="hasError('outcome')"
+                formControlName="outcome"
+                aria-required="true"
+              >
+                <option value="" disabled>Sélectionner un résultat…</option>
+                @for (opt of outcomeOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+              @if (hasError('outcome')) {
+                <span class="am__err" role="alert">Le résultat est requis.</span>
+              }
+            </div>
+
+            <!-- Contacté indicator -->
+            @if (form.get('outcome')?.value) {
+              <div
+                class="am__contact-badge"
+                [class.am__contact-badge--yes]="contacted"
+                [class.am__contact-badge--no]="!contacted"
+                role="status"
+                aria-live="polite"
+              >
+                @if (contacted) { ✓ Client contacté }
+                @else           { ✗ Client non contacté }
+              </div>
+            }
+
+            <!-- Motif non-paiement (contacté mais pas de promesse) -->
+            @if (showNonPaymentReason) {
+              <div class="am__field">
+                <label class="am__label" for="am-npm-reason">Motif de non-paiement</label>
+                <select
+                  id="am-npm-reason"
+                  class="am__select"
+                  formControlName="nonPaymentReason"
+                >
+                  <option value="">Sélectionner un motif…</option>
+                  @for (r of nonPaymentReasons; track r.value) {
+                    <option [value]="r.value">{{ r.label }}</option>
+                  }
+                </select>
+              </div>
+            }
+
+            <!-- Case à cocher : créer promesse -->
+            <div class="am__field am__field--inline">
+              <label class="am__checkbox-lbl">
+                <input
+                  type="checkbox"
+                  class="am__checkbox"
+                  formControlName="createPromise"
+                />
+                Créer une promesse de paiement depuis cette action
+              </label>
+            </div>
+
+            <!-- Sous-formulaire promesse -->
+            @if (hasPromise) {
+              <div class="am__promise">
+                <p class="am__promise-title">Promesse de paiement</p>
+                <div class="am__row">
+                  <div class="am__field">
+                    <label class="am__label" for="am-pdate">
+                      Date de promesse <span aria-hidden="true">*</span>
+                    </label>
+                    <input
+                      id="am-pdate"
+                      type="date"
+                      class="am__input"
+                      [class.am__input--err]="hasError('promiseDate')"
+                      formControlName="promiseDate"
+                      aria-required="true"
+                    />
+                    @if (hasError('promiseDate')) {
+                      <span class="am__err" role="alert">La date de promesse est requise.</span>
+                    }
+                  </div>
+                  <div class="am__field">
+                    <label class="am__label" for="am-pamount">
+                      Montant promis (MAD) <span aria-hidden="true">*</span>
+                    </label>
+                    <input
+                      id="am-pamount"
+                      type="number"
+                      class="am__input"
+                      [class.am__input--err]="hasError('promiseAmount')"
+                      min="0.01"
+                      step="0.01"
+                      formControlName="promiseAmount"
+                      aria-required="true"
+                      placeholder="0,00"
+                    />
+                    @if (hasError('promiseAmount')) {
+                      <span class="am__err" role="alert">Le montant est requis.</span>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          </fieldset>
+
+          <!-- Notes / observations -->
+          <div class="am__field">
+            <label class="am__label" for="am-notes">
+              Notes / Observations <span aria-hidden="true">*</span>
+            </label>
+            <textarea
+              id="am-notes"
+              class="am__textarea"
+              [class.am__textarea--err]="hasError('commentaire')"
+              formControlName="commentaire"
+              rows="3"
+              aria-required="true"
+              placeholder="Détails de l'action, observations…"
+            ></textarea>
+            @if (hasError('commentaire')) {
+              <span class="am__err" role="alert">Les notes sont requises.</span>
+            }
+          </div>
+
+          <!-- Footer sticky -->
+          <footer class="am__footer">
+            <button
+              type="button"
+              class="am__btn am__btn--cancel"
+              (click)="closeModal()"
+            >Annuler</button>
+            <button
+              type="submit"
+              class="am__btn am__btn--submit"
+            >Enregistrer l'action</button>
+          </footer>
+
+        </form>
+      } @else {
+        <div class="am__select-prompt">
+          Sélectionnez un type d'action pour continuer
+        </div>
+      }
+
+    </div>
+  </div>
+}

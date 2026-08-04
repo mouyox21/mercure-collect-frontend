@@ -1,0 +1,14 @@
+<mc-app-sidebar [class.sidebar--mobile-open]="sidebarOpen()" />
+
+<!-- Mobile overlay — closes sidebar on tap outside -->
+@if (sidebarOpen()) {
+  <div class="shell__overlay" (click)="sidebarOpen.set(false)" aria-hidden="true"></div>
+}
+
+<div class="shell__main">
+  <mc-app-header (toggleSidebar)="sidebarOpen.update(v => !v)" />
+  <main class="shell__content">
+    <mc-breadcrumb />
+    <router-outlet />
+  </main>
+</div>

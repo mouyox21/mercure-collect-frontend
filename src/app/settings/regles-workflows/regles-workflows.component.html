@@ -1,0 +1,288 @@
+<div class="rw">
+
+  <!-- ── Left nav ── -->
+  <aside class="rw__nav" aria-label="Navigation règles et workflows">
+
+    <h2 class="rw__nav-title">Packages DMN</h2>
+    <ul class="rw__nav-list" role="list">
+      @for (dt of DECISION_TYPES; track dt.key) {
+        <li
+          class="rw__nav-item"
+          [class.rw__nav-item--active]="activeTab() === dt.key"
+          role="button"
+          tabindex="0"
+          (click)="setActiveTab(dt.key)"
+          (keydown.enter)="setActiveTab(dt.key)">
+          <span class="rw__nav-icon" aria-hidden="true">{{ dt.icon }}</span>
+          <span class="rw__nav-label">{{ dt.label }}</span>
+          @if (viewState() === 'success') {
+            <span class="rw__nav-count">{{ countByType(dt.key) }}</span>
+          }
+        </li>
+      }
+    </ul>
+
+    <div class="rw__nav-divider" role="separator"></div>
+
+    <h2 class="rw__nav-title">Diagrammes</h2>
+    <ul class="rw__nav-list" role="list">
+      @for (wf of WORKFLOW_DEFS; track wf.key) {
+        <li
+          class="rw__nav-item"
+          [class.rw__nav-item--active]="activeTab() === wf.key"
+          role="button"
+          tabindex="0"
+          (click)="setActiveTab(wf.key)"
+          (keydown.enter)="setActiveTab(wf.key)">
+          <span class="rw__nav-icon" aria-hidden="true">{{ wf.icon }}</span>
+          <span class="rw__nav-label">{{ wf.label }}</span>
+        </li>
+      }
+    </ul>
+
+  </aside>
+
+  <!-- ── Main content ── -->
+  <main class="rw__content">
+
+    @if (isWorkflowTab()) {
+
+      <!-- ── Workflow diagram view ── -->
+      @let wf = activeWorkflow();
+      @if (wf) {
+
+        <div class="rw__content-header">
+          <div>
+            <h1 class="rw__content-title">{{ wf.icon }} {{ wf.label }}</h1>
+            <p class="rw__content-sub">{{ wf.description }}</p>
+          </div>
+        </div>
+
+        <div class="rw__diagram-card">
+          <p class="rw__diagram-legend">Lecture seule · Flux automatisé par les règles DMN</p>
+
+          <!-- Main flow -->
+          <div class="rw__diagram-row">
+            @for (step of wf.mainFlow; track step.label; let last = $last) {
+              <div [class]="nodeClass(step.type)">
+                <span class="rw__node-label">{{ step.label }}</span>
+                @if (step.sublabel) {
+                  <span class="rw__node-sub">{{ step.sublabel }}</span>
+                }
+              </div>
+              @if (!last) {
+                <span class="rw__diagram-arrow" aria-hidden="true">›</span>
+              }
+            }
+          </div>
+
+          <!-- Branches -->
+          @if (wf.branches && wf.branches.length > 0) {
+            <div class="rw__diagram-branch-area">
+              @for (branch of wf.branches; track branch.condition) {
+                <div class="rw__diagram-branch">
+                  <span class="rw__branch-cond">{{ branch.condition }}</span>
+                  <div class="rw__branch-steps">
+                    @for (step of branch.steps; track step.label; let last = $last) {
+                      <div [class]="nodeClass(step.type)">
+                        <span class="rw__node-label">{{ step.label }}</span>
+                      </div>
+                      @if (!last) {
+                        <span class="rw__diagram-arrow" aria-hidden="true">›</span>
+                      }
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+        </div>
+      }
+
+    } @else {
+
+      <!-- ── Package list view ── -->
+      <div class="rw__content-header">
+        <div>
+          <h1 class="rw__content-title">{{ activeTabLabel() }}</h1>
+          <p class="rw__content-sub">{{ filtered().length }} package(s)</p>
+        </div>
+      </div>
+
+      @switch (viewState()) {
+        @case ('loading') {
+          <div class="rw__state-wrap"><mc-skeleton-loader /></div>
+        }
+        @case ('error') {
+          <div class="rw__state-wrap"><mc-error-state (retry)="load()" /></div>
+        }
+        @case ('forbidden') {
+          <div class="rw__state-wrap"><mc-forbidden-state /></div>
+        }
+        @case ('success') {
+          @if (filtered().length === 0) {
+            <div class="rw__state-wrap">
+              <mc-empty-state message="Aucun package DMN pour ce type de décision." />
+            </div>
+          } @else {
+            <mc-data-grid
+              [rows]="rows()"
+              [columns]="COLUMNS"
+              [totalItems]="filtered().length"
+              [pageSize]="100"
+              [rowClickable]="true"
+              (rowClick)="openDetail($event)" />
+          }
+        }
+      }
+
+    }
+
+  </main>
+</div>
+
+<!-- ── Detail panel ── -->
+@if (panelOpen()) {
+  <div class="rw__overlay" role="presentation" (click)="closePanel()"></div>
+
+  @let pkg = selectedPkg();
+  @if (pkg) {
+    <aside class="rw__panel" role="dialog" aria-modal="true" aria-label="Détail du package DMN">
+
+      <!-- Header -->
+      <div class="rw__panel-header">
+        <div class="rw__panel-header-info">
+          <h2 class="rw__panel-title">{{ pkg.packageLabel }}</h2>
+          <div class="rw__panel-meta">
+            <span class="rw__panel-version">v{{ pkg.version }}</span>
+            <span [class]="statusClass(pkg.status)">{{ statusLabel(pkg.status) }}</span>
+          </div>
+        </div>
+        <button class="rw__panel-close" type="button" aria-label="Fermer" (click)="closePanel()">✕</button>
+      </div>
+
+      <!-- Body -->
+      <div class="rw__panel-body">
+
+        @if (pkg.description) {
+          <p class="rw__panel-desc">{{ pkg.description }}</p>
+        }
+
+        <!-- Info -->
+        <dl class="rw__info-grid">
+          <dt class="rw__info-label">Type décision</dt>
+          <dd class="rw__info-value">{{ pkg.decisionType }}</dd>
+          <dt class="rw__info-label">Activé le</dt>
+          <dd class="rw__info-value">{{ formatDate(pkg.publishedAt) }}</dd>
+          <dt class="rw__info-label">Activé par</dt>
+          <dd class="rw__info-value">{{ pkg.publishedBy ?? '—' }}</dd>
+          <dt class="rw__info-label">Créé le</dt>
+          <dd class="rw__info-value">{{ formatDate(pkg.createdAt) }}</dd>
+        </dl>
+
+        <!-- Tests section -->
+        <div class="rw__section-hd">
+          <h3 class="rw__section-title">Jeux de tests</h3>
+          <span class="rw__tests-score"
+            [class.rw__tests-score--ok]="(pkg.testsPassed ?? 0) === (pkg.testsTotal ?? 0) && (pkg.testsTotal ?? 0) > 0"
+            [class.rw__tests-score--fail]="(pkg.testsPassed ?? 0) < (pkg.testsTotal ?? 1)">
+            {{ pkg.testsPassed ?? 0 }} / {{ pkg.testsTotal ?? 0 }}
+          </span>
+        </div>
+
+        @switch (testViewState()) {
+          @case ('loading') {
+            <div class="rw__state-sm"><mc-skeleton-loader /></div>
+          }
+          @case ('error') {
+            <p class="rw__inline-error">Erreur de chargement des tests.</p>
+          }
+          @case ('success') {
+            @if (testCases().length === 0) {
+              <p class="rw__no-tests">Aucun cas de test enregistré pour ce package.</p>
+            } @else {
+              <ul class="rw__test-list" role="list">
+                @for (tc of testCases(); track tc.testId) {
+                  <li class="rw__test-item">
+
+                    <button
+                      class="rw__test-hd"
+                      type="button"
+                      [attr.aria-expanded]="expandedTestId() === tc.testId"
+                      (click)="toggleTest(tc.testId)">
+                      <span [class]="testBadgeClass(tc.lastRunResult)">
+                        {{ tc.lastRunResult ?? '?' }}
+                      </span>
+                      <span class="rw__test-label">{{ tc.testLabel }}</span>
+                      <span class="rw__test-date">{{ formatDateTime(tc.lastRunAt) }}</span>
+                      <span class="rw__test-chevron" aria-hidden="true">
+                        {{ expandedTestId() === tc.testId ? '▴' : '▾' }}
+                      </span>
+                    </button>
+
+                    @if (expandedTestId() === tc.testId) {
+                      <div class="rw__test-body">
+                        <div class="rw__json-block">
+                          <p class="rw__json-label">Entrée</p>
+                          <pre class="rw__json-pre">{{ jsonStr(tc.inputPayload) }}</pre>
+                        </div>
+                        <div class="rw__json-block">
+                          <p class="rw__json-label">Sortie attendue</p>
+                          <pre class="rw__json-pre">{{ jsonStr(tc.expectedOutput) }}</pre>
+                        </div>
+                        @if (tc.lastRunResult === 'FAIL') {
+                          <div class="rw__json-block rw__json-block--diff">
+                            <p class="rw__json-label">Écart détecté</p>
+                            <pre class="rw__json-pre">{{ jsonStr(tc.lastRunDiff ?? {}) }}</pre>
+                          </div>
+                        }
+                      </div>
+                    }
+
+                  </li>
+                }
+              </ul>
+            }
+          }
+        }
+
+        <!-- Actions (DRAFT only) -->
+        @if (pkg.status === 'DRAFT') {
+          <div class="rw__panel-actions">
+
+            <button
+              class="rw__run-btn"
+              type="button"
+              [disabled]="runningTests()"
+              (click)="runTests()">
+              @if (runningTests()) {
+                ⏳ Exécution en cours…
+              } @else {
+                ▶ Lancer les tests de non-régression
+              }
+            </button>
+
+            @if (canActivate()) {
+              <div class="rw__activate-box">
+                <p class="rw__activate-hint">
+                  ✓ Tous les tests passent. La version actuellement active sera archivée automatiquement.
+                </p>
+                <button class="rw__activate-btn" type="button" (click)="activatePackage()">
+                  Activer cette version
+                </button>
+              </div>
+            }
+
+          </div>
+        }
+
+      </div>
+    </aside>
+  }
+}
+
+<!-- ── Toast ── -->
+@if (toastVisible()) {
+  <div class="rw__toast" role="alert" aria-live="polite">{{ toastMsg() }}</div>
+}

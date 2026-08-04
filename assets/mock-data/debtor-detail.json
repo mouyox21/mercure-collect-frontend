@@ -1,0 +1,195 @@
+{
+  "debtorId": "DBT-001",
+  "debtorName": "Atlas Retail SA",
+  "ice": "001234567000023",
+  "cin": "",
+  "legalForm": "SA",
+  "address": "45 Boulevard Mohammed V, Quartier des Affaires",
+  "city": "Casablanca",
+  "postalCode": "20000",
+  "country": "Maroc",
+  "mainPhone": "+212661234567",
+  "email": "contact@atlasretail.ma",
+  "contactPersonName": "M. Rachid Benali",
+  "segment": "PME",
+  "clientType": "ENTREPRISE",
+  "status": "ACTIVE",
+  "riskSegment": "RISK",
+  "pdScore": 34,
+  "lgdScore": 68,
+  "kpi": {
+    "activeCasesCount": 3,
+    "totalDebtAmount": 1961000,
+    "totalOverdueAmount": 1513000,
+    "averageDaysLate": 102,
+    "brokenPromisesCount": 0,
+    "riskScore": 72
+  },
+  "nextAction": {
+    "actionType": "PHONE_CALL",
+    "actionLabel": "Appel de relance",
+    "scheduledDate": "2026-08-05",
+    "agentId": "AGT-001",
+    "agentName": "Marie Dupont"
+  },
+  "contracts": [
+    {
+      "contractId": "CON-001-A",
+      "contractReference": "CTR-001-2024",
+      "productType": "Crédit d'exploitation",
+      "creditorId": "CRED-001",
+      "creditorLabel": "Banque Atlas",
+      "originalAmount": 300000,
+      "outstandingAmount": 240000,
+      "overdueAmount": 185000,
+      "startDate": "2024-03-15",
+      "status": "OVERDUE"
+    },
+    {
+      "contractId": "CON-001-B",
+      "contractReference": "CTR-024-2020",
+      "productType": "Crédit immobilier commercial",
+      "creditorId": "CRED-001",
+      "creditorLabel": "Banque Atlas",
+      "originalAmount": 2000000,
+      "outstandingAmount": 1620000,
+      "overdueAmount": 1250000,
+      "startDate": "2020-06-01",
+      "status": "LEGAL"
+    },
+    {
+      "contractId": "CON-001-C",
+      "contractReference": "CTR-039-2025",
+      "productType": "Ligne de crédit court terme",
+      "creditorId": "CRED-001",
+      "creditorLabel": "Banque Atlas",
+      "originalAmount": 120000,
+      "outstandingAmount": 101000,
+      "overdueAmount": 78000,
+      "startDate": "2025-01-10",
+      "status": "OVERDUE"
+    }
+  ],
+  "debts": [
+    {
+      "debtId": "DEBT-001-01",
+      "contractReference": "CTR-001-2024",
+      "creditorLabel": "Banque Atlas",
+      "amount": 185000,
+      "dueDate": "2026-07-15",
+      "daysLate": 15,
+      "status": "OVERDUE"
+    },
+    {
+      "debtId": "DEBT-001-02",
+      "contractReference": "CTR-024-2020",
+      "creditorLabel": "Banque Atlas",
+      "amount": 1250000,
+      "dueDate": "2026-01-01",
+      "daysLate": 280,
+      "status": "LEGAL"
+    },
+    {
+      "debtId": "DEBT-001-03",
+      "contractReference": "CTR-039-2025",
+      "creditorLabel": "Banque Atlas",
+      "amount": 78000,
+      "dueDate": "2026-07-20",
+      "daysLate": 12,
+      "status": "OVERDUE"
+    }
+  ],
+  "interactions": [
+    {
+      "interactionId": "INT-001-01",
+      "channel": "PHONE",
+      "actionType": "OUTBOUND_CALL",
+      "actionLabel": "Appel téléphonique sortant",
+      "interactionDate": "2026-07-25",
+      "agentId": "AGT-001",
+      "agentName": "Marie Dupont",
+      "outcome": "Pas de réponse",
+      "hasPromise": false
+    },
+    {
+      "interactionId": "INT-001-02",
+      "channel": "LETTER",
+      "actionType": "REMINDER_LETTER",
+      "actionLabel": "Envoi courrier 1er rappel",
+      "interactionDate": "2026-07-28",
+      "agentId": "AGT-001",
+      "agentName": "Marie Dupont",
+      "outcome": "Envoyé",
+      "hasPromise": false
+    },
+    {
+      "interactionId": "INT-001-03",
+      "channel": "PHONE",
+      "actionType": "OUTBOUND_CALL",
+      "actionLabel": "Appel de relance",
+      "interactionDate": "2026-07-15",
+      "agentId": "AGT-004",
+      "agentName": "Omar Tazi",
+      "outcome": "Accord verbal partiel",
+      "hasPromise": false
+    },
+    {
+      "interactionId": "INT-001-04",
+      "channel": "EMAIL",
+      "actionType": "EMAIL",
+      "actionLabel": "Email de mise en demeure",
+      "interactionDate": "2026-05-20",
+      "agentId": "AGT-001",
+      "agentName": "Marie Dupont",
+      "outcome": "Lu – accusé de lecture",
+      "hasPromise": false
+    }
+  ],
+  "documents": [
+    {
+      "documentId": "DOC-001-01",
+      "documentType": "CONTRAT",
+      "documentLabel": "Contrat de crédit CTR-001-2024",
+      "uploadedAt": "2024-03-15",
+      "uploadedBy": "AGT-001",
+      "fileSize": 245760,
+      "mimeType": "application/pdf"
+    },
+    {
+      "documentId": "DOC-001-02",
+      "documentType": "MISE_EN_DEMEURE",
+      "documentLabel": "Mise en demeure 2026-05-20",
+      "uploadedAt": "2026-05-20",
+      "uploadedBy": "AGT-001",
+      "fileSize": 102400,
+      "mimeType": "application/pdf"
+    },
+    {
+      "documentId": "DOC-001-03",
+      "documentType": "JUGEMENT",
+      "documentLabel": "Ordonnance de saisie-arrêt",
+      "uploadedAt": "2026-06-10",
+      "uploadedBy": "AGT-001",
+      "fileSize": 512000,
+      "mimeType": "application/pdf"
+    }
+  ],
+  "guarantees": [
+    {
+      "guaranteeId": "GAR-001-01",
+      "guaranteeType": "HYPOTHEQUE",
+      "description": "Hypothèque de 1er rang sur local commercial – 25 Rue Ibn Battouta, Casablanca",
+      "estimatedValue": 1800000,
+      "registrationDate": "2020-06-15",
+      "status": "ACTIVE"
+    },
+    {
+      "guaranteeId": "GAR-001-02",
+      "guaranteeType": "CAUTIONNEMENT",
+      "description": "Caution personnelle du gérant M. Rachid Benali",
+      "estimatedValue": 500000,
+      "registrationDate": "2024-03-15",
+      "status": "ACTIVE"
+    }
+  ]
+}

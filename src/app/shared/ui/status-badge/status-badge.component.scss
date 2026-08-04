@@ -1,0 +1,51 @@
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-badge);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  transition: background var(--transition-fast);
+
+  // Default (standard)
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+
+  &--nouveau {
+    background: var(--color-action-light);
+    color: var(--color-action);
+  }
+
+  &--en-cours {
+    background: var(--color-warning-light);
+    color: var(--color-warning-text);
+  }
+
+  &--promesse {
+    background: var(--color-success-light);
+    color: var(--color-success-text);
+  }
+
+  &--echeancier {
+    background: var(--color-action-light);
+    color: var(--color-action-hover);
+  }
+
+  &--precontentieux {
+    background: var(--color-warning-light);
+    color: var(--color-warning-text);
+    border: 1px solid var(--color-warning-text);
+  }
+
+  &--contentieux {
+    background: var(--color-critical-light);
+    color: var(--color-critical-text);
+  }
+
+  &--cloture {
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+  }
+}

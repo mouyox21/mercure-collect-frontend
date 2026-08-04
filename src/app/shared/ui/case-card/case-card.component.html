@@ -1,0 +1,37 @@
+<article
+  [class]="cardClass()"
+  [attr.aria-label]="ariaLabel()"
+  tabindex="0"
+  role="button"
+  (click)="selected.emit(case())"
+  (keydown)="onKeydown($event)"
+>
+  <header class="case-card__header">
+    <span class="case-card__name">{{ case().debtorName }}</span>
+    <mc-status-badge [status]="case().status" />
+  </header>
+
+  <div class="case-card__body">
+    <dl class="case-card__metrics">
+      <div class="case-card__metric">
+        <dt class="case-card__metric-label">Montant dû</dt>
+        <dd class="case-card__metric-value case-card__metric-value--amount">{{ formattedAmount() }}</dd>
+      </div>
+      <div class="case-card__metric">
+        <dt class="case-card__metric-label">Retard</dt>
+        <dd class="case-card__metric-value" [class.case-card__metric-value--critical]="case().daysOverdue > 30">
+          {{ overdueLabel() }}
+        </dd>
+      </div>
+    </dl>
+  </div>
+
+  <footer class="case-card__footer">
+    @if (case().agent) {
+      <span class="case-card__agent">{{ case().agent }}</span>
+    }
+    <span class="case-card__last-contact">
+      Dernier contact : {{ formattedLastContact() }}
+    </span>
+  </footer>
+</article>

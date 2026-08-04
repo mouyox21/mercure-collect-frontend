@@ -1,0 +1,16 @@
+<div
+  class="error-state"
+  role="alert"
+  [attr.data-error-code]="errorCode() ?? null">
+  <div class="error-state__icon" aria-hidden="true">
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="2" fill="none"/>
+      <path d="M24 14v14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="24" cy="33" r="1.5" fill="currentColor"/>
+    </svg>
+  </div>
+  <p class="error-state__message">{{ message() }}</p>
+  <button class="error-state__btn" type="button" (click)="retry.emit()">
+    Réessayer
+  </button>
+</div>

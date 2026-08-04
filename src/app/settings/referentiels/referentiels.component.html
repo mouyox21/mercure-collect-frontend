@@ -1,0 +1,181 @@
+<div class="ref">
+
+  <!-- ── Sidebar nav (domaines) ── -->
+  <aside class="ref__nav" aria-label="Domaines référentiels">
+    <h2 class="ref__nav-title">Domaines</h2>
+    <ul class="ref__nav-list" role="list">
+      @for (d of DOMAINS; track d.key) {
+        <li
+          class="ref__nav-item"
+          [class.ref__nav-item--active]="activeDomain() === d.key"
+          role="button"
+          tabindex="0"
+          (click)="selectDomain(d.key)"
+          (keydown.enter)="selectDomain(d.key)">
+          <span class="ref__nav-icon" aria-hidden="true">{{ d.icon }}</span>
+          <span class="ref__nav-label">{{ d.label }}</span>
+        </li>
+      }
+    </ul>
+  </aside>
+
+  <!-- ── Main content ── -->
+  <main class="ref__content" aria-label="Valeurs référentielles">
+
+    <!-- States -->
+    @switch (viewState()) {
+
+      @case ('loading') {
+        <div class="ref__state-wrap"><mc-skeleton-loader /></div>
+      }
+
+      @case ('error') {
+        <div class="ref__state-wrap"><mc-error-state (retry)="load()" /></div>
+      }
+
+      @case ('forbidden') {
+        <div class="ref__state-wrap"><mc-forbidden-state /></div>
+      }
+
+      @case ('success') {
+
+        <!-- Header -->
+        <div class="ref__content-header">
+          <div>
+            <h1 class="ref__content-title">{{ activeDomainLabel() }}</h1>
+            <p class="ref__content-sub">{{ filtered().length }} valeur(s) dans ce domaine</p>
+          </div>
+          <button class="ref__add-btn" type="button" (click)="openCreate()">+ Ajouter</button>
+        </div>
+        @if (filtered().length === 0) {
+          <div class="ref__state-wrap">
+            <mc-empty-state message="Aucune valeur pour ce domaine. Cliquez sur Ajouter." />
+          </div>
+        } @else {
+          <mc-data-grid
+            [rows]="rows()"
+            [columns]="COLUMNS"
+            [totalItems]="filtered().length"
+            [pageSize]="100"
+            [rowClickable]="true"
+            (rowClick)="openEdit($event)" />
+        }
+      }
+
+    }
+
+  </main>
+
+</div>
+
+<!-- ── Edit/Create drawer ── -->
+@if (drawerOpen()) {
+  <div class="ref__overlay" role="presentation" (click)="closeDrawer()"></div>
+
+  <aside class="ref__drawer" role="dialog" aria-modal="true"
+    [attr.aria-label]="isEditing() ? 'Modifier la valeur' : 'Ajouter une valeur'">
+
+    <div class="ref__drawer-header">
+      <h2 class="ref__drawer-title">
+        {{ isEditing() ? 'Modifier la valeur' : 'Ajouter une valeur' }}
+      </h2>
+      <button class="ref__drawer-close" type="button" aria-label="Fermer" (click)="closeDrawer()">✕</button>
+    </div>
+
+    <div class="ref__drawer-body">
+
+      <!-- Code -->
+      <div class="ref__form-group">
+        <label class="ref__form-label" for="fCode">
+          Code technique <span class="ref__form-required" aria-hidden="true">*</span>
+        </label>
+        <input
+          id="fCode"
+          class="ref__form-input"
+          [class.ref__form-input--readonly]="isEditing()"
+          type="text"
+          [value]="fCode()"
+          [readOnly]="isEditing()"
+          placeholder="ex. CRED-001"
+          (input)="fCode.set($any($event.target).value)" />
+        @if (isEditing()) {
+          <p class="ref__form-hint">Le code technique est immuable.</p>
+        }
+      </div>
+
+      <!-- Libellé -->
+      <div class="ref__form-group">
+        <label class="ref__form-label" for="fLabel">
+          Libellé <span class="ref__form-required" aria-hidden="true">*</span>
+        </label>
+        <input
+          id="fLabel"
+          class="ref__form-input"
+          [class.ref__form-input--error]="formTouched() && !fLabel().trim()"
+          type="text"
+          [value]="fLabel()"
+          placeholder="ex. Banque Atlas"
+          (input)="fLabel.set($any($event.target).value)" />
+      </div>
+
+      <!-- Description -->
+      <div class="ref__form-group">
+        <label class="ref__form-label" for="fDescription">Description</label>
+        <textarea
+          id="fDescription"
+          class="ref__form-textarea"
+          rows="3"
+          [value]="fDescription()"
+          placeholder="Description optionnelle…"
+          (input)="fDescription.set($any($event.target).value)"></textarea>
+      </div>
+
+      <!-- Ordre -->
+      <div class="ref__form-group">
+        <label class="ref__form-label" for="fSortOrder">Ordre d'affichage</label>
+        <input
+          id="fSortOrder"
+          class="ref__form-input ref__form-input--narrow"
+          type="number"
+          min="0"
+          [value]="fSortOrder()"
+          placeholder="ex. 1"
+          (input)="fSortOrder.set($any($event.target).value)" />
+      </div>
+
+      <!-- Actif -->
+      <div class="ref__form-group ref__form-group--inline">
+        <input
+          id="fActive"
+          class="ref__form-checkbox"
+          type="checkbox"
+          [checked]="fActive()"
+          (change)="fActive.set($any($event.target).checked)" />
+        <label class="ref__form-label ref__form-label--inline" for="fActive">Valeur active</label>
+      </div>
+
+      <!-- Error -->
+      @if (formError()) {
+        <p class="ref__form-error" role="alert">{{ formError() }}</p>
+      }
+
+    </div>
+
+    <div class="ref__drawer-footer">
+      @if (pendingDeactivate() && isDeactivating()) {
+        <p class="ref__form-error" role="alert" style="margin-bottom:0.5rem;font-size:0.82rem;">
+          ⚠ Désactiver cette valeur la rendra indisponible. Cliquez à nouveau pour confirmer.
+        </p>
+      }
+      <button class="ref__cancel-btn" type="button" (click)="closeDrawer()">Annuler</button>
+      <button class="ref__save-btn" type="button" (click)="saveForm()">
+        {{ (pendingDeactivate() && isDeactivating()) ? 'Confirmer la désactivation' : (isEditing() ? 'Enregistrer' : 'Créer') }}
+      </button>
+    </div>
+
+  </aside>
+}
+
+@if (showToast()) {
+  <mc-success-toast [message]="toastMsg()" (dismissed)="showToast.set(false)" />
+}

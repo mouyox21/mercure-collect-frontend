@@ -1,0 +1,197 @@
+<div class="aud">
+
+  <!-- ── Header ── -->
+  <div class="aud__header">
+    <div>
+      <h1 class="aud__title">Journal d'audit</h1>
+      <p class="aud__sub">
+        {{ filtered().length }} événement(s) · lecture seule
+        @if (hasFiltersActive()) { · <span class="aud__filter-active-hint">filtres actifs</span> }
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Filters ── -->
+  <div class="aud__filters">
+
+    <div class="aud__filter-group">
+      <label class="aud__filter-label" for="aud-date-from">Du</label>
+      <input id="aud-date-from" class="aud__filter-input" type="date"
+        [value]="filterDateFrom()" (change)="setDateFrom($event)" />
+    </div>
+
+    <div class="aud__filter-group">
+      <label class="aud__filter-label" for="aud-date-to">Au</label>
+      <input id="aud-date-to" class="aud__filter-input" type="date"
+        [value]="filterDateTo()" (change)="setDateTo($event)" />
+    </div>
+
+    <div class="aud__filter-group">
+      <label class="aud__filter-label" for="aud-user">Utilisateur</label>
+      <input id="aud-user" class="aud__filter-input" type="text" placeholder="Nom..."
+        [value]="filterUserName()" (input)="setUserName($event)" />
+    </div>
+
+    <div class="aud__filter-group">
+      <label class="aud__filter-label" for="aud-entity">Entité</label>
+      <select id="aud-entity" class="aud__filter-select"
+        [value]="filterEntityType()" (change)="setEntityType($event)">
+        @for (opt of ENTITY_TYPE_OPTIONS; track opt.key) {
+          <option [value]="opt.key">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="aud__filter-group">
+      <label class="aud__filter-label" for="aud-action">Action</label>
+      <input id="aud-action" class="aud__filter-input" type="text" placeholder="Filtrer..."
+        [value]="filterEventType()" (input)="setEventType($event)" />
+    </div>
+
+    <div class="aud__filter-group aud__filter-group--sm">
+      <label class="aud__filter-label" for="aud-ip">IP</label>
+      <input id="aud-ip" class="aud__filter-input" type="text" placeholder="192.168..."
+        [value]="filterIp()" (input)="setIp($event)" />
+    </div>
+
+    <div class="aud__filter-group">
+      <label class="aud__filter-label" for="aud-creditor">Créancier</label>
+      <select id="aud-creditor" class="aud__filter-select"
+        [value]="filterCreditor()" (change)="setCreditor($event)">
+        @for (opt of CREDITOR_OPTIONS; track opt.key) {
+          <option [value]="opt.key">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+
+    @if (hasFiltersActive()) {
+      <button class="aud__reset-btn" type="button" (click)="resetFilters()">
+        ✕ Réinitialiser
+      </button>
+    }
+
+  </div>
+
+  <!-- ── Content ── -->
+  <div class="aud__content">
+    @switch (viewState()) {
+      @case ('loading') {
+        <div class="aud__state-wrap"><mc-skeleton-loader /></div>
+      }
+      @case ('error') {
+        <div class="aud__state-wrap"><mc-error-state (retry)="load()" /></div>
+      }
+      @case ('forbidden') {
+        <div class="aud__state-wrap"><mc-forbidden-state /></div>
+      }
+      @case ('success') {
+        @if (filtered().length === 0) {
+          <div class="aud__state-wrap">
+            <mc-empty-state message="Aucun événement ne correspond aux filtres sélectionnés." />
+          </div>
+        } @else {
+          <mc-data-grid
+            [rows]="rows()"
+            [columns]="COLUMNS"
+            [totalItems]="filtered().length"
+            [pageSize]="100"
+            [rowClickable]="true"
+            (rowClick)="openDetail($event)" />
+        }
+      }
+    }
+  </div>
+
+</div>
+
+<!-- ── Detail panel ── -->
+@if (panelOpen()) {
+  <div class="aud__overlay" role="presentation" (click)="closePanel()"></div>
+
+  @let ev = selectedEvent();
+  @if (ev) {
+    <aside class="aud__panel" role="dialog" aria-modal="true" aria-label="Détail de l'événement d'audit">
+
+      <!-- Header -->
+      <div class="aud__panel-header">
+        <div class="aud__panel-header-info">
+          <h2 class="aud__panel-title">{{ eventTypeLabel(ev.eventType) }}</h2>
+          <div class="aud__panel-meta">
+            <span class="aud__entity-badge">{{ entityTypeLabel(ev.entityType) }}</span>
+            <code class="aud__entity-id">{{ ev.entityId }}</code>
+          </div>
+        </div>
+        <button class="aud__panel-close" type="button" aria-label="Fermer" (click)="closePanel()">✕</button>
+      </div>
+
+      <!-- Scrollable body -->
+      <div class="aud__panel-body">
+
+        <!-- Résumé -->
+        <section class="aud__section">
+          <h3 class="aud__section-title">Résumé</h3>
+
+          <dl class="aud__info-grid">
+            <dt class="aud__info-label">Date / Heure</dt>
+            <dd class="aud__info-value">{{ formatDateTime(ev.eventDate) }}</dd>
+
+            <dt class="aud__info-label">Utilisateur</dt>
+            <dd class="aud__info-value">
+              {{ ev.userName }}
+              <span class="aud__user-id">({{ ev.userId }})</span>
+            </dd>
+
+            @if (ev.ipAddress) {
+              <dt class="aud__info-label">Adresse IP</dt>
+              <dd class="aud__info-value aud__info-value--mono">{{ ev.ipAddress }}</dd>
+            }
+
+            @if (ev.creditorId) {
+              <dt class="aud__info-label">Créancier</dt>
+              <dd class="aud__info-value">{{ creditorLabel(ev.creditorId) }}</dd>
+            }
+
+            @if (ev.correlationId) {
+              <dt class="aud__info-label">Corrélation</dt>
+              <dd class="aud__info-value aud__info-value--mono">{{ ev.correlationId }}</dd>
+            }
+          </dl>
+
+          <p class="aud__description">{{ ev.description }}</p>
+        </section>
+
+        <!-- JSON diff old / new -->
+        @if (ev.oldValue || ev.newValue) {
+          <section class="aud__section">
+            <h3 class="aud__section-title">Diff valeurs</h3>
+
+            @if (hasFullView()) {
+              <div class="aud__diff">
+                @if (ev.oldValue) {
+                  <div class="aud__diff-block aud__diff-block--old">
+                    <div class="aud__diff-label">Avant</div>
+                    <pre class="aud__json">{{ formatJson(ev.oldValue) }}</pre>
+                  </div>
+                }
+                @if (ev.newValue) {
+                  <div class="aud__diff-block aud__diff-block--new">
+                    <div class="aud__diff-label">Après</div>
+                    <pre class="aud__json">{{ formatJson(ev.newValue) }}</pre>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="aud__restricted">
+                <span class="aud__restricted-icon" aria-hidden="true">🔒</span>
+                <span>Contenu masqué — droit <code>AUDIT_VIEW</code> requis pour voir les valeurs JSON.</span>
+              </div>
+            }
+          </section>
+        }
+
+      </div>
+      <!-- end panel-body -->
+
+    </aside>
+  }
+}

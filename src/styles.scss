@@ -1,0 +1,6 @@
+// ─── Global stylesheet entry point ────────────────────────────────────────────
+// Import order matters: tokens first so _reset and _typography can consume them.
+
+@use 'styles/tokens';
+@use 'styles/reset';
+@use 'styles/typography';

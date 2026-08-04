@@ -1,0 +1,59 @@
+.kpi-card {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-6);
+  transition: box-shadow var(--transition-normal);
+  border-left: 4px solid transparent;
+
+  &:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  &--success  { border-left-color: var(--color-success); }
+  &--warning  { border-left-color: var(--color-warning); }
+  &--critical { border-left-color: var(--color-critical); }
+  &--amount   { border-left-color: var(--color-action); }
+
+  &__header {
+    margin-bottom: var(--space-2);
+  }
+
+  &__title {
+    font-size: var(--font-size-subtitle);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__body {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  &__value {
+    font-size: var(--font-size-heading-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+  }
+
+  &__delta {
+    font-size: var(--font-size-body-sm);
+    font-weight: var(--font-weight-medium);
+
+    &--positive { color: var(--color-success-text); }
+    &--negative { color: var(--color-critical-text); }
+    &--neutral  { color: var(--color-text-secondary); }
+  }
+
+  &__subtitle {
+    margin-top: var(--space-2);
+    font-size: var(--font-size-body-sm);
+    color: var(--color-text-secondary);
+  }
+}

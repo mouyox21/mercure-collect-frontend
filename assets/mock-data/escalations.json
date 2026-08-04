@@ -1,0 +1,91 @@
+{
+  "items": [
+    {
+      "escalationId": "ESC-001",
+      "caseId": "CASE-018", "caseReference": "MC-2026-018",
+      "debtorId": "DBT-014", "debtorName": "Auto Maroc SA",
+      "agentId": "AGT-001", "agentName": "Marie Dupont",
+      "reason": "Encours de 567 000 MAD – refus répété de coopérer depuis 3 mois. Demande d'autorisation d'accélérer vers pré-contentieux.",
+      "status": "PENDING",
+      "priority": "CRITICAL",
+      "overdueAmount": 567000,
+      "dmnRecommendation": "PRE_LEGAL",
+      "dmnRecommendationReason": "Score de risque 94/100 – historique de 2 promesses rompues et 145 jours de retard",
+      "createdAt": "2026-07-30T08:00:00"
+    },
+    {
+      "escalationId": "ESC-002",
+      "caseId": "CASE-019", "caseReference": "MC-2026-019",
+      "debtorId": "DBT-014", "debtorName": "Auto Maroc SA",
+      "agentId": "AGT-001", "agentName": "Marie Dupont",
+      "reason": "Dossier lié à ESC-001 – même groupe. Montant 328 000 MAD. Demande de traitement groupé.",
+      "status": "PENDING",
+      "priority": "HIGH",
+      "overdueAmount": 328000,
+      "dmnRecommendation": "URGENT_CALL",
+      "dmnRecommendationReason": "Score 85/100 – 130 jours de retard",
+      "createdAt": "2026-07-30T08:30:00"
+    },
+    {
+      "escalationId": "ESC-003",
+      "caseId": "CASE-021", "caseReference": "MC-2026-021",
+      "debtorId": "DBT-015", "debtorName": "Médina Invest SA",
+      "agentId": "AGT-001", "agentName": "Marie Dupont",
+      "reason": "Accord oral refusé. Encours 890 000 MAD. Demande autorisation mise en demeure recommandée.",
+      "status": "APPROVED",
+      "priority": "HIGH",
+      "overdueAmount": 890000,
+      "dmnRecommendation": "FORMAL_NOTICE",
+      "dmnRecommendationReason": "Score 88/100 – 210 jours de retard sans paiement",
+      "createdAt": "2026-07-15T11:00:00",
+      "decidedAt": "2026-07-16T09:00:00",
+      "decidedBy": "Jean Martin",
+      "decisionComment": "Approuvé. Mise en demeure autorisée. Informer le service juridique."
+    },
+    {
+      "escalationId": "ESC-004",
+      "caseId": "CASE-022", "caseReference": "MC-2026-022",
+      "debtorId": "DBT-015", "debtorName": "Médina Invest SA",
+      "agentId": "AGT-001", "agentName": "Marie Dupont",
+      "reason": "Demande de passage contentieux immédiat – délai court par rapport à la procédure standard.",
+      "status": "REJECTED",
+      "priority": "NORMAL",
+      "overdueAmount": 654000,
+      "dmnRecommendation": "CONTINUE_AMIABLE",
+      "dmnRecommendationReason": "Score 76/100 – retard 185 jours mais accord verbal récent",
+      "createdAt": "2026-07-10T14:00:00",
+      "decidedAt": "2026-07-11T10:30:00",
+      "decidedBy": "Jean Martin",
+      "decisionComment": "Rejeté. Procédure amiable à poursuivre encore 30 jours avant contentieux."
+    },
+    {
+      "escalationId": "ESC-005",
+      "caseId": "CASE-033", "caseReference": "MC-2026-033",
+      "debtorId": "DBT-011", "debtorName": "Bâtir Ensemble SARL",
+      "agentId": "AGT-002", "agentName": "Karim Hassan",
+      "reason": "Client injoignable depuis 8 jours. Encours 425 000 MAD. Risque de fuite.",
+      "status": "PENDING",
+      "priority": "HIGH",
+      "overdueAmount": 425000,
+      "dmnRecommendation": "URGENT_FIELD_VISIT",
+      "dmnRecommendationReason": "Score 82/100 – 125 jours de retard et 2 appels sans réponse",
+      "createdAt": "2026-07-25T09:15:00"
+    },
+    {
+      "escalationId": "ESC-006",
+      "caseId": "CASE-037", "caseReference": "MC-2026-037",
+      "debtorId": "DBT-014", "debtorName": "Auto Maroc SA",
+      "agentId": "AGT-003", "agentName": "Nadia Benali",
+      "reason": "Dossier critique Auto Maroc – 3ème dossier groupe, total exposé 1.3M MAD. Escalade au niveau Direction.",
+      "status": "ESCALATED",
+      "priority": "CRITICAL",
+      "overdueAmount": 389000,
+      "dmnRecommendation": "PRE_LEGAL",
+      "dmnRecommendationReason": "Score 91/100 – exposition groupe très élevée",
+      "createdAt": "2026-07-20T16:00:00",
+      "decidedAt": "2026-07-21T08:00:00",
+      "decidedBy": "Jean Martin",
+      "decisionComment": "Escaladé à la Direction du Recouvrement. Dossier groupe Auto Maroc à traiter en comité."
+    }
+  ]
+}

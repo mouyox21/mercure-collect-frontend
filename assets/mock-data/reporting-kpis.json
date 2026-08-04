@@ -1,0 +1,100 @@
+{
+  "filters": {
+    "creditorId": "CRED-001",
+    "period": "MONTH",
+    "dateFrom": "2026-07-01",
+    "dateTo": "2026-07-31"
+  },
+  "kpis": [
+    {
+      "kpiCode": "RECOVERY_RATE",
+      "kpiLabel": "Taux de recouvrement",
+      "value": 68,
+      "previousValue": 64,
+      "unit": "%",
+      "trend": 6.25,
+      "variant": "success"
+    },
+    {
+      "kpiCode": "COLLECTED_AMOUNT",
+      "kpiLabel": "Montant recouvré",
+      "value": 8500000,
+      "previousValue": 7200000,
+      "unit": "MAD",
+      "trend": 18.06,
+      "variant": "success"
+    },
+    {
+      "kpiCode": "ACTIVE_CASES",
+      "kpiLabel": "Dossiers actifs",
+      "value": 2504,
+      "previousValue": 2410,
+      "unit": "dossiers",
+      "trend": 3.90,
+      "variant": "warning"
+    },
+    {
+      "kpiCode": "PROMISES_KEPT_RATE",
+      "kpiLabel": "Taux de tenue des promesses",
+      "value": 68,
+      "previousValue": 71,
+      "unit": "%",
+      "trend": -4.23,
+      "variant": "warning"
+    },
+    {
+      "kpiCode": "AVERAGE_DAYS_LATE",
+      "kpiLabel": "Retard moyen (jours)",
+      "value": 87,
+      "previousValue": 92,
+      "unit": "jours",
+      "trend": -5.43,
+      "variant": "success"
+    },
+    {
+      "kpiCode": "NEW_CASES",
+      "kpiLabel": "Nouveaux dossiers",
+      "value": 189,
+      "previousValue": 145,
+      "unit": "dossiers",
+      "trend": 30.34,
+      "variant": "critical"
+    },
+    {
+      "kpiCode": "CLOSED_CASES",
+      "kpiLabel": "Dossiers clôturés",
+      "value": 95,
+      "previousValue": 88,
+      "unit": "dossiers",
+      "trend": 7.95,
+      "variant": "standard"
+    },
+    {
+      "kpiCode": "PENDING_ESCALATIONS",
+      "kpiLabel": "Escalades en attente",
+      "value": 36,
+      "previousValue": 28,
+      "unit": "escalades",
+      "trend": 28.57,
+      "variant": "critical"
+    },
+    {
+      "kpiCode": "ACTIONS_PER_AGENT",
+      "kpiLabel": "Actions/agent/jour (moy.)",
+      "value": 12.4,
+      "previousValue": 11.8,
+      "unit": "actions",
+      "trend": 5.08,
+      "variant": "success"
+    },
+    {
+      "kpiCode": "OVERDUE_PORTFOLIO",
+      "kpiLabel": "Encours impayé",
+      "value": 20500000,
+      "previousValue": 19800000,
+      "unit": "MAD",
+      "trend": 3.54,
+      "variant": "warning"
+    }
+  ]
+}

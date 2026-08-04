@@ -1,0 +1,16 @@
+<div class="empty-state" role="status">
+  <div class="empty-state__icon" aria-hidden="true">
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="6" y="12" width="36" height="28" rx="3" stroke="currentColor" stroke-width="2" fill="none"/>
+      <path d="M6 20h36" stroke="currentColor" stroke-width="2"/>
+      <path d="M17 32h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <path d="M20 28h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <p class="empty-state__message">{{ message() }}</p>
+  @if (actionLabel()) {
+    <button class="empty-state__btn" type="button" (click)="action.emit()">
+      {{ actionLabel() }}
+    </button>
+  }
+</div>

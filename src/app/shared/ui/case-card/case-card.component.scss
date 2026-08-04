@@ -1,0 +1,106 @@
+.case-card {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5);
+  cursor: pointer;
+  transition: box-shadow var(--transition-normal), border-color var(--transition-normal);
+  outline-offset: 2px;
+
+  &:hover {
+    box-shadow: var(--shadow-card-hover);
+    border-color: var(--color-action);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-action);
+  }
+
+  &--critical {
+    border-left: 4px solid var(--color-critical);
+  }
+
+  &--broken-promise {
+    border-left: 4px solid var(--color-warning);
+  }
+
+  &--legal {
+    border-left: 4px solid var(--color-navy);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  &__name {
+    font-size: var(--font-size-heading-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__body {
+    margin-bottom: var(--space-4);
+  }
+
+  &__metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+
+  &__metric {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  &__metric-label {
+    font-size: var(--font-size-body-sm);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
+  }
+
+  &__metric-value {
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+
+    &--amount {
+      color: var(--color-action);
+    }
+
+    &--critical {
+      color: var(--color-critical);
+    }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  &__agent {
+    font-size: var(--font-size-body-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-navy);
+  }
+
+  &__last-contact {
+    font-size: var(--font-size-body-sm);
+    color: var(--color-text-muted);
+    margin-left: auto;
+  }
+}

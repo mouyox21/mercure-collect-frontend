@@ -1,0 +1,56 @@
+<div class="kanban">
+  <div class="kanban__board">
+    @for (col of columns(); track col.key) {
+      <div
+        class="kanban__column"
+        [class.kanban__column--drag-over]="dragOverKey() === col.key"
+        (dragover)="onDragOver($event, col.key)"
+        (dragleave)="onDragLeave(col.key)"
+        (drop)="onDrop($event, col.key)"
+      >
+        <div class="kanban__col-header">
+          <button
+            class="kanban__col-btn"
+            type="button"
+            (click)="toggleColumn(col.key)"
+            [attr.aria-expanded]="!col.collapsed"
+            [attr.aria-label]="col.label + ', ' + col.cards.length + ' dossier' + (col.cards.length > 1 ? 's' : '')"
+          >
+            <span
+              class="kanban__col-chevron"
+              [class.kanban__col-chevron--collapsed]="col.collapsed"
+              aria-hidden="true"
+            >▾</span>
+            <span class="kanban__col-label">{{ col.label }}</span>
+            <span class="kanban__col-count">{{ col.cards.length }}</span>
+          </button>
+          @if (col.totalAmount !== undefined) {
+            <span class="kanban__col-total">{{ formatCurrency(col.totalAmount) }}</span>
+          }
+        </div>
+
+        @if (!col.collapsed) {
+          <div class="kanban__cards">
+            @if (col.cards.length === 0) {
+              <p class="kanban__empty">Aucun dossier</p>
+            } @else {
+              @for (card of col.cards; track trackCard($index, card)) {
+                <div
+                  class="kanban__card-wrap"
+                  [attr.draggable]="dragDropEnabled() ? 'true' : null"
+                  (dragstart)="onDragStart($event, card.row, col.key)"
+                  (dragend)="onDragEnd()"
+                >
+                  <mc-case-card
+                    [case]="card.caseData"
+                    (selected)="cardSelected.emit($event)"
+                  />
+                </div>
+              }
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,70 @@
+<div class="timeline">
+  <div class="timeline__filters" role="group" aria-label="Filtres">
+    <div class="timeline__filter-group">
+      <span class="timeline__filter-label">Canal</span>
+      @for (channel of allChannels; track channel) {
+        <button
+          class="timeline__filter-btn"
+          [class.timeline__filter-btn--active]="isChannelActive(channel)"
+          type="button"
+          [attr.aria-pressed]="isChannelActive(channel)"
+          [attr.aria-label]="'Filtrer par ' + channelLabels[channel]"
+          (click)="toggleChannel(channel)"
+        >
+          {{ channelLabels[channel] }}
+        </button>
+      }
+    </div>
+
+    <div class="timeline__filter-group">
+      <span class="timeline__filter-label">Type</span>
+      @for (type of allTypes; track type) {
+        <button
+          class="timeline__filter-btn"
+          [class.timeline__filter-btn--active]="isTypeActive(type)"
+          type="button"
+          [attr.aria-pressed]="isTypeActive(type)"
+          [attr.aria-label]="'Filtrer par ' + typeLabels[type]"
+          (click)="toggleType(type)"
+        >
+          {{ typeLabels[type] }}
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (filteredEvents().length === 0) {
+    <p class="timeline__empty" role="status">Aucun événement correspondant aux filtres.</p>
+  } @else {
+    <ol class="timeline__list" aria-label="Historique des événements">
+      @for (event of filteredEvents(); track event.id) {
+        <li class="timeline__event" [attr.aria-label]="eventAriaLabel(event)">
+          <div [class]="channelClass(event.channel)" aria-hidden="true"></div>
+
+          <div class="timeline__content">
+            <div class="timeline__meta">
+              <time class="timeline__date" [attr.datetime]="event.date.toISOString()">
+                {{ formatDate(event.date) }}
+              </time>
+              <span class="timeline__channel-tag">{{ channelLabels[event.channel] }}</span>
+              <span class="timeline__type-tag timeline__type-tag--{{ event.type }}">{{ typeLabels[event.type] }}</span>
+            </div>
+
+            <p class="timeline__description">{{ event.description }}</p>
+
+            <div class="timeline__footer">
+              @if (event.agent) {
+                <span class="timeline__agent">{{ event.agent }}</span>
+              }
+              @if (event.amount !== undefined) {
+                <span class="timeline__amount">
+                  {{ formatAmount(event.amount!) }}
+                </span>
+              }
+            </div>
+          </div>
+        </li>
+      }
+    </ol>
+  }
+</div>

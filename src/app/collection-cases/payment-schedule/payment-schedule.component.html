@@ -1,0 +1,337 @@
+<div class="ps">
+
+  @switch (viewState()) {
+
+    @case ('loading') {
+      <div class="ps__state-wrap">
+        <mc-skeleton-loader variant="list" [rows]="6" />
+      </div>
+    }
+
+    @case ('error') {
+      <div class="ps__state-wrap">
+        <mc-error-state
+          message="Impossible de charger le dossier."
+          (retry)="load()"
+        />
+      </div>
+    }
+
+    @case ('forbidden') {
+      <div class="ps__state-wrap">
+        <mc-forbidden-state />
+      </div>
+    }
+
+    @case ('success') {
+
+      <!-- Breadcrumb ─────────────────────────────────────────────────────── -->
+      <nav class="ps__breadcrumb" aria-label="Navigation">
+        <button type="button" class="ps__back-btn" (click)="goBack()">
+          ← Retour au dossier
+        </button>
+        <span class="ps__breadcrumb-sep" aria-hidden="true">/</span>
+        <span class="ps__breadcrumb-item">{{ caseDetail()!.caseReference }}</span>
+        <span class="ps__breadcrumb-sep" aria-hidden="true">/</span>
+        <span class="ps__breadcrumb-item ps__breadcrumb-item--current">Nouvel échéancier</span>
+      </nav>
+
+      <div class="ps__layout">
+
+        <!-- Title row ──────────────────────────────────────────────────────── -->
+        <div class="ps__title-row">
+          <h1 class="ps__title">Créer un échéancier</h1>
+          <span class="ps__debtor">{{ caseDetail()!.debtorName }}</span>
+        </div>
+
+        <!-- Debt Summary ────────────────────────────────────────────────────── -->
+        <section class="ps__section" aria-label="Synthèse de la dette">
+          <h2 class="ps__section-title">Synthèse de la dette</h2>
+          <div class="ps__summary-grid">
+
+            <div class="ps__summary-card">
+              <div class="ps__summary-label">Montant total de la dette</div>
+              <div class="ps__summary-value">{{ formatAmount(caseDetail()!.totalDebtAmount) }}</div>
+            </div>
+
+            <div class="ps__summary-card ps__summary-card--highlight">
+              <div class="ps__summary-label">Montant impayé</div>
+              <div class="ps__summary-value ps__summary-value--overdue">{{ formatAmount(caseDetail()!.overdueAmount) }}</div>
+            </div>
+
+            <div class="ps__summary-card">
+              <div class="ps__summary-label">Garanties</div>
+              <div class="ps__summary-value ps__summary-value--sm">Nantissement contrat · Caution solidaire</div>
+            </div>
+
+            <div class="ps__summary-card">
+              <div class="ps__summary-label">Score IA</div>
+              <div class="ps__score-row">
+                <div class="ps__score-bar">
+                  <div
+                    class="ps__score-fill"
+                    [style.width.%]="caseDetail()!.dmnDecision.score"
+                  ></div>
+                </div>
+                <span class="ps__score-value">{{ caseDetail()!.dmnDecision.score }}/100</span>
+              </div>
+            </div>
+
+            <div class="ps__summary-card">
+              <div class="ps__summary-label">Éligibilité DMN</div>
+              @if (dmnEligible()) {
+                <span class="ps__eligibility ps__eligibility--yes">✓ Éligible à l'échéancier</span>
+              } @else {
+                <span class="ps__eligibility ps__eligibility--no">✗ Score insuffisant (min. {{ 60 }})</span>
+              }
+            </div>
+
+            <div class="ps__summary-card">
+              <div class="ps__summary-label">Segment débiteur</div>
+              <div class="ps__summary-value ps__summary-value--sm">{{ caseDetail()!.dmnDecision.segment }}</div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Simulator Form ─────────────────────────────────────────────────── -->
+        <section class="ps__section" aria-label="Simulateur d'échéancier">
+          <h2 class="ps__section-title">Simulateur d'échéancier</h2>
+
+          <div class="ps__sim-grid">
+
+            <div class="ps__field">
+              <label class="ps__label" for="sim-total">Montant total à rembourser (MAD)</label>
+              <input
+                id="sim-total"
+                type="number"
+                class="ps__input"
+                [value]="simTotalAmount()"
+                (input)="simTotalAmount.set(+$any($event.target).value)"
+                min="0"
+                step="1000"
+              />
+            </div>
+
+            <div class="ps__field">
+              <label class="ps__label" for="sim-down">Acompte initial (MAD)</label>
+              <input
+                id="sim-down"
+                type="number"
+                class="ps__input"
+                [value]="simDownPayment()"
+                (input)="simDownPayment.set(+$any($event.target).value)"
+                min="0"
+                step="1000"
+              />
+            </div>
+
+            <div class="ps__field">
+              <label class="ps__label" for="sim-count">Nombre d'échéances</label>
+              <select
+                id="sim-count"
+                class="ps__select"
+                (change)="simInstallmentCount.set(+$any($event.target).value)"
+              >
+                @for (n of countOptions; track n) {
+                  <option [value]="n" [selected]="simInstallmentCount() === n">{{ n }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="ps__field">
+              <label class="ps__label" for="sim-date">Date de la première échéance</label>
+              <input
+                id="sim-date"
+                type="date"
+                class="ps__input"
+                [value]="simFirstDate()"
+                (input)="simFirstDate.set($any($event.target).value)"
+              />
+            </div>
+
+            <div class="ps__field">
+              <label class="ps__label" for="sim-freq">Périodicité</label>
+              <select
+                id="sim-freq"
+                class="ps__select"
+                (change)="simFrequency.set($any($event.target).value)"
+              >
+                @for (opt of frequencyOptions; track opt.value) {
+                  <option [value]="opt.value" [selected]="simFrequency() === opt.value">{{ opt.label }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="ps__field ps__field--action">
+              <label class="ps__label">&nbsp;</label>
+              <button type="button" class="ps__btn ps__btn--simulate" (click)="simulate()">
+                ⟳ Simuler les échéances
+              </button>
+            </div>
+
+          </div>
+
+          @if (validationRequired()) {
+            <div class="ps__threshold-hint">
+              ⚠️ Le montant ou la durée dépasse les seuils autorisés — une validation superviseur sera obligatoire.
+            </div>
+          }
+        </section>
+
+        <!-- Installments Table ─────────────────────────────────────────────── -->
+        @if (simulated()) {
+
+          <section class="ps__section" aria-label="Tableau des échéances">
+            <div class="ps__installments-header">
+              <h2 class="ps__section-title">Échéances générées</h2>
+              <span class="ps__edit-hint">Vous pouvez modifier les montants et dates avant de valider.</span>
+            </div>
+
+            <table class="ps__table" aria-label="Tableau des échéances">
+              <thead>
+                <tr>
+                  <th class="ps__th">#</th>
+                  <th class="ps__th">Date d'échéance</th>
+                  <th class="ps__th">Montant (MAD)</th>
+                  <th class="ps__th">Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (inst of installments(); track inst.installmentNumber; let i = $index) {
+                  <tr class="ps__tr">
+                    <td class="ps__td ps__td--num">{{ inst.installmentNumber }}</td>
+                    <td class="ps__td">
+                      <input
+                        type="date"
+                        class="ps__inline-input"
+                        [value]="inst.dueDate"
+                        (change)="updateInstallmentDate(i, $any($event.target).value)"
+                      />
+                    </td>
+                    <td class="ps__td">
+                      <input
+                        type="number"
+                        class="ps__inline-input ps__inline-input--amount"
+                        [value]="inst.amount"
+                        min="0"
+                        (input)="updateInstallmentAmount(i, +$any($event.target).value)"
+                      />
+                    </td>
+                    <td class="ps__td">
+                      <span class="ps__badge ps__badge--scheduled">Planifié</span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+              <tfoot>
+                <tr class="ps__tr ps__tr--total">
+                  <td class="ps__td" colspan="2"><strong>Total simulé</strong></td>
+                  <td class="ps__td ps__td--total">
+                    <strong>{{ formatAmount(simTotal()) }}</strong>
+                  </td>
+                  <td class="ps__td"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </section>
+
+          <!-- Validation Block ───────────────────────────────────────────────── -->
+          @if (validationRequired()) {
+            <section class="ps__section ps__section--validation" aria-label="Validation obligatoire">
+
+              <div class="ps__val-banner">
+                <span class="ps__val-icon" aria-hidden="true">⚠️</span>
+                <div class="ps__val-title-group">
+                  <h2 class="ps__section-title ps__section-title--warn">Validation obligatoire</h2>
+                  <p class="ps__val-desc">
+                    Le montant total ({{ formatAmount(simTotalAmount()) }}) ou le nombre d'échéances
+                    ({{ simInstallmentCount() }}) dépasse les seuils autorisés
+                    ({{ formatAmount(validationAmountThreshold) }} / {{ validationCountThreshold }} échéances max.).
+                    Une validation superviseur est requise avant de soumettre.
+                  </p>
+                </div>
+              </div>
+
+              <div class="ps__val-grid">
+
+                <div class="ps__field">
+                  <label class="ps__label" for="val-validator">
+                    Validateur <span class="ps__required" aria-hidden="true">*</span>
+                  </label>
+                  <select
+                    id="val-validator"
+                    class="ps__select"
+                    [class.ps__select--error]="!validationValidator()"
+                    (change)="validationValidator.set($any($event.target).value)"
+                  >
+                    <option value="">Sélectionner un validateur…</option>
+                    <option value="SUP-001">J. Martin — Superviseur</option>
+                    <option value="SUP-002">F. Alaoui — Superviseur</option>
+                    <option value="DIR-001">A. Berrada — Directeur régional</option>
+                  </select>
+                </div>
+
+                <div class="ps__field ps__field--full">
+                  <label class="ps__label" for="val-comment">
+                    Commentaire / Justification <span class="ps__required" aria-hidden="true">*</span>
+                  </label>
+                  <textarea
+                    id="val-comment"
+                    class="ps__textarea"
+                    [class.ps__textarea--error]="!validationComment().trim()"
+                    rows="3"
+                    placeholder="Justifiez la dérogation accordée…"
+                    [value]="validationComment()"
+                    (input)="validationComment.set($any($event.target).value)"
+                  ></textarea>
+                </div>
+
+                <div class="ps__field ps__field--full">
+                  <label class="ps__label" for="val-conditions">Conditions spécifiques</label>
+                  <textarea
+                    id="val-conditions"
+                    class="ps__textarea"
+                    rows="2"
+                    placeholder="Conditions supplémentaires imposées par le validateur (facultatif)…"
+                    [value]="validationConditions()"
+                    (input)="validationConditions.set($any($event.target).value)"
+                  ></textarea>
+                </div>
+
+              </div>
+            </section>
+          }
+
+          <!-- Footer actions ─────────────────────────────────────────────────── -->
+          <div class="ps__footer-actions">
+            <button type="button" class="ps__btn ps__btn--cancel" (click)="goBack()">
+              Annuler
+            </button>
+            <button
+              type="button"
+              class="ps__btn ps__btn--submit"
+              [disabled]="!canSubmit()"
+              (click)="submit()"
+            >
+              @if (submitting()) {
+                ⟳ Enregistrement…
+              } @else {
+                ✓ Valider l'échéancier
+              }
+            </button>
+          </div>
+
+        }<!-- /simulated -->
+
+      </div><!-- .ps__layout -->
+
+    }
+
+  }<!-- @switch -->
+
+  @if (showToast()) {
+    <mc-success-toast [message]="toastMsg()" (dismissed)="showToast.set(false)" />
+  }
+
+</div>

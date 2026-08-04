@@ -1,0 +1,43 @@
+{
+  "items": [
+    {
+      "caseId": "CASE-010",
+      "totalAmount": 89000,
+      "installmentCount": 6,
+      "firstInstallmentDate": "2026-09-01",
+      "frequency": "MONTHLY",
+      "derogation": false,
+      "installments": [
+        { "installmentNumber": 1, "dueDate": "2026-09-01", "amount": 14834, "status": "SCHEDULED" },
+        { "installmentNumber": 2, "dueDate": "2026-10-01", "amount": 14834, "status": "SCHEDULED" },
+        { "installmentNumber": 3, "dueDate": "2026-11-01", "amount": 14834, "status": "SCHEDULED" },
+        { "installmentNumber": 4, "dueDate": "2026-12-01", "amount": 14834, "status": "SCHEDULED" },
+        { "installmentNumber": 5, "dueDate": "2027-01-01", "amount": 14834, "status": "SCHEDULED" },
+        { "installmentNumber": 6, "dueDate": "2027-02-01", "amount": 14830, "status": "SCHEDULED" }
+      ]
+    },
+    {
+      "caseId": "CASE-013",
+      "totalAmount": 267000,
+      "installmentCount": 12,
+      "firstInstallmentDate": "2026-08-31",
+      "frequency": "MONTHLY",
+      "derogation": true,
+      "derogationReason": "Entreprise en difficulté temporaire – accord superviseur J. Martin",
+      "installments": [
+        { "installmentNumber": 1,  "dueDate": "2026-07-31", "amount": 22250, "status": "PAID", "paidDate": "2026-07-30", "paidAmount": 22250 },
+        { "installmentNumber": 2,  "dueDate": "2026-08-31", "amount": 22250, "status": "SCHEDULED" },
+        { "installmentNumber": 3,  "dueDate": "2026-09-30", "amount": 22250, "status": "SCHEDULED" },
+        { "installmentNumber": 4,  "dueDate": "2026-10-31", "amount": 22250, "status": "SCHEDULED" },
+        { "installmentNumber": 5,  "dueDate": "2026-11-30", "amount": 22250, "status": "SCHEDULED" },
+        { "installmentNumber": 6,  "dueDate": "2026-12-31", "amount": 22250, "status": "SCHEDULED" },
+        { "installmentNumber": 7,  "dueDate": "2027-01-31", "amount": 22250, "status": "SCHEDULED" },
+        { "installmentNumber": 8,  "dueDate": "2027-02-28", "amount": 22250, "status": "SCHEDULED" },
+        { "installmentNumber": 9,  "dueDate": "2027-03-31", "amount": 22250, "status": "SCHEDULED" },
+        { "installmentNumber": 10, "dueDate": "2027-04-30", "amount": 22250, "status": "SCHEDULED" },
+        { "installmentNumber": 11, "dueDate": "2027-05-31", "amount": 22250, "status": "SCHEDULED" },
+        { "installmentNumber": 12, "dueDate": "2027-06-30", "amount": 22250, "status": "SCHEDULED" }
+      ]
+    }
+  ]
+}

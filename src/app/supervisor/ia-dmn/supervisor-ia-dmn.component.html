@@ -1,0 +1,308 @@
+<div class="iadmn">
+
+    @switch (viewState()) {
+      @case ('loading') {
+        <div class="iadmn__state-wrap"><mc-skeleton-loader /></div>
+      }
+      @case ('error') {
+        <div class="iadmn__state-wrap"><mc-error-state (retry)="load()" /></div>
+      }
+      @case ('forbidden') {
+        <div class="iadmn__state-wrap"><mc-forbidden-state /></div>
+      }
+      @case ('success') {
+
+        <!-- Header -->
+        <div class="iadmn__header">
+          <div>
+            <h1 class="iadmn__page-title">Supervision IA / DMN</h1>
+            <p class="iadmn__page-sub">
+              {{ totalDecisions() }} décision(s) — {{ withFeedback() }} avec feedback agent
+            </p>
+          </div>
+          <button class="iadmn__refresh-btn" type="button" (click)="load()">↺ Actualiser</button>
+        </div>
+
+        <!-- Period filter pills -->
+        <div class="iadmn__periods" role="group" aria-label="Filtrer par période">
+          @for (p of PERIODS; track p.key) {
+            <button
+              class="iadmn__period-btn"
+              [class.iadmn__period-btn--active]="period() === p.key"
+              type="button"
+              (click)="period.set(p.key)">
+              {{ p.label }}
+            </button>
+          }
+        </div>
+
+        <!-- KPI bar -->
+        <div class="iadmn__kpis">
+          <mc-kpi-card
+            title="Décisions DMN"
+            [value]="totalDecisions()"
+            variant="standard"
+            subtitle="dans la période"
+          />
+          <mc-kpi-card
+            title="Recommandations IA"
+            [value]="totalDecisions()"
+            variant="standard"
+            subtitle="NBA générées"
+          />
+          <mc-kpi-card
+            title="Taux d'acceptation"
+            [value]="tauxAcceptation() + ' %'"
+            variant="success"
+            subtitle="feedbacks positifs"
+          />
+          <mc-kpi-card
+            title="Taux d'exécution"
+            [value]="tauxExecution() + ' %'"
+            variant="standard"
+            subtitle="décisions évaluées"
+          />
+          <mc-kpi-card
+            title="Score IA moyen"
+            [value]="scoreMoyen()"
+            variant="standard"
+            subtitle="confiance du modèle"
+          />
+        </div>
+
+        <!-- Workspace: list + detail panel -->
+        <div class="iadmn__workspace" [class.iadmn__workspace--split]="selected() !== null">
+
+          <!-- Decision list -->
+          <div class="iadmn__table-wrap">
+            <table class="iadmn__table" aria-label="Décisions IA / DMN">
+              <thead>
+                <tr>
+                  <th scope="col">Dossier</th>
+                  <th scope="col">NBA recommandée</th>
+                  <th scope="col">Segment</th>
+                  <th scope="col">Score</th>
+                  <th scope="col">Raison</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Feedback agent</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (d of filtered(); track d.decisionId) {
+                  <tr
+                    class="iadmn__row"
+                    [class.iadmn__row--selected]="selected()?.decisionId === d.decisionId"
+                    (click)="selectRow(d)"
+                    tabindex="0"
+                    (keydown.enter)="selectRow(d)"
+                    [attr.aria-selected]="selected()?.decisionId === d.decisionId">
+                    <td>
+                      <span class="iadmn__ref">{{ d.caseReference }}</span>
+                    </td>
+                    <td class="iadmn__nba">{{ actionLabel(d.nextBestAction) }}</td>
+                    <td>
+                      <span
+                        class="iadmn__segment"
+                        [class.iadmn__segment--critical]="d.segment === 'CRITICAL'"
+                        [class.iadmn__segment--high-risk]="d.segment === 'HIGH_RISK'"
+                        [class.iadmn__segment--pre-legal]="d.segment === 'PRE_LEGAL'">
+                        {{ segmentLabel(d.segment) }}
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        class="iadmn__score"
+                        [class.iadmn__score--high]="d.score >= 80"
+                        [class.iadmn__score--medium]="d.score >= 60 && d.score < 80"
+                        [class.iadmn__score--low]="d.score < 60">
+                        {{ d.score }}
+                      </span>
+                    </td>
+                    <td class="iadmn__reason-cell" [title]="d.reasonLabel">{{ d.reasonLabel }}</td>
+                    <td class="iadmn__date">{{ formatDate(d.decisionDate) }}</td>
+                    <td>
+                      @if (feedbackBadge(d); as badge) {
+                        <span
+                          class="iadmn__fb-badge"
+                          [class.iadmn__fb-badge--accord]="badge === 'accord'"
+                          [class.iadmn__fb-badge--desaccord]="badge === 'desaccord'"
+                          [class.iadmn__fb-badge--executee]="badge === 'executee'">
+                          {{ badge === 'accord' ? 'Accord' : badge === 'desaccord' ? 'Désaccord' : 'Exécutée' }}
+                        </span>
+                      } @else {
+                        <span class="iadmn__fb-empty">—</span>
+                      }
+                    </td>
+                  </tr>
+                }
+                @empty {
+                  <tr>
+                    <td colspan="7" class="iadmn__empty">Aucune décision pour cette période.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Detail + Feedback panel -->
+          @if (selected(); as d) {
+            <aside class="iadmn__detail" aria-label="Détail de la décision DMN">
+
+              <button
+                class="iadmn__detail-close"
+                type="button"
+                (click)="closeDetail()"
+                aria-label="Fermer le panneau">×</button>
+
+              <!-- Identity header -->
+              <div class="iadmn__detail-head">
+                <span class="iadmn__detail-ref">{{ d.caseReference }}</span>
+                <span
+                  class="iadmn__segment"
+                  [class.iadmn__segment--critical]="d.segment === 'CRITICAL'"
+                  [class.iadmn__segment--high-risk]="d.segment === 'HIGH_RISK'"
+                  [class.iadmn__segment--pre-legal]="d.segment === 'PRE_LEGAL'">
+                  {{ segmentLabel(d.segment) }}
+                </span>
+              </div>
+
+              <!-- NBA + score -->
+              <div class="iadmn__detail-action">
+                <p class="iadmn__detail-action-label">Recommandation IA</p>
+                <p class="iadmn__detail-action-value">{{ actionLabel(d.nextBestAction) }}</p>
+                <span
+                  class="iadmn__score iadmn__score--lg"
+                  [class.iadmn__score--high]="d.score >= 80"
+                  [class.iadmn__score--medium]="d.score >= 60 && d.score < 80"
+                  [class.iadmn__score--low]="d.score < 60">
+                  Score {{ d.score }} / 100
+                </span>
+              </div>
+
+              <!-- Raison métier (visible à tous) -->
+              <div class="iadmn__detail-section">
+                <h3 class="iadmn__section-title">Raison métier</h3>
+                <p class="iadmn__detail-reason-code">{{ d.reasonCode }}</p>
+                <p class="iadmn__detail-reason">{{ d.reasonLabel }}</p>
+              </div>
+
+              <!-- Date -->
+              <div class="iadmn__detail-meta-row">
+                <span class="iadmn__detail-meta-item">📅 {{ formatDate(d.decisionDate) }}</span>
+              </div>
+
+              <!-- Payloads DMN — administrateur uniquement (AUDIT_VIEW) -->
+              <ng-container *appHasRight="'AUDIT_VIEW'">
+                <div class="iadmn__detail-section">
+                  <h3 class="iadmn__section-title">Entrée DMN (input)</h3>
+                  <div class="iadmn__payload">
+                    <pre>{{ formatJson(d.inputPayload) }}</pre>
+                  </div>
+                </div>
+                <div class="iadmn__detail-section">
+                  <h3 class="iadmn__section-title">Sortie DMN (output)</h3>
+                  <div class="iadmn__payload">
+                    <pre>{{ formatJson(d.outputPayload) }}</pre>
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- Feedback agent -->
+              <div class="iadmn__detail-section iadmn__feedback-section">
+                <h3 class="iadmn__section-title">Feedback agent</h3>
+
+                @if (d.agentFeedback) {
+                  <div class="iadmn__feedback-display">
+                    @if (feedbackBadge(d); as badge) {
+                      <span
+                        class="iadmn__fb-badge"
+                        [class.iadmn__fb-badge--accord]="badge === 'accord'"
+                        [class.iadmn__fb-badge--desaccord]="badge === 'desaccord'"
+                        [class.iadmn__fb-badge--executee]="badge === 'executee'">
+                        {{ badge === 'accord' ? 'Accord' : badge === 'desaccord' ? 'Désaccord' : 'Exécutée' }}
+                      </span>
+                    }
+                    <p class="iadmn__feedback-text">{{ d.agentFeedback }}</p>
+                    @if (d.agentFeedbackDate) {
+                      <span class="iadmn__feedback-date">{{ formatDate(d.agentFeedbackDate) }}</span>
+                    }
+                  </div>
+                } @else {
+                  <div class="iadmn__feedback-form">
+                    <div class="iadmn__feedback-types" role="group" aria-label="Type de feedback">
+                      <button
+                        class="iadmn__feedback-pill"
+                        [class.iadmn__feedback-pill--selected-accord]="feedbackType() === 'ACCEPTEE'"
+                        type="button"
+                        [disabled]="submitting()"
+                        (click)="feedbackType.set('ACCEPTEE')">
+                        ✓ Acceptée
+                      </button>
+                      <button
+                        class="iadmn__feedback-pill"
+                        [class.iadmn__feedback-pill--selected-desaccord]="feedbackType() === 'REJETEE'"
+                        type="button"
+                        [disabled]="submitting()"
+                        (click)="feedbackType.set('REJETEE')">
+                        ✗ Rejetée
+                      </button>
+                      <button
+                        class="iadmn__feedback-pill"
+                        [class.iadmn__feedback-pill--selected-executee]="feedbackType() === 'EXECUTEE'"
+                        type="button"
+                        [disabled]="submitting()"
+                        (click)="feedbackType.set('EXECUTEE')">
+                        ↪ Exécutée
+                      </button>
+                    </div>
+
+                    @if (feedbackError()) {
+                      <p class="iadmn__feedback-error" role="alert">Veuillez sélectionner un type de retour.</p>
+                    }
+
+                    <label class="iadmn__form-label" for="feedback-result">
+                      Résultat / commentaire
+                      <span class="iadmn__form-optional">(optionnel)</span>
+                    </label>
+                    <textarea
+                      id="feedback-result"
+                      class="iadmn__form-textarea"
+                      rows="3"
+                      placeholder="Décrivez le résultat observé…"
+                      [value]="feedbackResult()"
+                      (input)="setFeedbackResult($any($event.target).value)"
+                      [disabled]="submitting()">
+                    </textarea>
+
+                    <button
+                      class="iadmn__feedback-submit"
+                      type="button"
+                      [disabled]="submitting()"
+                      (click)="onSubmitFeedback()">
+                      {{ submitting() ? 'Enregistrement…' : 'Enregistrer le feedback' }}
+                    </button>
+                  </div>
+                }
+              </div>
+
+              <!-- Lien dossier (toujours visible) -->
+              <button
+                class="iadmn__dossier-link"
+                type="button"
+                (click)="navigateToDossier(d.caseId)">
+                Voir le dossier complet ↗
+              </button>
+
+            </aside>
+          }
+
+        </div><!-- /.iadmn__workspace -->
+
+      }
+    }
+
+</div><!-- /.iadmn -->
+
+@if (showToast()) {
+  <mc-success-toast [message]="toastMsg()" (dismissed)="showToast.set(false)" />
+}

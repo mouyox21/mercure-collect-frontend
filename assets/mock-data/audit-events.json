@@ -1,0 +1,220 @@
+{
+  "items": [
+    {
+      "eventId": "AUD-001",
+      "eventType": "CASE_CREATED",
+      "entityType": "COLLECTION_CASE",
+      "entityId": "CASE-001",
+      "userId": "AGT-004",
+      "userName": "Omar Tazi",
+      "eventDate": "2026-07-18T08:30:00",
+      "description": "Création du dossier MC-2026-001 pour Atlas Retail SA",
+      "newValue": {
+        "caseId": "CASE-001",
+        "caseReference": "MC-2026-001",
+        "debtorId": "DBT-001",
+        "overdueAmount": 185000,
+        "status": "OPEN",
+        "priority": "NORMAL"
+      },
+      "creditorId": "CRED-001",
+      "correlationId": "COR-20260718-001"
+    },
+    {
+      "eventId": "AUD-002",
+      "eventType": "ACTION_PERFORMED",
+      "entityType": "COLLECTION_CASE",
+      "entityId": "CASE-001",
+      "userId": "AGT-001",
+      "userName": "Marie Dupont",
+      "eventDate": "2026-07-28T09:15:00",
+      "description": "Action REMINDER_LETTER enregistrée sur dossier MC-2026-001",
+      "newValue": {
+        "actionType": "REMINDER_LETTER",
+        "channel": "LETTER",
+        "scheduledDate": "2026-07-28",
+        "outcome": "Envoyé"
+      },
+      "ipAddress": "192.168.1.42",
+      "creditorId": "CRED-001",
+      "correlationId": "COR-20260728-002"
+    },
+    {
+      "eventId": "AUD-003",
+      "eventType": "PROMISE_CREATED",
+      "entityType": "PAYMENT_PROMISE",
+      "entityId": "PROM-001",
+      "userId": "AGT-001",
+      "userName": "Marie Dupont",
+      "eventDate": "2026-07-10T09:30:00",
+      "description": "Promesse de paiement PROM-001 créée pour CASE-010 – Tech Innov SA",
+      "newValue": {
+        "promiseId": "PROM-001",
+        "caseId": "CASE-010",
+        "promiseAmount": 89000,
+        "promiseDate": "2026-08-15",
+        "status": "ACTIVE"
+      },
+      "ipAddress": "192.168.1.42",
+      "creditorId": "CRED-001"
+    },
+    {
+      "eventId": "AUD-004",
+      "eventType": "ESCALATION_CREATED",
+      "entityType": "ESCALATION",
+      "entityId": "ESC-001",
+      "userId": "AGT-001",
+      "userName": "Marie Dupont",
+      "eventDate": "2026-07-30T08:00:00",
+      "description": "Escalade ESC-001 créée pour CASE-018 – Auto Maroc SA",
+      "newValue": {
+        "escalationId": "ESC-001",
+        "caseId": "CASE-018",
+        "reason": "Encours de 567 000 MAD – refus répété",
+        "priority": "CRITICAL",
+        "status": "PENDING"
+      },
+      "ipAddress": "192.168.1.42",
+      "creditorId": "CRED-001",
+      "correlationId": "COR-20260730-004"
+    },
+    {
+      "eventId": "AUD-005",
+      "eventType": "DMN_DECISION_COMPUTED",
+      "entityType": "COLLECTION_CASE",
+      "entityId": "CASE-001",
+      "userId": "SYSTEM",
+      "userName": "Moteur DMN",
+      "eventDate": "2026-07-28T09:00:00",
+      "description": "Décision DMN calculée pour CASE-001 – Prochaine action : REMINDER_LETTER",
+      "newValue": {
+        "decisionId": "DEC-001",
+        "nextBestAction": "REMINDER_LETTER",
+        "segment": "STANDARD",
+        "score": 55
+      },
+      "creditorId": "CRED-001"
+    },
+    {
+      "eventId": "AUD-006",
+      "eventType": "STATUS_CHANGED",
+      "entityType": "COLLECTION_CASE",
+      "entityId": "CASE-023",
+      "userId": "AGT-001",
+      "userName": "Marie Dupont",
+      "eventDate": "2026-06-12T10:00:00",
+      "description": "Changement de statut CASE-023 : OPEN → OPEN (phase AMIABLE → PRE_LEGAL)",
+      "oldValue": { "phase": "AMIABLE", "status": "OPEN" },
+      "newValue": { "phase": "PRE_LEGAL", "status": "OPEN" },
+      "ipAddress": "192.168.1.42",
+      "creditorId": "CRED-001"
+    },
+    {
+      "eventId": "AUD-007",
+      "eventType": "IMPORT_COMPLETED",
+      "entityType": "IMPORT_BATCH",
+      "entityId": "IMP-001",
+      "userId": "SYSTEM",
+      "userName": "Scheduler automatique",
+      "eventDate": "2026-08-01T02:15:00",
+      "description": "Import ERP IMP-001 terminé : 518 lignes importées, 5 erreurs",
+      "newValue": {
+        "batchId": "IMP-001",
+        "status": "COMPLETED",
+        "successRows": 518,
+        "errorRows": 5
+      },
+      "creditorId": "CRED-001",
+      "correlationId": "COR-20260801-007"
+    },
+    {
+      "eventId": "AUD-008",
+      "eventType": "REFERENCE_VALUE_UPDATED",
+      "entityType": "REFERENCE_VALUE",
+      "entityId": "RV-CAT-005",
+      "userId": "ADMIN-001",
+      "userName": "Admin Système",
+      "eventDate": "2026-07-15T11:00:00",
+      "description": "Libellé de la catégorie URGENT mis à jour",
+      "oldValue": { "label": "Action urgente critique", "active": true },
+      "newValue": { "label": "Action Urgente", "active": true },
+      "ipAddress": "192.168.1.10",
+      "creditorId": "CRED-001"
+    },
+    {
+      "eventId": "AUD-009",
+      "eventType": "DMN_PACKAGE_PUBLISHED",
+      "entityType": "DMN_PACKAGE",
+      "entityId": "PKG-001",
+      "userId": "ADMIN-001",
+      "userName": "Admin Système",
+      "eventDate": "2026-06-15T10:00:00",
+      "description": "Package DMN PKG-001 (SEGMENT_SCORING v2.1) publié en production",
+      "oldValue": { "status": "DRAFT", "version": "2.1" },
+      "newValue": { "status": "ACTIVE", "version": "2.1", "publishedAt": "2026-06-15T10:00:00" },
+      "ipAddress": "192.168.1.10",
+      "creditorId": "CRED-001",
+      "correlationId": "COR-20260615-009"
+    },
+    {
+      "eventId": "AUD-010",
+      "eventType": "PROMISE_BROKEN",
+      "entityType": "PAYMENT_PROMISE",
+      "entityId": "PROM-003",
+      "userId": "SYSTEM",
+      "userName": "Scheduler automatique",
+      "eventDate": "2026-07-22T00:05:00",
+      "description": "Promesse PROM-003 marquée BROKEN : date d'échéance dépassée sans paiement",
+      "oldValue": { "status": "ACTIVE", "promiseDate": "2026-07-21" },
+      "newValue": { "status": "BROKEN", "brokenAt": "2026-07-22T00:05:00" },
+      "creditorId": "CRED-002"
+    },
+    {
+      "eventId": "AUD-011",
+      "eventType": "IMPORT_FAILED",
+      "entityType": "IMPORT_BATCH",
+      "entityId": "IMP-002",
+      "userId": "SYSTEM",
+      "userName": "Scheduler automatique",
+      "eventDate": "2026-07-31T14:35:00",
+      "description": "Import CSV IMP-002 échoué : en-tête du fichier incorrect",
+      "newValue": {
+        "batchId": "IMP-002",
+        "status": "FAILED",
+        "errorRows": 45,
+        "errorSummary": "En-tête invalide"
+      },
+      "creditorId": "CRED-001"
+    },
+    {
+      "eventId": "AUD-012",
+      "eventType": "CASE_ASSIGNED",
+      "entityType": "COLLECTION_CASE",
+      "entityId": "CASE-015",
+      "userId": "SUP-001",
+      "userName": "Fatima Benali",
+      "eventDate": "2026-07-25T14:00:00",
+      "description": "CASE-015 réassigné de Omar Tazi vers Marie Dupont",
+      "oldValue": { "assignedTo": "AGT-004", "assignedName": "Omar Tazi" },
+      "newValue": { "assignedTo": "AGT-001", "assignedName": "Marie Dupont" },
+      "ipAddress": "192.168.1.55",
+      "creditorId": "CRED-002",
+      "correlationId": "COR-20260725-012"
+    },
+    {
+      "eventId": "AUD-013",
+      "eventType": "ESCALATION_RESOLVED",
+      "entityType": "ESCALATION",
+      "entityId": "ESC-002",
+      "userId": "SUP-001",
+      "userName": "Fatima Benali",
+      "eventDate": "2026-08-02T10:30:00",
+      "description": "Escalade ESC-002 approuvée : plan d'apurement sur 6 mois autorisé",
+      "oldValue": { "status": "PENDING", "decision": null },
+      "newValue": { "status": "APPROVED", "decision": "APPROVE", "comment": "Plan d'apurement validé" },
+      "ipAddress": "192.168.1.55",
+      "creditorId": "CRED-001",
+      "correlationId": "COR-20260802-013"
+    }
+  ]
+}

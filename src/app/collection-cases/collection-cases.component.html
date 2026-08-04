@@ -1,0 +1,345 @@
+<div class="dossiers">
+
+  <!-- ── Page header ─────────────────────────────────────────────────────── -->
+  <header class="dossiers__header">
+    <div class="dossiers__header-title">
+      <h1 class="dossiers__title">Dossiers</h1>
+      @if (viewState() === 'success' || viewState() === 'empty') {
+        <span class="dossiers__count-badge">{{ totalItems() }} dossier(s)</span>
+      }
+      @if (hasActiveFilters()) {
+        <span class="dossiers__filter-indicator">Filtres actifs</span>
+      }
+    </div>
+  </header>
+
+  <!-- ── Saved views bar ────────────────────────────────────────────────── -->
+  <div class="dossiers__views-bar">
+    <div class="views-bar__tabs">
+      @for (view of savedViews(); track view.id) {
+        <button
+          type="button"
+          class="views-bar__tab"
+          [class.views-bar__tab--active]="activeViewId() === view.id"
+          (click)="applyView(view)"
+        >
+          {{ view.label }}
+          @if (!view.isBuiltin) {
+            <span
+              class="views-bar__tab-del"
+              role="button"
+              aria-label="Supprimer cette vue"
+              (click)="deleteView(view.id, $event)"
+            >✕</span>
+          }
+        </button>
+      }
+    </div>
+    <div class="views-bar__save-area">
+      @if (!saveViewOpen()) {
+        <button type="button" class="views-bar__save-btn" (click)="openSaveView()">
+          + Sauvegarder cette vue
+        </button>
+      } @else {
+        <div class="views-bar__save-form">
+          <input
+            type="text"
+            class="views-bar__save-input"
+            placeholder="Nom de la vue…"
+            [value]="newViewName()"
+            (input)="newViewName.set($any($event.target).value)"
+            (keydown.enter)="confirmSaveView()"
+            (keydown.escape)="cancelSaveView()"
+          />
+          <button type="button" class="views-bar__save-confirm" (click)="confirmSaveView()">OK</button>
+          <button type="button" class="views-bar__save-cancel" (click)="cancelSaveView()">✕</button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- ── Filter panel (collapsible) ─────────────────────────────────────── -->
+  <div class="dossiers__filters" [class.dossiers__filters--open]="filtersOpen()">
+
+    <div
+      class="filters__header"
+      role="button"
+      [attr.aria-expanded]="filtersOpen()"
+      tabindex="0"
+      (click)="filtersOpen.set(!filtersOpen())"
+      (keydown.enter)="filtersOpen.set(!filtersOpen())"
+    >
+      <span class="filters__header-label">
+        Filtres avancés
+        @if (hasActiveFilters()) {
+          <span class="filters__active-dot" aria-label="Filtres actifs"></span>
+        }
+      </span>
+      <span class="filters__toggle" aria-hidden="true">{{ filtersOpen() ? '▲' : '▼' }}</span>
+    </div>
+
+    @if (filtersOpen()) {
+      <div class="filters__body">
+
+        <!-- Row 1: text searches -->
+        <div class="filters__row">
+          <div class="filters__field">
+            <label class="filters__label">Client</label>
+            <input
+              type="text"
+              class="filters__input"
+              placeholder="Nom du client…"
+              [value]="filters().debtorName"
+              (input)="updateFilter('debtorName', $any($event.target).value)"
+              (keydown.enter)="onSearch()"
+            />
+          </div>
+          <div class="filters__field">
+            <label class="filters__label">Référence dossier</label>
+            <input
+              type="text"
+              class="filters__input"
+              placeholder="MC-2026-…"
+              [value]="filters().caseReference"
+              (input)="updateFilter('caseReference', $any($event.target).value)"
+              (keydown.enter)="onSearch()"
+            />
+          </div>
+          <div class="filters__field">
+            <label class="filters__label">Identifiant agent</label>
+            <input
+              type="text"
+              class="filters__input"
+              placeholder="AGT-001…"
+              [value]="filters().agentId"
+              (input)="updateFilter('agentId', $any($event.target).value)"
+              (keydown.enter)="onSearch()"
+            />
+          </div>
+        </div>
+
+        <!-- Row 2: select filters -->
+        <div class="filters__row">
+          <div class="filters__field">
+            <label class="filters__label">Statut</label>
+            <select
+              class="filters__select"
+              [value]="filters().status"
+              (change)="updateFilter('status', $any($event.target).value)"
+            >
+              <option value="">Tous statuts</option>
+              <option value="OPEN">Ouvert</option>
+              <option value="PENDING">En attente</option>
+              <option value="SUSPENDED">Suspendu</option>
+              <option value="CLOSED">Clôturé</option>
+            </select>
+          </div>
+          <div class="filters__field">
+            <label class="filters__label">Priorité</label>
+            <select
+              class="filters__select"
+              [value]="filters().priority"
+              (change)="updateFilter('priority', $any($event.target).value)"
+            >
+              <option value="">Toutes priorités</option>
+              <option value="CRITICAL">Critique</option>
+              <option value="HIGH">Haute</option>
+              <option value="NORMAL">Normal</option>
+              <option value="LOW">Faible</option>
+            </select>
+          </div>
+          <div class="filters__field">
+            <label class="filters__label">Phase</label>
+            <select
+              class="filters__select"
+              [value]="filters().phase"
+              (change)="updateFilter('phase', $any($event.target).value)"
+            >
+              <option value="">Toutes phases</option>
+              <option value="AMIABLE">Amiable</option>
+              <option value="PRE_LEGAL">Pré-contentieux</option>
+              <option value="LEGAL">Contentieux</option>
+            </select>
+          </div>
+          <div class="filters__field">
+            <label class="filters__label">Catégorie</label>
+            <select
+              class="filters__select"
+              [value]="filters().categoryCode"
+              (change)="updateFilter('categoryCode', $any($event.target).value)"
+            >
+              <option value="">Toutes catégories</option>
+              <option value="FIRST_CONTACT">Premier Contact</option>
+              <option value="STANDARD">Relance Standard</option>
+              <option value="PROMISE_ACTIVE">Promesse en Cours</option>
+              <option value="PROMISE_BROKEN">Promesse Rompue</option>
+              <option value="URGENT">Action Urgente</option>
+              <option value="PRE_LEGAL">Pré-légal</option>
+              <option value="LEGAL">Contentieux</option>
+              <option value="SUSPENDED">Suspendu</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 3: numeric ranges + action buttons -->
+        <div class="filters__row filters__row--last">
+          <div class="filters__field">
+            <label class="filters__label">Montant impayé (MAD)</label>
+            <div class="filters__range">
+              <input
+                type="number"
+                class="filters__input filters__input--sm"
+                placeholder="Min"
+                min="0"
+                [value]="filters().amountMin ?? ''"
+                (input)="updateFilterNum('amountMin', $any($event.target).value)"
+              />
+              <span class="filters__range-sep">—</span>
+              <input
+                type="number"
+                class="filters__input filters__input--sm"
+                placeholder="Max"
+                min="0"
+                [value]="filters().amountMax ?? ''"
+                (input)="updateFilterNum('amountMax', $any($event.target).value)"
+              />
+            </div>
+          </div>
+          <div class="filters__field">
+            <label class="filters__label">Retard (jours)</label>
+            <div class="filters__range">
+              <input
+                type="number"
+                class="filters__input filters__input--sm"
+                placeholder="Min"
+                min="0"
+                [value]="filters().daysLateMin ?? ''"
+                (input)="updateFilterNum('daysLateMin', $any($event.target).value)"
+              />
+              <span class="filters__range-sep">—</span>
+              <input
+                type="number"
+                class="filters__input filters__input--sm"
+                placeholder="Max"
+                min="0"
+                [value]="filters().daysLateMax ?? ''"
+                (input)="updateFilterNum('daysLateMax', $any($event.target).value)"
+              />
+            </div>
+          </div>
+          <div class="filters__field filters__field--submit">
+            <button type="button" class="filters__btn" (click)="onSearch()">
+              🔍 Rechercher
+            </button>
+            <button
+              type="button"
+              class="filters__btn filters__btn--outline"
+              (click)="onReset()"
+              [disabled]="!hasActiveFilters()"
+            >Réinitialiser</button>
+          </div>
+        </div>
+
+      </div>
+    }
+  </div>
+
+  <!-- ── Bulk action bar ────────────────────────────────────────────────── -->
+  @if (selectedRows().length > 0) {
+    <div class="dossiers__bulk-bar" role="toolbar" aria-label="Actions sur la sélection">
+      <span class="bulk-bar__count">
+        {{ selectedRows().length }} dossier(s) sélectionné(s)
+      </span>
+      <div class="bulk-bar__actions">
+        @if (canExport()) {
+          <button type="button" class="bulk-bar__btn" (click)="onExport()">
+            📥 Exporter
+          </button>
+        }
+        @if (canAssign()) {
+          <button type="button" class="bulk-bar__btn" (click)="onReassign()">
+            👤 Réaffecter
+          </button>
+        }
+        @if (canAction()) {
+          <button type="button" class="bulk-bar__btn" (click)="onSchedule()">
+            📅 Planifier action
+          </button>
+          <button type="button" class="bulk-bar__btn" (click)="onSmsCampaign()">
+            💬 Campagne SMS
+          </button>
+        }
+        <button
+          type="button"
+          class="bulk-bar__btn bulk-bar__btn--cancel"
+          (click)="clearSelection()"
+          aria-label="Annuler la sélection"
+        >✕ Annuler</button>
+      </div>
+    </div>
+  }
+
+  <!-- ── Main content ───────────────────────────────────────────────────── -->
+  <main class="dossiers__content" role="main">
+
+    @switch (viewState()) {
+
+      @case ('loading') {
+        <mc-skeleton-loader variant="table" [rows]="10" />
+      }
+
+      @case ('error') {
+        <mc-error-state
+          [message]="errorMessage()"
+          (retry)="loadData()"
+        />
+      }
+
+      @case ('forbidden') {
+        <mc-forbidden-state />
+      }
+
+      @case ('empty') {
+        <mc-empty-state
+          message="Aucun dossier ne correspond à ces critères."
+          actionLabel="Réinitialiser les filtres"
+          (action)="onReset()"
+        />
+      }
+
+      @case ('success') {
+        <mc-data-grid
+          [rows]="rows()"
+          [columns]="gridColumns"
+          [pageIndex]="pageIndex()"
+          [pageSize]="pageSize()"
+          [totalItems]="totalItems()"
+          [sortState]="sortState()"
+          [rowClickable]="true"
+          (pageChange)="onPageChange($event)"
+          (sortChange)="onSortChange($event)"
+          (selectionChange)="onSelectionChange($event)"
+          (rowClick)="onRowClick($event)"
+        />
+      }
+
+    }
+  </main>
+
+  <!-- ── Modal ──────────────────────────────────────────────────────────── -->
+  <mc-modal-form
+    [open]="modalOpen()"
+    [usage]="modalUsage()"
+    (submitted)="onActionSubmitted($event)"
+    (closed)="modalOpen.set(false)"
+  />
+
+  <!-- ── Toast ──────────────────────────────────────────────────────────── -->
+  @if (showToast()) {
+    <mc-success-toast
+      [message]="toastMsg()"
+      (dismissed)="showToast.set(false)"
+    />
+  }
+
+</div>

@@ -1,0 +1,22 @@
+<article [class]="cardClass()" [attr.aria-label]="ariaLabel()">
+  <header class="kpi-card__header">
+    <span class="kpi-card__title">{{ title() }}</span>
+  </header>
+
+  <div class="kpi-card__body">
+    <span class="kpi-card__value">{{ displayValue() }}</span>
+    @if (delta() !== undefined) {
+      <span
+        class="kpi-card__delta"
+        [class]="deltaClass()"
+        [attr.aria-label]="'Variation : ' + (delta()! > 0 ? '+' : '') + delta() + '%'"
+      >
+        {{ delta()! > 0 ? '+' : '' }}{{ delta() }}%
+      </span>
+    }
+  </div>
+
+  @if (subtitle()) {
+    <p class="kpi-card__subtitle">{{ subtitle() }}</p>
+  }
+</article>

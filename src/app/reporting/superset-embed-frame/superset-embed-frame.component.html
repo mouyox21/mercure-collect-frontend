@@ -1,0 +1,58 @@
+@if (isMock()) {
+  <div class="embed">
+
+    <div class="embed__header">
+      <span class="embed__mock-badge">MODE MOCK</span>
+      <h3 class="embed__title">Vue analytique consolidée</h3>
+      <p class="embed__subtitle">
+        En production, cette zone affiche le dashboard Superset (iframe sécurisée + token d'embed).
+        En mode mock, les indicateurs sont natifs Angular.
+      </p>
+    </div>
+
+    <div class="embed__chart" role="list" aria-label="Graphique des indicateurs">
+      @for (bar of barsData(); track bar.kpi.kpiCode) {
+        <div class="embed__bar-row" role="listitem">
+
+          <span class="embed__bar-label" [title]="bar.kpi.kpiLabel">
+            {{ bar.kpi.kpiLabel }}
+          </span>
+
+          <div class="embed__bar-track">
+            <div
+              class="embed__bar-fill"
+              [class.embed__bar-fill--success]="bar.kpi.variant === 'success'"
+              [class.embed__bar-fill--warning]="bar.kpi.variant === 'warning'"
+              [class.embed__bar-fill--critical]="bar.kpi.variant === 'critical'"
+              [class.embed__bar-fill--standard]="bar.kpi.variant === 'standard'"
+              [style.width.%]="bar.barWidth"
+              [attr.aria-label]="bar.kpi.kpiLabel + ' : ' + bar.displayValue">
+            </div>
+          </div>
+
+          <span class="embed__bar-value">{{ bar.displayValue }}</span>
+
+          @if (bar.kpi.trend !== undefined) {
+            <span
+              class="embed__bar-trend"
+              [class.embed__bar-trend--up]="bar.kpi.trend > 0"
+              [class.embed__bar-trend--down]="bar.kpi.trend < 0"
+              [attr.aria-label]="(bar.kpi.trend > 0 ? 'Hausse' : 'Baisse') + ' de ' + fmtTrend(bar.kpi.trend) + ' %'">
+              {{ bar.kpi.trend > 0 ? '▲' : '▼' }} {{ fmtTrend(bar.kpi.trend) }}%
+            </span>
+          }
+
+        </div>
+      }
+    </div>
+
+  </div>
+} @else {
+  <iframe
+    class="embed__iframe"
+    title="Dashboard Superset"
+    [attr.data-token]="embedToken()"
+    [attr.data-dashboard]="dashboardId()"
+    sandbox="allow-same-origin allow-scripts allow-popups allow-forms">
+  </iframe>
+}

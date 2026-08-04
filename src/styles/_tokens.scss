@@ -1,0 +1,107 @@
+// ─── Design Tokens — MERCURE Collect AI ─────────────────────────────────────
+// Single source of truth for all CSS custom properties.
+// Import via: @use 'src/styles/tokens' (or rely on styles.scss entry point).
+
+:root {
+  // ── Colours ────────────────────────────────────────────────────────────────
+  // Brand
+  --color-navy:           #183b56; // sidebar background, page headers
+  --color-navy-dark:      #0f2438; // navy hover / pressed state
+  --color-navy-light:     rgba(24, 59, 86, 0.08); // subtle navy tint (active rows)
+
+  // Action
+  --color-action:         #2563eb; // primary buttons, links, focus rings
+  --color-action-hover:   #1d4ed8; // darker action on hover
+  --color-action-light:   #eff6ff; // action background tint (tags, chips)
+
+  // Surfaces
+  --color-surface:        #f8fafc; // page / app background
+  --color-surface-card:   #ffffff; // card / panel background
+  --color-border:         #e2e8f0; // card borders, dividers, input outlines
+
+  // Semantic
+  --color-success:        #16a34a;
+  --color-success-light:  #f0fdf4;
+  --color-success-text:   #15803d; // emerald-700 — 5.0:1 on white, 4.8:1 on success-light (WCAG AA)
+  --color-warning:        #f97316;
+  --color-warning-light:  #fff7ed;
+  --color-warning-text:   #c2410c; // orange-700 — 4.9:1 on white, 4.6:1 on warning-light (WCAG AA)
+  --color-critical:       #dc2626;
+  --color-critical-light: #fef2f2;
+  --color-critical-text:  #b91c1c; // red-700 — 6.4:1 on white, 5.9:1 on critical-light (WCAG AA)
+
+  // Text
+  --color-text-primary:   #0f172a; // body copy, table cells
+  --color-text-secondary: #64748b; // labels, secondary info
+  --color-text-muted:     #94a3b8; // placeholders, disabled
+
+  // ── Typography ─────────────────────────────────────────────────────────────
+  --font-family:          'Inter', 'Aptos', system-ui, sans-serif;
+
+  // Font sizes — PRD §4: titres 20-28px, sous-titres 14px, corps 13-14px, tableaux 12-13px
+  --font-size-heading-xl: 28px; // page-level titles
+  --font-size-heading-lg: 24px; // section headings
+  --font-size-heading-md: 20px; // card / panel headings
+  --font-size-subtitle:   14px;
+  --font-size-body:       14px;
+  --font-size-body-sm:    13px;
+  --font-size-table:      13px;
+  --font-size-table-sm:   12px;
+
+  // Font weights
+  --font-weight-regular:   400;
+  --font-weight-medium:    500;
+  --font-weight-semibold:  600;
+  --font-weight-bold:      700;
+
+  // Line heights
+  --line-height-tight:    1.25;
+  --line-height-normal:   1.5;
+  --line-height-relaxed:  1.75;
+
+  // ── Border Radius ──────────────────────────────────────────────────────────
+  // PRD §4: cartes 16px, boutons 10-12px, badges 999px
+  --radius-card:   16px;
+  --radius-btn-lg: 12px;
+  --radius-btn:    10px;
+  --radius-badge:  999px;
+  --radius-input:  8px;
+  --radius-sm:     4px;
+
+  // ── Layout / Grid ──────────────────────────────────────────────────────────
+  // PRD §4: 1440px desktop, sidebar 240px, header 72px, margins 24px, 12-col grid
+  --layout-max-width:      1440px;
+  --layout-sidebar-width:  240px;
+  --layout-header-height:  72px;
+  --layout-margin:         24px;
+  --layout-grid-columns:   12;
+  --layout-gap:            24px;
+
+  // ── Spacing scale (4-point base) ───────────────────────────────────────────
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  // ── Shadows ────────────────────────────────────────────────────────────────
+  --shadow-card:     0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-modal:    0 20px 40px rgba(0, 0, 0, 0.16);
+  --shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.10);
+
+  // ── Transitions ────────────────────────────────────────────────────────────
+  --transition-fast:   120ms ease;
+  --transition-normal: 200ms ease;
+
+  // ── Z-index layers ─────────────────────────────────────────────────────────
+  --z-sidebar:  100;
+  --z-header:   200;
+  --z-dropdown: 300;
+  --z-modal:    400;
+  --z-toast:    500;
+}

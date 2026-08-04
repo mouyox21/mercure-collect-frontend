@@ -1,0 +1,18 @@
+<div [class]="containerClass()" role="status" aria-busy="true" aria-label="Chargement en cours">
+  @for (item of skeletonRows(); track $index) {
+    <div class="skeleton__row">
+      @if (variant() === 'card') {
+        <div class="skeleton__block skeleton__block--avatar"></div>
+        <div class="skeleton__block skeleton__block--card"></div>
+      } @else if (variant() === 'table') {
+        <div class="skeleton__cell skeleton__cell--wide"></div>
+        <div class="skeleton__cell"></div>
+        <div class="skeleton__cell"></div>
+        <div class="skeleton__cell skeleton__cell--narrow"></div>
+      } @else {
+        <div class="skeleton__line skeleton__line--primary"></div>
+        <div class="skeleton__line skeleton__line--secondary"></div>
+      }
+    </div>
+  }
+</div>

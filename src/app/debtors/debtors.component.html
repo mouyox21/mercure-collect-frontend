@@ -1,0 +1,211 @@
+<div class="cli">
+
+  <!-- ── Page header ─────────────────────────────────────────────────────── -->
+  <header class="cli__header">
+    <div class="cli__header-title">
+      <h1 class="cli__title">Clients</h1>
+      @if (viewState() === 'success' || viewState() === 'empty') {
+        <span class="cli__count-badge">{{ totalItems() }} client(s)</span>
+      }
+      @if (hasActiveFilters()) {
+        <span class="cli__filter-indicator">Filtres actifs</span>
+      }
+    </div>
+  </header>
+
+  <!-- ── Search bar (CA-CLI-01 : debounce 400ms, déclenchement ≥ 3 chars) ─ -->
+  <div class="cli__search-bar" role="search">
+    <span class="cli__search-icon" aria-hidden="true">🔍</span>
+    <input
+      type="search"
+      class="cli__search-input"
+      placeholder="Rechercher par nom, ICE, CIN, ville…"
+      [value]="queryInput()"
+      (input)="onQueryInput($any($event.target).value)"
+      aria-label="Recherche client"
+      autocomplete="off"
+    />
+    @if (queryHint()) {
+      <span class="cli__search-hint" aria-live="polite">
+        Tapez au moins 3 caractères pour lancer la recherche
+      </span>
+    }
+    @if (queryInput().length > 0) {
+      <button
+        type="button"
+        class="cli__search-clear"
+        aria-label="Effacer la recherche"
+        (click)="onQueryInput('')"
+      >✕</button>
+    }
+  </div>
+
+  <!-- ── Filter panel (collapsible) ─────────────────────────────────────── -->
+  <div class="cli__filters" [class.cli__filters--open]="filtersOpen()">
+
+    <div
+      class="filters__header"
+      role="button"
+      [attr.aria-expanded]="filtersOpen()"
+      tabindex="0"
+      (click)="filtersOpen.set(!filtersOpen())"
+      (keydown.enter)="filtersOpen.set(!filtersOpen())"
+    >
+      <span class="filters__header-label">
+        Filtres avancés
+        @if (hasActiveFilters()) {
+          <span class="filters__active-dot" aria-label="Filtres actifs"></span>
+        }
+      </span>
+      <span class="filters__toggle" aria-hidden="true">{{ filtersOpen() ? '▲' : '▼' }}</span>
+    </div>
+
+    @if (filtersOpen()) {
+      <div class="filters__body">
+        <div class="filters__row">
+
+          <div class="filters__field">
+            <label class="filters__label">Type client</label>
+            <select
+              class="filters__select"
+              [value]="filters().clientType"
+              (change)="updateFilter('clientType', $any($event.target).value)"
+            >
+              <option value="">Tous types</option>
+              <option value="PARTICULIER">Particulier</option>
+              <option value="ENTREPRISE">Entreprise</option>
+              <option value="ASSOCIATION">Association</option>
+            </select>
+          </div>
+
+          <div class="filters__field">
+            <label class="filters__label">Statut</label>
+            <select
+              class="filters__select"
+              [value]="filters().status"
+              (change)="updateFilter('status', $any($event.target).value)"
+            >
+              <option value="">Tous statuts</option>
+              <option value="ACTIVE">Actif</option>
+              <option value="INACTIVE">Inactif</option>
+              <option value="SUSPENDED">Suspendu</option>
+            </select>
+          </div>
+
+          <div class="filters__field">
+            <label class="filters__label">Segment risque</label>
+            <select
+              class="filters__select"
+              [value]="filters().riskSegment"
+              (change)="updateFilter('riskSegment', $any($event.target).value)"
+            >
+              <option value="">Tous segments</option>
+              <option value="STANDARD">Standard</option>
+              <option value="VIP">VIP</option>
+              <option value="SENSIBLE">Sensible</option>
+              <option value="RISK">À risque</option>
+            </select>
+          </div>
+
+          <div class="filters__field">
+            <label class="filters__label">Créancier</label>
+            <select
+              class="filters__select"
+              [value]="filters().creditorId"
+              (change)="updateFilter('creditorId', $any($event.target).value)"
+            >
+              <option value="">Tous créanciers</option>
+              <option value="BNP-001">BNP Paribas Maroc</option>
+              <option value="CA-001">Crédit Agricole Maroc</option>
+              <option value="SG-001">Société Générale Maroc</option>
+              <option value="LBP-001">La Banque Postale Maroc</option>
+            </select>
+          </div>
+
+          <div class="filters__field">
+            <label class="filters__label">Ville</label>
+            <input
+              type="text"
+              class="filters__input"
+              placeholder="Ville…"
+              [value]="filters().city"
+              (input)="updateFilter('city', $any($event.target).value)"
+              (keydown.enter)="onSearch()"
+            />
+          </div>
+
+          <div class="filters__field filters__field--submit">
+            <button type="button" class="filters__btn" (click)="onSearch()">
+              🔍 Rechercher
+            </button>
+            <button
+              type="button"
+              class="filters__btn filters__btn--outline"
+              (click)="onReset()"
+              [disabled]="!hasActiveFilters() && !queryInput()"
+            >Réinitialiser</button>
+          </div>
+
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ── Duplicate alert banner (CA-CLI-03) ─────────────────────────────── -->
+  @if (duplicateCount() > 0) {
+    <div class="cli__dup-banner" role="alert" aria-live="polite">
+      <span class="cli__dup-icon" aria-hidden="true">⚠️</span>
+      <span>
+        <strong>{{ duplicateCount() }} doublon(s) détecté(s)</strong> dans les résultats —
+        identifiant ICE, CIN ou numéro de téléphone identique entre plusieurs clients.
+      </span>
+    </div>
+  }
+
+  <!-- ── Main content ───────────────────────────────────────────────────── -->
+  <main class="cli__content" role="main">
+
+    @switch (viewState()) {
+
+      @case ('loading') {
+        <mc-skeleton-loader variant="table" [rows]="10" />
+      }
+
+      @case ('error') {
+        <mc-error-state
+          message="Impossible de charger la liste des clients."
+          (retry)="loadData()"
+        />
+      }
+
+      @case ('forbidden') {
+        <mc-forbidden-state />
+      }
+
+      @case ('empty') {
+        <mc-empty-state
+          message="Aucun client ne correspond à ces critères de recherche."
+          actionLabel="Réinitialiser les filtres"
+          (action)="onReset()"
+        />
+      }
+
+      @case ('success') {
+        <mc-data-grid
+          [rows]="rows()"
+          [columns]="gridColumns()"
+          [pageIndex]="pageIndex()"
+          [pageSize]="pageSize()"
+          [totalItems]="totalItems()"
+          [sortState]="sortState()"
+          [rowClickable]="true"
+          (pageChange)="onPageChange($event)"
+          (sortChange)="onSortChange($event)"
+          (rowClick)="onRowClick($event)"
+        />
+      }
+
+    }
+  </main>
+
+</div>

@@ -1,0 +1,130 @@
+.kanban {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  &__board {
+    display: flex;
+    gap: var(--space-4);
+    align-items: flex-start;
+    padding: var(--space-4);
+    min-width: fit-content;
+  }
+
+  // ── Column ──────────────────────────────────────────────────────────────────
+  &__column {
+    width: 300px;
+    flex-shrink: 0;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    display: flex;
+    flex-direction: column;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+
+    &--drag-over {
+      border-color: var(--color-action);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18);
+    }
+  }
+
+  // ── Column header ────────────────────────────────────────────────────────────
+  &__col-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface-card);
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    min-height: 44px;
+  }
+
+  &__col-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: var(--font-family);
+    text-align: left;
+    outline-offset: 2px;
+    min-width: 0;
+
+    &:focus-visible {
+      outline: 2px solid var(--color-action);
+      border-radius: var(--radius-sm);
+    }
+  }
+
+  &__col-chevron {
+    flex-shrink: 0;
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    transition: transform var(--transition-fast);
+
+    &--collapsed { transform: rotate(-90deg); }
+  }
+
+  &__col-label {
+    font-size: var(--font-size-body-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-navy);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__col-count {
+    flex-shrink: 0;
+    font-size: var(--font-size-table-sm);
+    color: var(--color-text-secondary);
+    background: var(--color-border);
+    padding: 1px var(--space-2);
+    border-radius: var(--radius-badge);
+  }
+
+  &__col-total {
+    flex-shrink: 0;
+    margin-left: auto;
+    font-size: var(--font-size-body-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    white-space: nowrap;
+  }
+
+  // ── Cards list ───────────────────────────────────────────────────────────────
+  &__cards {
+    padding: var(--space-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-height: 80px;
+  }
+
+  &__card-wrap {
+    border-radius: var(--radius-card);
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+
+    &[draggable='true'] {
+      cursor: grab;
+
+      &:active { cursor: grabbing; }
+
+      &:hover { transform: translateY(-1px); }
+    }
+  }
+
+  // ── Empty state ───────────────────────────────────────────────────────────────
+  &__empty {
+    font-size: var(--font-size-body-sm);
+    color: var(--color-text-muted);
+    text-align: center;
+    padding: var(--space-8) var(--space-4);
+    margin: 0;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-card);
+  }
+}

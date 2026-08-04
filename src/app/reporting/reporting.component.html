@@ -1,0 +1,181 @@
+<div class="rpt">
+
+  <!-- ── Header ── -->
+  <div class="rpt__header">
+    <div>
+      <h1 class="rpt__page-title">Rapports & Analyses</h1>
+      <p class="rpt__page-sub">Tableau de bord de performance opérationnelle</p>
+    </div>
+    <div class="rpt__header-actions">
+      @if (viewState() === 'success' && canExport()) {
+        <button class="rpt__export-btn rpt__export-btn--pdf"   type="button" (click)="onExport('PDF')">↓ PDF</button>
+        <button class="rpt__export-btn rpt__export-btn--excel" type="button" (click)="onExport('EXCEL')">↓ Excel</button>
+        <button class="rpt__export-btn rpt__export-btn--csv"   type="button" (click)="onExport('CSV')">↓ CSV</button>
+      }
+      <button class="rpt__refresh-btn" type="button" (click)="load()">↺ Actualiser</button>
+    </div>
+  </div>
+
+  <!-- ── Stale data banner ── -->
+  @if (viewState() === 'success' && dataDate()) {
+    <mc-stale-data-banner
+      [message]="'Données au ' + formatDate(dataDate())"
+      (refresh)="load()" />
+  }
+
+  <!-- ── Filters ── -->
+  <div class="rpt__filters">
+
+    <label class="rpt__filter-group">
+      <span class="rpt__filter-label">Créancier</span>
+      <select class="rpt__filter-select"
+              [value]="filterCreditor()"
+              (change)="setFilterCreditor($any($event.target).value)">
+        @for (c of CREDITORS; track c.id) {
+          <option [value]="c.id">{{ c.label }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="rpt__filter-group">
+      <span class="rpt__filter-label">Période</span>
+      <select class="rpt__filter-select"
+              [value]="filterPeriod()"
+              (change)="setFilterPeriod($any($event.target).value)">
+        @for (p of PERIOD_OPTIONS; track p.value) {
+          <option [value]="p.value">{{ p.label }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="rpt__filter-group">
+      <span class="rpt__filter-label">Portefeuille</span>
+      <select class="rpt__filter-select"
+              [value]="filterPortfolio()"
+              (change)="setFilterPortfolio($any($event.target).value)">
+        @for (p of PORTFOLIOS; track p.value) {
+          <option [value]="p.value">{{ p.label }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="rpt__filter-group">
+      <span class="rpt__filter-label">Agence</span>
+      <select class="rpt__filter-select"
+              [value]="filterAgency()"
+              (change)="setFilterAgency($any($event.target).value)">
+        @for (a of AGENCIES; track a.value) {
+          <option [value]="a.value">{{ a.label }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="rpt__filter-group">
+      <span class="rpt__filter-label">Agent</span>
+      <input
+        class="rpt__filter-input"
+        type="text"
+        placeholder="ID ou nom"
+        [value]="filterAgent()"
+        (input)="setFilterAgent($any($event.target).value)" />
+    </label>
+
+    <label class="rpt__filter-group">
+      <span class="rpt__filter-label">Type client</span>
+      <select class="rpt__filter-select"
+              [value]="filterClientType()"
+              (change)="setFilterClientType($any($event.target).value)">
+        @for (t of CLIENT_TYPES; track t.value) {
+          <option [value]="t.value">{{ t.label }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="rpt__filter-group">
+      <span class="rpt__filter-label">Produit</span>
+      <select class="rpt__filter-select"
+              [value]="filterProduct()"
+              (change)="setFilterProduct($any($event.target).value)">
+        @for (p of PRODUCTS; track p.value) {
+          <option [value]="p.value">{{ p.label }}</option>
+        }
+      </select>
+    </label>
+
+    <button class="rpt__apply-btn" type="button" (click)="load()">Appliquer</button>
+
+  </div><!-- /.rpt__filters -->
+
+  <!-- ── Body : catalogue + dashboard ── -->
+  <div class="rpt__body">
+
+    <!-- Catalogue filtré par rôle -->
+    <aside class="rpt__catalogue" aria-label="Catalogue des rapports">
+      <h2 class="rpt__catalogue-title">Catalogue</h2>
+      <ul class="rpt__report-list" role="list">
+        @for (r of catalogue(); track r.id) {
+          <li
+            class="rpt__report-item"
+            [class.rpt__report-item--active]="activeReport() === r.id"
+            role="button"
+            tabindex="0"
+            (click)="activeReport.set(r.id)"
+            (keydown.enter)="activeReport.set(r.id)">
+            <span class="rpt__report-icon" aria-hidden="true">{{ r.icon }}</span>
+            <span class="rpt__report-name">{{ r.title }}</span>
+          </li>
+        }
+        @empty {
+          <li class="rpt__catalogue-empty">Aucun rapport disponible pour votre profil.</li>
+        }
+      </ul>
+    </aside>
+
+    <!-- Zone dashboard analytics -->
+    <main class="rpt__dashboard" aria-label="Zone analytics">
+
+      @switch (viewState()) {
+
+        @case ('loading') {
+          <div class="rpt__state-wrap"><mc-skeleton-loader /></div>
+        }
+
+        @case ('error') {
+          <div class="rpt__state-wrap"><mc-error-state (retry)="load()" /></div>
+        }
+
+        @case ('forbidden') {
+          <div class="rpt__state-wrap"><mc-forbidden-state /></div>
+        }
+
+        @case ('success') {
+
+          <!-- KPI bar ×5 (top 5 KPIs) -->
+          <div class="rpt__kpi-grid">
+            @for (kpi of topKpis(); track kpi.kpiCode) {
+              <mc-kpi-card
+                [title]="kpi.kpiLabel"
+                [value]="formatKpiValue(kpi)"
+                [variant]="kpi.variant"
+                [delta]="kpi.trend"
+                [unit]="kpiUnit(kpi)"
+                subtitle="vs période précédente" />
+            }
+          </div>
+
+          <!-- SupersetEmbedFrame (mock = graphique natif Angular) -->
+          <mc-superset-embed-frame [kpis]="chartKpis()" />
+
+        }
+
+      }
+
+    </main><!-- /.rpt__dashboard -->
+
+  </div><!-- /.rpt__body -->
+
+</div><!-- /.rpt -->
+
+@if (showToast()) {
+  <mc-success-toast [message]="toastMsg()" (dismissed)="showToast.set(false)" />
+}

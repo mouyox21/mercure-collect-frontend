@@ -1,0 +1,35 @@
+<div class="action-menu" [class.action-menu--open]="isOpen()">
+  <button
+    class="action-menu__trigger"
+    type="button"
+    [attr.aria-expanded]="isOpen()"
+    aria-haspopup="menu"
+    [attr.aria-label]="triggerLabel()"
+    (click)="toggle()"
+  >
+    <span class="action-menu__trigger-label">{{ triggerLabel() }}</span>
+    <span class="action-menu__trigger-icon" aria-hidden="true">▾</span>
+  </button>
+
+  @if (isOpen()) {
+    <ul class="action-menu__list" role="menu" [attr.aria-label]="triggerLabel()">
+      @for (action of actions(); track action.type) {
+        <li role="none">
+          <button
+            class="action-menu__item"
+            [class.action-menu__item--disabled]="action.disabled"
+            role="menuitem"
+            type="button"
+            [disabled]="action.disabled ?? false"
+            [attr.aria-disabled]="action.disabled ?? false"
+            (click)="select(action)"
+            (keydown)="onItemKeydown($event, action)"
+          >
+            <span class="action-menu__item-icon" aria-hidden="true">{{ action.icon }}</span>
+            <span class="action-menu__item-label">{{ action.label }}</span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</div>

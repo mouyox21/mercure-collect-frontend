@@ -1,0 +1,336 @@
+<div class="agent-dashboard" [class.agent-dashboard--drawer-open]="drawerOpen()">
+
+  <!-- ── KPI bar ─────────────────────────────────────────────────────────── -->
+  @if (header(); as h) {
+    <header class="agent-dashboard__kpi-bar">
+      <mc-kpi-card
+        title="Dossiers affectés"
+        [value]="h.totalAssignedCases"
+        variant="standard"
+      />
+      <mc-kpi-card
+        title="À traiter aujourd'hui"
+        [value]="h.totalCasesToProcess"
+        [variant]="h.totalCasesToProcess >= h.totalAssignedCases * 0.8 ? 'warning' : 'standard'"
+      />
+      <mc-kpi-card
+        title="Montant impayés"
+        [value]="h.portfolioOverdueAmount"
+        variant="amount"
+      />
+      <mc-kpi-card
+        title="Créancier"
+        [value]="h.creditorLabel"
+        variant="standard"
+        [subtitle]="h.agentName + ' · ' + h.businessDate"
+      />
+    </header>
+  }
+
+  <!-- ── Toolbar ─────────────────────────────────────────────────────────── -->
+  <div class="agent-dashboard__toolbar">
+
+    <div class="toolbar__search">
+      <span class="toolbar__search-icon" aria-hidden="true">🔍</span>
+      <input
+        type="search"
+        class="toolbar__input"
+        placeholder="Rechercher client, référence…"
+        [value]="filterText()"
+        (input)="filterText.set($any($event.target).value)"
+        aria-label="Rechercher un dossier"
+      />
+    </div>
+
+    <div class="toolbar__filters">
+      <select
+        class="toolbar__select"
+        (change)="filterCategory.set($any($event.target).value)"
+        aria-label="Filtrer par catégorie"
+      >
+        <option value="">Toutes catégories</option>
+        @for (cat of availableCategories(); track cat.code) {
+          <option [value]="cat.code">{{ cat.label }}</option>
+        }
+      </select>
+
+      <select
+        class="toolbar__select"
+        (change)="filterStatus.set($any($event.target).value)"
+        aria-label="Filtrer par statut"
+      >
+        <option value="">Tous statuts</option>
+        <option value="OPEN">Ouvert</option>
+        <option value="PENDING">En attente</option>
+        <option value="SUSPENDED">Suspendu</option>
+      </select>
+
+      <select
+        class="toolbar__select"
+        (change)="filterDaysMin.set($any($event.target).value ? +$any($event.target).value : null)"
+        aria-label="Filtrer par ancienneté de retard"
+      >
+        <option value="">Tout retard</option>
+        <option value="30">+ 30 j</option>
+        <option value="60">+ 60 j</option>
+        <option value="90">+ 90 j</option>
+        <option value="180">+ 180 j</option>
+      </select>
+    </div>
+
+    <div class="toolbar__view-toggle" role="group" aria-label="Mode d'affichage">
+      <button
+        type="button"
+        class="toolbar__view-btn"
+        [class.toolbar__view-btn--active]="activeView() === 'groupe'"
+        (click)="activeView.set('groupe')"
+        [attr.aria-pressed]="activeView() === 'groupe'"
+      >Vue Groupe</button>
+      <button
+        type="button"
+        class="toolbar__view-btn"
+        [class.toolbar__view-btn--active]="activeView() === 'liste'"
+        (click)="activeView.set('liste')"
+        [attr.aria-pressed]="activeView() === 'liste'"
+      >Vue Liste</button>
+      <button
+        type="button"
+        class="toolbar__view-btn"
+        [class.toolbar__view-btn--active]="activeView() === 'kanban'"
+        (click)="activeView.set('kanban')"
+        [attr.aria-pressed]="activeView() === 'kanban'"
+      >Vue Kanban</button>
+    </div>
+
+    <div class="toolbar__actions">
+      <button type="button" class="toolbar__btn" (click)="onRefresh()">
+        <span aria-hidden="true">🔄</span> Actualiser
+      </button>
+      <button type="button" class="toolbar__btn toolbar__btn--outline" (click)="onExport()">
+        <span aria-hidden="true">📥</span> Exporter
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ── Stale banner (shown above content when data is stale) ───────────── -->
+  @if (isStale() && viewState() === 'success') {
+    <mc-stale-data-banner
+      message="Données potentiellement obsolètes — cliquez sur Actualiser pour recharger."
+      (refresh)="onRefresh()"
+    />
+  }
+
+  <!-- ── Main content ────────────────────────────────────────────────────── -->
+  <main class="agent-dashboard__content" role="main">
+
+    @switch (viewState()) {
+
+      @case ('loading') {
+        <mc-skeleton-loader variant="table" [rows]="8" />
+      }
+
+      @case ('error') {
+        <mc-error-state
+          [message]="errorMessage()"
+          (retry)="loadData()"
+        />
+      }
+
+      @case ('forbidden') {
+        <mc-forbidden-state />
+      }
+
+      @case ('empty') {
+        <mc-empty-state
+          message="Aucun dossier à traiter pour cette session."
+          actionLabel="Actualiser"
+          (action)="loadData()"
+        />
+      }
+
+      @case ('success') {
+        @if (activeView() === 'kanban') {
+          <mc-kanban-board
+            [rows]="filteredRows()"
+            groupBy="categoryCode"
+            [groupDefs]="gridGroupDefs()"
+            amountField="overdueAmount"
+            [rowToCase]="rowToCaseData"
+            (cardSelected)="onCardSelected($event)"
+          />
+        } @else {
+          <mc-data-grid
+            [rows]="filteredRows()"
+            [columns]="gridColumns"
+            [groupBy]="activeView() === 'groupe' ? 'categoryCode' : null"
+            [groupDefs]="gridGroupDefs()"
+            amountField="overdueAmount"
+            [sortState]="sortState()"
+            [totalItems]="filteredRows().length"
+            [pageSize]="25"
+            (sortChange)="onSortChange($event)"
+            (selectionChange)="onSelectionChange($event)"
+          />
+        }
+      }
+
+    }
+  </main>
+
+  <!-- ── Quick-action drawer ─────────────────────────────────────────────── -->
+  @if (drawerOpen()) {
+    @if (selectedRow(); as row) {
+      <aside
+        class="agent-dashboard__drawer"
+        role="complementary"
+        aria-label="Panneau action rapide"
+      >
+
+        <!-- Drawer header -->
+        <div class="drawer__header">
+          <div class="drawer__title-group">
+            <span class="drawer__case-ref">{{ row['caseReference'] }}</span>
+            <span class="drawer__customer-name">{{ row['customerName'] }}</span>
+            <span class="drawer__category">{{ row['categoryLabel'] }}</span>
+          </div>
+          <div class="drawer__header-meta">
+            <span class="drawer__amount">{{ formatCurrency($any(row['overdueAmount'])) }}</span>
+            <span class="drawer__days-late">{{ row['daysLate'] }} j de retard</span>
+            <button
+              type="button"
+              class="drawer__close"
+              (click)="closeDrawer()"
+              aria-label="Fermer le panneau action rapide"
+            >✕</button>
+          </div>
+        </div>
+
+        <!-- Drawer body: 4 sections side by side -->
+        <div class="drawer__body">
+
+          <!-- Section 1: Détails du dossier -->
+          <section class="drawer__section">
+            <h3 class="drawer__section-title">Détails du dossier</h3>
+            <dl class="drawer__details">
+              <dt>Référence</dt>
+              <dd>{{ row['caseReference'] }}</dd>
+              <dt>Contrat</dt>
+              <dd>{{ row['contractReference'] }}</dd>
+              <dt>Statut</dt>
+              <dd>{{ statusText('' + row['status']) }}</dd>
+              <dt>Priorité</dt>
+              <dd [class]="'drawer__priority drawer__priority--' + priorityClass('' + row['priority'])">
+                {{ priorityText('' + row['priority']) }}
+              </dd>
+              <dt>Téléphone</dt>
+              <dd>{{ row['mainPhone'] }}</dd>
+              <dt>Âge catégorie</dt>
+              <dd>{{ row['categoryAgeDays'] }} j</dd>
+            </dl>
+          </section>
+
+          <!-- Section 2: Dernière action -->
+          <section class="drawer__section">
+            <h3 class="drawer__section-title">Dernière action</h3>
+            <p class="drawer__last-action">{{ row['lastActionLabel'] }}</p>
+          </section>
+
+          <!-- Section 3: Action suivante recommandée (DMN) -->
+          <section class="drawer__section">
+            <h3 class="drawer__section-title">Action suivante</h3>
+            @switch (caseDetailState()) {
+              @case ('loading') {
+                <mc-skeleton-loader variant="list" [rows]="2" />
+              }
+              @case ('error') {
+                <p class="drawer__detail-error">Impossible de charger la recommandation.</p>
+              }
+              @case ('success') {
+                @if (caseDetail(); as d) {
+                  <div class="drawer__dmn">
+                    <span class="drawer__dmn-action">{{ d.dmnDecision.nextBestAction }}</span>
+                    <p class="drawer__dmn-reason">{{ d.dmnDecision.nextBestActionReason }}</p>
+                    <span class="drawer__dmn-score">Score décision : {{ d.dmnDecision.score }}</span>
+                  </div>
+                }
+              }
+            }
+          </section>
+
+          <!-- Section 4: Actions rapides -->
+          <section class="drawer__section drawer__section--actions">
+            <h3 class="drawer__section-title">Actions rapides</h3>
+            <div class="drawer__action-buttons">
+              <button type="button" class="drawer__action-btn" (click)="openActionModal('PHONE_CALL')">
+                <span aria-hidden="true">📞</span> Appeler
+              </button>
+              <button type="button" class="drawer__action-btn" (click)="openActionModal('SMS')">
+                <span aria-hidden="true">💬</span> SMS
+              </button>
+              <button type="button" class="drawer__action-btn" (click)="openActionModal('EMAIL')">
+                <span aria-hidden="true">✉️</span> E-mail
+              </button>
+              <button type="button" class="drawer__action-btn" (click)="openActionModal('VISIT')">
+                <span aria-hidden="true">🏠</span> Visite
+              </button>
+              <button type="button" class="drawer__action-btn" (click)="openActionModal('RELANCE')">
+                <span aria-hidden="true">🔔</span> Relance
+              </button>
+              <button type="button" class="drawer__action-btn" (click)="openModal('promesse')">
+                <span aria-hidden="true">🤝</span> Promesse
+              </button>
+              <button type="button" class="drawer__action-btn" (click)="openModal('echeancier')">
+                <span aria-hidden="true">📅</span> Échéancier
+              </button>
+              <button
+                type="button"
+                class="drawer__action-btn drawer__action-btn--danger"
+                (click)="openModal('escalade')"
+              ><span aria-hidden="true">⚠️</span> Escalader</button>
+            </div>
+          </section>
+
+          <!-- Section 5: Timeline des actions (session) -->
+          <section class="drawer__section drawer__section--timeline">
+            <h3 class="drawer__section-title">Historique (session)</h3>
+            @if (caseTimeline().length === 0) {
+              <p class="drawer__timeline-empty">Aucune action enregistrée dans cette session.</p>
+            } @else {
+              <mc-timeline [events]="caseTimeline()" />
+            }
+          </section>
+
+        </div>
+      </aside>
+    }
+  }
+
+  <!-- ── Simple modal (promesse / echeancier / escalade) ──────────────── -->
+  <mc-modal-form
+    [open]="modalOpen()"
+    [usage]="modalUsage()"
+    (submitted)="onModalSubmitted($event)"
+    (closed)="modalOpen.set(false)"
+  />
+
+  <!-- ── Action modal (appel, SMS, e-mail, visite, relance…) ───────────── -->
+  @if (actionCaseContext(); as ctx) {
+    <mc-action-modal
+      [open]="actionModalOpen()"
+      [caseContext]="ctx"
+      [preselectedType]="preselectedActionType()"
+      (submitted)="onActionModalSubmitted($event)"
+      (closed)="actionModalOpen.set(false)"
+    />
+  }
+
+  <!-- ── Success toast ─────────────────────────────────────────────────── -->
+  @if (showToast()) {
+    <mc-success-toast
+      [message]="toastMsg()"
+      (dismissed)="showToast.set(false)"
+    />
+  }
+
+</div>

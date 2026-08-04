@@ -1,0 +1,100 @@
+{
+  "items": [
+    {
+      "promiseId": "PROM-001",
+      "caseId": "CASE-010", "caseReference": "MC-2026-010",
+      "debtorId": "DBT-010", "debtorName": "Tech Innov SA",
+      "promiseDate": "2026-08-15",
+      "promiseAmount": 89000,
+      "status": "ACTIVE",
+      "createdByAgentId": "AGT-001", "createdByAgentName": "Marie Dupont",
+      "createdAt": "2026-07-10T09:30:00",
+      "notes": "Client s'engage à régler la totalité au 15/08",
+      "relatedActionId": "INT-010-01"
+    },
+    {
+      "promiseId": "PROM-002",
+      "caseId": "CASE-011", "caseReference": "MC-2026-011",
+      "debtorId": "DBT-010", "debtorName": "Tech Innov SA",
+      "promiseDate": "2026-09-01",
+      "promiseAmount": 50000,
+      "status": "ACTIVE",
+      "createdByAgentId": "AGT-001", "createdByAgentName": "Marie Dupont",
+      "createdAt": "2026-07-08T14:15:00",
+      "notes": "1ère tranche plan de remboursement",
+      "relatedActionId": "INT-011-01"
+    },
+    {
+      "promiseId": "PROM-003",
+      "caseId": "CASE-012", "caseReference": "MC-2026-012",
+      "debtorId": "DBT-011", "debtorName": "Bâtir Ensemble SARL",
+      "promiseDate": "2026-07-20",
+      "promiseAmount": 198000,
+      "status": "KEPT",
+      "createdByAgentId": "AGT-001", "createdByAgentName": "Marie Dupont",
+      "createdAt": "2026-07-05T11:00:00",
+      "notes": "Paiement reçu le 20/07",
+      "relatedActionId": "INT-012-01"
+    },
+    {
+      "promiseId": "PROM-004",
+      "caseId": "CASE-013", "caseReference": "MC-2026-013",
+      "debtorId": "DBT-011", "debtorName": "Bâtir Ensemble SARL",
+      "promiseDate": "2026-07-31",
+      "promiseAmount": 100000,
+      "status": "KEPT",
+      "createdByAgentId": "AGT-001", "createdByAgentName": "Marie Dupont",
+      "createdAt": "2026-07-02T16:30:00",
+      "notes": "1ère tranche accord de règlement – tenue",
+      "relatedActionId": "INT-013-01"
+    },
+    {
+      "promiseId": "PROM-005",
+      "caseId": "CASE-014", "caseReference": "MC-2026-014",
+      "debtorId": "DBT-012", "debtorName": "Maroc Pétrole SA",
+      "promiseDate": "2026-07-01",
+      "promiseAmount": 200000,
+      "status": "BROKEN",
+      "createdByAgentId": "AGT-001", "createdByAgentName": "Marie Dupont",
+      "createdAt": "2026-06-15T10:00:00",
+      "notes": "Aucun paiement reçu à l'échéance",
+      "relatedActionId": "INT-014-01"
+    },
+    {
+      "promiseId": "PROM-006",
+      "caseId": "CASE-015", "caseReference": "MC-2026-015",
+      "debtorId": "DBT-012", "debtorName": "Maroc Pétrole SA",
+      "promiseDate": "2026-06-15",
+      "promiseAmount": 60000,
+      "status": "BROKEN",
+      "createdByAgentId": "AGT-001", "createdByAgentName": "Marie Dupont",
+      "createdAt": "2026-05-20T09:00:00",
+      "notes": "2ème rupture de promesse – passage PROMISE_BROKEN",
+      "relatedActionId": "INT-015-01"
+    },
+    {
+      "promiseId": "PROM-007",
+      "caseId": "CASE-016", "caseReference": "MC-2026-016",
+      "debtorId": "DBT-013", "debtorName": "Distribution Plus SARL",
+      "promiseDate": "2026-06-28",
+      "promiseAmount": 150000,
+      "status": "BROKEN",
+      "createdByAgentId": "AGT-001", "createdByAgentName": "Marie Dupont",
+      "createdAt": "2026-05-28T13:00:00",
+      "notes": "Chèque sans provision",
+      "relatedActionId": "INT-016-01"
+    },
+    {
+      "promiseId": "PROM-008",
+      "caseId": "CASE-001", "caseReference": "MC-2026-001",
+      "debtorId": "DBT-001", "debtorName": "Atlas Retail SA",
+      "promiseDate": "2026-06-01",
+      "promiseAmount": 185000,
+      "status": "CANCELLED",
+      "createdByAgentId": "AGT-001", "createdByAgentName": "Marie Dupont",
+      "createdAt": "2026-05-10T10:30:00",
+      "notes": "Annulée suite à contestation du montant par le client",
+      "relatedActionId": "INT-001-05"
+    }
+  ]
+}

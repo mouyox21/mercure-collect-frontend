@@ -1,0 +1,202 @@
+{
+  "items": [
+    {
+      "debtorId": "DBT-001", "debtorName": "Atlas Retail SA",
+      "clientType": "ENTREPRISE",
+      "ice": "001234567000023", "cin": "",
+      "mainPhone": "+212661234567", "email": "contact@atlasretail.ma", "city": "Casablanca",
+      "creditorId": "BNP-001", "creditorLabel": "BNP Paribas Maroc",
+      "riskSegment": "RISK", "riskScore": 78,
+      "outstandingAmount": 1800000,
+      "activeCasesCount": 3, "totalOverdueAmount": 1513000,
+      "hasDuplicateAlert": false, "status": "ACTIVE"
+    },
+    {
+      "debtorId": "DBT-002", "debtorName": "Maroc Digital SARL",
+      "clientType": "ENTREPRISE",
+      "ice": "002345678000041", "cin": "",
+      "mainPhone": "+212662345678", "email": "info@marocdigital.ma", "city": "Rabat",
+      "creditorId": "CA-001", "creditorLabel": "Crédit Agricole Maroc",
+      "riskSegment": "STANDARD", "riskScore": 32,
+      "outstandingAmount": 290000,
+      "activeCasesCount": 2, "totalOverdueAmount": 237000,
+      "hasDuplicateAlert": false, "status": "ACTIVE"
+    },
+    {
+      "debtorId": "DBT-003", "debtorName": "Trans-Atlas Logistique SA",
+      "clientType": "ENTREPRISE",
+      "ice": "003456789000012", "cin": "",
+      "mainPhone": "+212663456789", "email": "dg@transatlas.ma", "city": "Tanger",
+      "creditorId": "SG-001", "creditorLabel": "Société Générale Maroc",
+      "riskSegment": "SENSIBLE", "riskScore": 62,
+      "outstandingAmount": 620000,
+      "activeCasesCount": 2, "totalOverdueAmount": 518000,
+      "hasDuplicateAlert": false, "status": "ACTIVE"
+    },
+    {
+      "debtorId": "DBT-004", "debtorName": "Immobilière Horizons SAS",
+      "clientType": "ENTREPRISE",
+      "ice": "004567890000078", "cin": "",
+      "mainPhone": "+212664567890", "email": "admin@horizons-immo.ma", "city": "Marrakech",
+      "creditorId": "LBP-001", "creditorLabel": "La Banque Postale Maroc",
+      "riskSegment": "VIP", "riskScore": 22,
+      "outstandingAmount": 1100000,
+      "activeCasesCount": 2, "totalOverdueAmount": 884000,
+      "hasDuplicateAlert": false, "status": "ACTIVE"
+    },
+    {
+      "debtorId": "DBT-005", "debtorName": "Sonatrach Maroc SA",
+      "clientType": "ENTREPRISE",
+      "ice": "005678901000056", "cin": "",
+      "mainPhone": "+212665678901", "email": "finance@sonatrach-ma.ma", "city": "Casablanca",
+      "creditorId": "BNP-001", "creditorLabel": "BNP Paribas Maroc",
+      "riskSegment": "RISK", "riskScore": 85,
+      "outstandingAmount": 580000,
+      "activeCasesCount": 2, "totalOverdueAmount": 502000,
+      "hasDuplicateAlert": true, "duplicateAlertType": "ICE_DUPLICATE", "status": "ACTIVE"
+    },
+    {
+      "debtorId": "DBT-006", "debtorName": "Sonatrach Distribution SA",
+      "clientType": "ENTREPRISE",
+      "ice": "005678901000056", "cin": "",
+      "mainPhone": "+212666789012", "email": "contact@sonatrach-dist.ma", "city": "Casablanca",
+      "creditorId": "BNP-001", "creditorLabel": "BNP Paribas Maroc",
+      "riskSegment": "RISK", "riskScore": 80,
+      "outstandingAmount": 450000,
+      "activeCasesCount": 2, "totalOverdueAmount": 376000,
+      "hasDuplicateAlert": true, "duplicateAlertType": "ICE_DUPLICATE", "status": "ACTIVE"
+    },
+    {
+      "debtorId": "DBT-007", "debtorName": "Financière Atlas SA",
+      "clientType": "ENTREPRISE",
+      "ice": "007890123000034", "cin": "",
+      "mainPhone": "+212667890123", "email": "tresorerie@finatlas.ma", "city": "Casablanca",
+      "creditorId": "CA-001", "creditorLabel": "Crédit Agricole Maroc",
+      "riskSegment": "VIP", "riskScore": 25,
+      "outstandingAmount": 2500000,
+      "activeCasesCount": 3, "totalOverdueAmount": 2103000,
+      "hasDuplicateAlert": false, "status": "ACTIVE"
+    },
+    {
+      "debtorId": "DBT-008", "debtorName": "Delta Commerce SARL",
+      "clientType": "ENTREPRISE",
+      "ice": "008901234000067", "cin": "",
+      "mainPhone": "+212668901234", "email": "direction@deltacommerce.ma", "city": "Fès",
+      "creditorId": "SG-001", "creditorLabel": "Société Générale Maroc",
+      "riskSegment": "SENSIBLE", "riskScore": 55,
+      "outstandingAmount": 1100000,
+      "activeCasesCount": 3, "totalOverdueAmount": 924000,
+      "hasDuplicateAlert": false, "status": "SUSPENDED"
+    },
+    {
+      "debtorId": "DBT-009", "debtorName": "Agri-Maroc SA",
+      "clientType": "ENTREPRISE",
+      "ice": "009012345000089", "cin": "",
+      "mainPhone": "+212669012345", "email": "comptable@agrimaroc.ma", "city": "Meknès",
+      "creditorId": "LBP-001", "creditorLabel": "La Banque Postale Maroc",
+      "riskSegment": "STANDARD", "riskScore": 38,
+      "outstandingAmount": 240000,
+      "activeCasesCount": 2, "totalOverdueAmount": 201000,
+      "hasDuplicateAlert": false, "status": "INACTIVE"
+    },
+    {
+      "debtorId": "DBT-010", "debtorName": "Tech Innov SA",
+      "clientType": "ENTREPRISE",
+      "ice": "010123456000045", "cin": "",
+      "mainPhone": "+212670123456", "email": "finance@techinnovma.com", "city": "Casablanca",
+      "creditorId": "BNP-001", "creditorLabel": "BNP Paribas Maroc",
+      "riskSegment": "STANDARD", "riskScore": 42,
+      "outstandingAmount": 640000,
+      "activeCasesCount": 3, "totalOverdueAmount": 535000,
+      "hasDuplicateAlert": false, "status": "ACTIVE"
+    },
+    {
+      "debtorId": "DBT-011", "debtorName": "Bâtir Ensemble SARL",
+      "clientType": "ENTREPRISE",
+      "ice": "011234567000023", "cin": "",
+      "mainPhone": "+212671234567", "email": "gestion@batirensemble.ma", "city": "Agadir",
+      "creditorId": "CA-001", "creditorLabel": "Crédit Agricole Maroc",
+      "riskSegment": "SENSIBLE", "riskScore": 68,
+      "outstandingAmount": 1050000,
+      "activeCasesCount": 3, "totalOverdueAmount": 890000,
+      "hasDuplicateAlert": false, "status": "ACTIVE"
+    },
+    {
+      "debtorId": "DBT-012", "debtorName": "Maroc Pétrole SA",
+      "clientType": "ENTREPRISE",
+      "ice": "012345678000012", "cin": "",
+      "mainPhone": "+212672345678", "email": "daf@marocpetrole.ma", "city": "Casablanca",
+      "creditorId": "SG-001", "creditorLabel": "Société Générale Maroc",
+      "riskSegment": "RISK", "riskScore": 72,
+      "outstandingAmount": 890000,
+      "activeCasesCount": 3, "totalOverdueAmount": 743000,
+      "hasDuplicateAlert": false, "status": "ACTIVE"
+    },
+    {
+      "debtorId": "DBT-013", "debtorName": "Distribution Plus SARL",
+      "clientType": "ENTREPRISE",
+      "ice": "013456789000078", "cin": "",
+      "mainPhone": "+212673456789", "email": "admin@distplus.ma", "city": "Oujda",
+      "creditorId": "LBP-001", "creditorLabel": "La Banque Postale Maroc",
+      "riskSegment": "STANDARD", "riskScore": 35,
+      "outstandingAmount": 1200000,
+      "activeCasesCount": 3, "totalOverdueAmount": 1036000,
+      "hasDuplicateAlert": false, "status": "ACTIVE"
+    },
+    {
+      "debtorId": "DBT-014", "debtorName": "Auto Maroc SA",
+      "clientType": "ENTREPRISE",
+      "ice": "014567890000056", "cin": "",
+      "mainPhone": "+212674567890", "email": "finance@automaroc.ma", "city": "Casablanca",
+      "creditorId": "BNP-001", "creditorLabel": "BNP Paribas Maroc",
+      "riskSegment": "VIP", "riskScore": 28,
+      "outstandingAmount": 2000000,
+      "activeCasesCount": 4, "totalOverdueAmount": 1696000,
+      "hasDuplicateAlert": false, "status": "ACTIVE"
+    },
+    {
+      "debtorId": "DBT-015", "debtorName": "Médina Invest SA",
+      "clientType": "ENTREPRISE",
+      "ice": "015678901000034", "cin": "",
+      "mainPhone": "+212675678901", "email": "invest@medinainvest.ma", "city": "Rabat",
+      "creditorId": "CA-001", "creditorLabel": "Crédit Agricole Maroc",
+      "riskSegment": "VIP", "riskScore": 18,
+      "outstandingAmount": 2500000,
+      "activeCasesCount": 4, "totalOverdueAmount": 2132000,
+      "hasDuplicateAlert": false, "status": "ACTIVE"
+    },
+    {
+      "debtorId": "DBT-016", "debtorName": "Mohamed Al Alami",
+      "clientType": "PARTICULIER",
+      "ice": "", "cin": "BK123456",
+      "mainPhone": "+212661234999", "email": "m.alalami@gmail.com", "city": "Casablanca",
+      "creditorId": "SG-001", "creditorLabel": "Société Générale Maroc",
+      "riskSegment": "STANDARD", "riskScore": 45,
+      "outstandingAmount": 85000,
+      "activeCasesCount": 1, "totalOverdueAmount": 72000,
+      "hasDuplicateAlert": true, "duplicateAlertType": "PHONE_DUPLICATE", "status": "ACTIVE"
+    },
+    {
+      "debtorId": "DBT-017", "debtorName": "Karim Bennani",
+      "clientType": "PARTICULIER",
+      "ice": "", "cin": "BC789012",
+      "mainPhone": "+212661234999", "email": "k.bennani@hotmail.com", "city": "Rabat",
+      "creditorId": "LBP-001", "creditorLabel": "La Banque Postale Maroc",
+      "riskSegment": "SENSIBLE", "riskScore": 58,
+      "outstandingAmount": 120000,
+      "activeCasesCount": 1, "totalOverdueAmount": 98000,
+      "hasDuplicateAlert": true, "duplicateAlertType": "PHONE_DUPLICATE", "status": "ACTIVE"
+    },
+    {
+      "debtorId": "DBT-018", "debtorName": "Association Entraide Atlas",
+      "clientType": "ASSOCIATION",
+      "ice": "018999000000001", "cin": "",
+      "mainPhone": "+212524001122", "email": "contact@entraide-atlas.ma", "city": "Marrakech",
+      "creditorId": "BNP-001", "creditorLabel": "BNP Paribas Maroc",
+      "riskSegment": "STANDARD", "riskScore": 30,
+      "outstandingAmount": 45000,
+      "activeCasesCount": 1, "totalOverdueAmount": 38000,
+      "hasDuplicateAlert": false, "status": "ACTIVE"
+    }
+  ]
+}

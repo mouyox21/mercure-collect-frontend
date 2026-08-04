@@ -1,0 +1,76 @@
+// ─── Typography ───────────────────────────────────────────────────────────────
+// Utility classes for the type scale defined in _tokens.scss.
+// Usage: apply class directly or extend in component SCSS.
+
+// Inter (self-hosted fallback via Google Fonts CDN at build time if not available)
+// Aptos ships with Office 365; browser falls back to Inter then system-ui.
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+// ── Heading utilities ──────────────────────────────────────────────────────────
+
+.text-heading-xl {
+  font-size: var(--font-size-heading-xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+}
+
+.text-heading-lg {
+  font-size: var(--font-size-heading-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+}
+
+.text-heading-md {
+  font-size: var(--font-size-heading-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+}
+
+// ── Body utilities ─────────────────────────────────────────────────────────────
+
+.text-subtitle {
+  font-size: var(--font-size-subtitle);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-secondary);
+}
+
+.text-body {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+}
+
+.text-body-sm {
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+}
+
+// ── Table utilities ────────────────────────────────────────────────────────────
+
+.text-table {
+  font-size: var(--font-size-table);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+}
+
+.text-table-sm {
+  font-size: var(--font-size-table-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+}
+
+// ── Colour modifiers ───────────────────────────────────────────────────────────
+
+.text-secondary { color: var(--color-text-secondary); }
+.text-muted     { color: var(--color-text-muted); }
+.text-success   { color: var(--color-success); }
+.text-warning   { color: var(--color-warning); }
+.text-critical  { color: var(--color-critical); }
+.text-action    { color: var(--color-action); }

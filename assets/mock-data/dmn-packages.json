@@ -1,0 +1,142 @@
+{
+  "items": [
+    {
+      "packageId": "PKG-001",
+      "packageCode": "SEGMENT_SCORING",
+      "packageLabel": "Segmentation et scoring de risque",
+      "decisionType": "SEGMENTATION",
+      "version": "2.1",
+      "status": "ACTIVE",
+      "description": "Calcule le score de risque (0-100) et assigne le segment client basé sur les données comportementales et financières.",
+      "testsPassed": 24,
+      "testsTotal": 24,
+      "publishedAt": "2026-06-15T10:00:00",
+      "publishedBy": "Admin Système",
+      "createdAt": "2026-05-01T09:00:00"
+    },
+    {
+      "packageId": "PKG-002",
+      "packageCode": "NEXT_BEST_ACTION",
+      "packageLabel": "Prochaine meilleure action (NBA)",
+      "decisionType": "NEXT_BEST_ACTION",
+      "version": "1.5",
+      "status": "ACTIVE",
+      "description": "Recommande la prochaine action de recouvrement optimale selon le segment, le retard et l'historique des interactions.",
+      "testsPassed": 31,
+      "testsTotal": 31,
+      "publishedAt": "2026-05-20T14:00:00",
+      "publishedBy": "Admin Système",
+      "createdAt": "2026-04-10T09:00:00"
+    },
+    {
+      "packageId": "PKG-003",
+      "packageCode": "ESCALATION_RULES",
+      "packageLabel": "Règles d'escalade",
+      "decisionType": "ESCALATION",
+      "version": "1.0",
+      "status": "ACTIVE",
+      "description": "Détermine si un dossier doit être escaladé au superviseur et le niveau de priorité de l'escalade.",
+      "testsPassed": 18,
+      "testsTotal": 18,
+      "publishedAt": "2026-04-01T09:00:00",
+      "publishedBy": "Admin Système",
+      "createdAt": "2026-03-15T09:00:00"
+    },
+    {
+      "packageId": "PKG-004",
+      "packageCode": "SEGMENT_SCORING",
+      "packageLabel": "Segmentation et scoring de risque",
+      "decisionType": "SEGMENTATION",
+      "version": "2.0",
+      "status": "ARCHIVED",
+      "description": "Version précédente – remplacée par v2.1 (ajout critère ancienneté client).",
+      "testsPassed": 20,
+      "testsTotal": 22,
+      "publishedAt": "2026-01-10T10:00:00",
+      "publishedBy": "Admin Système",
+      "createdAt": "2025-12-01T09:00:00"
+    },
+    {
+      "packageId": "PKG-005",
+      "packageCode": "NEXT_BEST_ACTION",
+      "packageLabel": "Prochaine meilleure action (NBA)",
+      "decisionType": "NEXT_BEST_ACTION",
+      "version": "2.0",
+      "status": "DRAFT",
+      "description": "Version 2.0 en cours de test – intègre le canal WhatsApp et les modèles de propension au paiement.",
+      "testsPassed": 14,
+      "testsTotal": 35,
+      "createdAt": "2026-07-01T09:00:00"
+    }
+  ],
+  "testCases": [
+    {
+      "testId": "TC-PKG001-001",
+      "packageId": "PKG-001",
+      "testLabel": "Débiteur standard – retard 30j – score attendu < 60",
+      "inputPayload": {
+        "daysLate": 30, "overdueAmount": 50000,
+        "brokenPromises": 0, "previousActions": ["EMAIL"],
+        "customerAge": 2, "historicRecoveryRate": 0.75
+      },
+      "expectedOutput": { "segment": "STANDARD", "riskScore": 45 },
+      "lastRunResult": "PASS",
+      "lastRunAt": "2026-06-15T10:05:00",
+      "lastRunDiff": {}
+    },
+    {
+      "testId": "TC-PKG001-002",
+      "packageId": "PKG-001",
+      "testLabel": "Débiteur haut risque – 2 promesses rompues – score > 80",
+      "inputPayload": {
+        "daysLate": 120, "overdueAmount": 500000,
+        "brokenPromises": 2, "previousActions": ["EMAIL", "PHONE", "LETTER", "PROMISE"],
+        "customerAge": 1, "historicRecoveryRate": 0.30
+      },
+      "expectedOutput": { "segment": "CRITICAL", "riskScore": 91 },
+      "lastRunResult": "PASS",
+      "lastRunAt": "2026-06-15T10:05:10",
+      "lastRunDiff": {}
+    },
+    {
+      "testId": "TC-PKG002-001",
+      "packageId": "PKG-002",
+      "testLabel": "Segment STANDARD – 1er contact – action = REMINDER_LETTER",
+      "inputPayload": {
+        "segment": "STANDARD", "daysLate": 15,
+        "previousActions": [], "brokenPromises": 0
+      },
+      "expectedOutput": { "nextBestAction": "REMINDER_LETTER", "urgency": "LOW" },
+      "lastRunResult": "PASS",
+      "lastRunAt": "2026-05-20T14:10:00",
+      "lastRunDiff": {}
+    },
+    {
+      "testId": "TC-PKG002-002",
+      "packageId": "PKG-002",
+      "testLabel": "Segment CRITICAL – action = ESCALATION_PRE_LEGAL",
+      "inputPayload": {
+        "segment": "CRITICAL", "daysLate": 145,
+        "previousActions": ["PHONE", "EMAIL", "PROMISE", "FORMAL_NOTICE"],
+        "brokenPromises": 2
+      },
+      "expectedOutput": { "nextBestAction": "ESCALATION_PRE_LEGAL", "urgency": "CRITICAL" },
+      "lastRunResult": "PASS",
+      "lastRunAt": "2026-05-20T14:10:15",
+      "lastRunDiff": {}
+    },
+    {
+      "testId": "TC-PKG005-001",
+      "packageId": "PKG-005",
+      "testLabel": "DRAFT – Canal WhatsApp pour segment STANDARD J+15",
+      "inputPayload": {
+        "segment": "STANDARD", "daysLate": 15,
+        "whatsappOptIn": true, "previousActions": []
+      },
+      "expectedOutput": { "nextBestAction": "WHATSAPP_MESSAGE", "urgency": "LOW" },
+      "lastRunResult": "FAIL",
+      "lastRunAt": "2026-07-20T09:00:00",
+      "lastRunDiff": { "nextBestAction": { "expected": "WHATSAPP_MESSAGE", "actual": "REMINDER_LETTER" } }
+    }
+  ]
+}

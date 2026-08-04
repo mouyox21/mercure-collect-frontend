@@ -1,0 +1,622 @@
+<div class="cld">
+
+  @switch (viewState()) {
+
+    @case ('loading') {
+      <div class="cld__state-wrap">
+        <mc-skeleton-loader variant="list" [rows]="8" />
+      </div>
+    }
+
+    @case ('error') {
+      <div class="cld__state-wrap">
+        <mc-error-state
+          message="Impossible de charger la fiche client."
+          (retry)="load()"
+        />
+      </div>
+    }
+
+    @case ('forbidden') {
+      <div class="cld__state-wrap">
+        <mc-forbidden-state />
+      </div>
+    }
+
+    @case ('success') {
+
+      <!-- Breadcrumb ─────────────────────────────────────────────────────────── -->
+      <nav class="cld__breadcrumb" aria-label="Navigation">
+        <button type="button" class="cld__back-btn" (click)="goBack()">
+          <span aria-hidden="true">←</span> Retour aux clients
+        </button>
+        <span class="cld__breadcrumb-sep" aria-hidden="true">/</span>
+        <span class="cld__breadcrumb-current">{{ detail()!.debtorId }}</span>
+      </nav>
+
+      <!-- CA-CLD-01 — Bandeau identité (sticky) ─────────────────────────────── -->
+      <div class="cld__banner" role="region" aria-label="Identité du client">
+
+        <!-- Left: identity fields -->
+        <div class="cld__banner-left">
+          <div class="cld__banner-name-row">
+            <h1 class="cld__banner-name">{{ detail()!.debtorName }}</h1>
+            <span class="cld__badge cld__badge--status-{{ statusModifier(detail()!.status) }}">
+              {{ statusLabel(detail()!.status) }}
+            </span>
+            <span class="cld__badge cld__badge--type">
+              {{ clientTypeLabel(detail()!.clientType) }}
+            </span>
+          </div>
+          <div class="cld__banner-ref-row">
+            <span class="cld__banner-ref">{{ detail()!.debtorId }}</span>
+            @if (detail()!.ice) {
+              <span>ICE&nbsp;: <strong>{{ detail()!.ice }}</strong></span>
+            }
+            @if (detail()!.cin) {
+              <span>CIN&nbsp;: <strong>{{ detail()!.cin }}</strong></span>
+            }
+            <span>📞&nbsp;{{ displayPhone() }}</span>
+            <span>📧&nbsp;{{ displayEmail() }}</span>
+          </div>
+        </div>
+
+        <!-- Middle: risk evaluation -->
+        <div class="cld__banner-risk" aria-label="Évaluation du risque">
+          <div class="cld__risk-item">
+            <span class="cld__risk-label">Segment</span>
+            <span class="cld__badge cld__badge--risk-{{ riskModifier(detail()!.riskSegment) }}">
+              {{ riskSegmentLabel(detail()!.riskSegment) }}
+            </span>
+          </div>
+          <div class="cld__risk-item">
+            <span class="cld__risk-label">Score</span>
+            <span class="cld__risk-value">{{ detail()!.kpi.riskScore }}/100</span>
+          </div>
+          @if (detail()!.pdScore != null) {
+            <div class="cld__risk-item">
+              <span class="cld__risk-label">PD</span>
+              <span class="cld__risk-value">{{ detail()!.pdScore }}%</span>
+            </div>
+          }
+          @if (detail()!.lgdScore != null) {
+            <div class="cld__risk-item">
+              <span class="cld__risk-label">LGD</span>
+              <span class="cld__risk-value">{{ detail()!.lgdScore }}%</span>
+            </div>
+          }
+        </div>
+
+        <!-- Right: KPI chips -->
+        <div class="cld__banner-kpi" aria-label="Indicateurs clés">
+          <div class="cld__kpi-chip">
+            <span class="cld__kpi-chip-label">Impayé total</span>
+            <span class="cld__kpi-chip-value cld__kpi-chip-value--overdue">{{ displayOverdueAmount() }}</span>
+          </div>
+          <div class="cld__kpi-chip">
+            <span class="cld__kpi-chip-label">Contrats</span>
+            <span class="cld__kpi-chip-value">{{ detail()!.contracts.length }}</span>
+          </div>
+          <div class="cld__kpi-chip">
+            <span class="cld__kpi-chip-label">Dossiers actifs</span>
+            <span class="cld__kpi-chip-value">{{ detail()!.kpi.activeCasesCount }}</span>
+          </div>
+          <div class="cld__kpi-chip">
+            <span class="cld__kpi-chip-label">Retard moyen</span>
+            <span class="cld__kpi-chip-value">{{ detail()!.kpi.averageDaysLate }}&nbsp;j</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CA-CLD-02 — Bloc prochaine action actionnable ──────────────────────── -->
+      @if (detail()!.nextAction) {
+        <div class="cld__next-action" role="complementary" aria-label="Prochaine action planifiée">
+          <span class="cld__next-action-icon" aria-hidden="true">⚡</span>
+          <div class="cld__next-action-info">
+            <span class="cld__next-action-label">{{ detail()!.nextAction!.actionLabel }}</span>
+            <span class="cld__next-action-meta">
+              Le {{ formatDate(detail()!.nextAction!.scheduledDate) }}
+              &nbsp;·&nbsp;{{ detail()!.nextAction!.agentName }}
+            </span>
+          </div>
+          <button type="button" class="cld__next-action-btn">
+            Traiter cette action <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      }
+
+      <!-- CA-CLD-02 — Tab bar ────────────────────────────────────────────────── -->
+      <div class="cld__tab-bar" role="tablist" aria-label="Sections de la fiche client">
+        @for (tab of tabs; track tab.id) {
+          <button
+            type="button"
+            role="tab"
+            [id]="'cld-tab-' + tab.id"
+            class="cld__tab-btn"
+            [class.cld__tab-btn--active]="activeTab() === tab.id"
+            [attr.aria-selected]="activeTab() === tab.id"
+            [attr.aria-controls]="'cld-panel-' + tab.id"
+            (click)="activeTab.set(tab.id)"
+          >{{ tab.label }}</button>
+        }
+      </div>
+
+      <!-- Tab content ────────────────────────────────────────────────────────── -->
+      <div
+        class="cld__tab-content"
+        role="tabpanel"
+        [id]="'cld-panel-' + activeTab()"
+        [attr.aria-labelledby]="'cld-tab-' + activeTab()"
+      >
+
+        @switch (activeTab()) {
+
+          <!-- Vue 360° — 2-column reference layout ──────────────────────────── -->
+          @case ('vue360') {
+            <div class="cld__vue360">
+
+              <!-- ── Left column ──────────────────────────────────────────── -->
+              <div class="cld__col cld__col--left">
+
+                <!-- Informations générales -->
+                <div class="cld__card">
+                  <h3 class="cld__card-title">Informations générales</h3>
+                  <dl class="cld__dl">
+                    <dt>Raison sociale</dt>  <dd>{{ detail()!.debtorName }}</dd>
+                    <dt>Forme juridique</dt> <dd>{{ detail()!.legalForm || '—' }}</dd>
+                    <dt>Type client</dt>     <dd>{{ clientTypeLabel(detail()!.clientType) }}</dd>
+                    <dt>Segment métier</dt>  <dd>{{ detail()!.segment || '—' }}</dd>
+                    <dt>Référence</dt>       <dd class="cld__mono">{{ detail()!.debtorId }}</dd>
+                    @if (detail()!.ice) {
+                      <dt>ICE</dt> <dd class="cld__mono">{{ detail()!.ice }}</dd>
+                    }
+                    @if (detail()!.cin) {
+                      <dt>CIN</dt> <dd class="cld__mono">{{ detail()!.cin }}</dd>
+                    }
+                    <dt>Statut</dt>
+                    <dd>
+                      <span class="cld__badge cld__badge--status-{{ statusModifier(detail()!.status) }}">
+                        {{ statusLabel(detail()!.status) }}
+                      </span>
+                    </dd>
+                  </dl>
+                </div>
+
+                <!-- Contacts -->
+                <div class="cld__card">
+                  <h3 class="cld__card-title">Contacts</h3>
+                  <dl class="cld__dl">
+                    <dt>Interlocuteur</dt> <dd>{{ detail()!.contactPersonName || '—' }}</dd>
+                    <dt>Téléphone</dt>     <dd>{{ displayPhone() }}</dd>
+                    <dt>E-mail</dt>        <dd>{{ displayEmail() }}</dd>
+                  </dl>
+                  @if (!canViewContacts()) {
+                    <p class="cld__masked-hint">
+                      🔒 Données masquées — droit CLIENT_CONTACT_VIEW requis.
+                    </p>
+                  }
+                </div>
+
+                <!-- Adresse -->
+                <div class="cld__card">
+                  <h3 class="cld__card-title">Adresse</h3>
+                  <dl class="cld__dl">
+                    <dt>Adresse</dt>     <dd>{{ detail()!.address    || '—' }}</dd>
+                    <dt>Ville</dt>       <dd>{{ detail()!.city       || '—' }}</dd>
+                    <dt>Code postal</dt> <dd>{{ detail()!.postalCode || '—' }}</dd>
+                    <dt>Pays</dt>        <dd>{{ detail()!.country    || '—' }}</dd>
+                  </dl>
+                </div>
+
+              </div>
+
+              <!-- ── Right column ─────────────────────────────────────────── -->
+              <div class="cld__col cld__col--right">
+
+                <!-- Contrats & dettes actifs -->
+                <div class="cld__card">
+                  <h3 class="cld__card-title">
+                    Contrats &amp; dettes actifs
+                    <span class="cld__card-badge">{{ detail()!.contracts.length }}</span>
+                  </h3>
+                  @if (detail()!.contracts.length === 0) {
+                    <p class="cld__card-empty">Aucun contrat enregistré.</p>
+                  } @else {
+                    <ul class="cld__contract-list">
+                      @for (c of detail()!.contracts.slice(0, 3); track c.contractId) {
+                        <li class="cld__contract-item">
+                          <div class="cld__contract-header">
+                            <span class="cld__contract-ref">{{ c.contractReference }}</span>
+                            <span class="cld__contract-status cld__contract-status--{{ contractModifier(c.status) }}">
+                              {{ contractStatusLabel(c.status) }}
+                            </span>
+                          </div>
+                          <div class="cld__contract-detail">
+                            <span>{{ c.productType }}</span>
+                            <span>
+                              Impayé&nbsp;:
+                              <strong class="cld__text--overdue">{{ maskContractAmount(c.overdueAmount) }}</strong>
+                            </span>
+                          </div>
+                        </li>
+                      }
+                    </ul>
+                    @if (detail()!.contracts.length > 3) {
+                      <button type="button" class="cld__see-more" (click)="activeTab.set('contrats')">
+                        Voir {{ detail()!.contracts.length - 3 }} autre(s) contrat(s) <span aria-hidden="true">→</span>
+                      </button>
+                    }
+                  }
+                </div>
+
+                <!-- Évaluation & risque -->
+                <div class="cld__card">
+                  <h3 class="cld__card-title">Évaluation &amp; risque</h3>
+                  <div class="cld__risk-grid">
+                    <div class="cld__risk-kpi">
+                      <span class="cld__risk-kpi-label">Segment risque</span>
+                      <span class="cld__badge cld__badge--risk-{{ riskModifier(detail()!.riskSegment) }}">
+                        {{ riskSegmentLabel(detail()!.riskSegment) }}
+                      </span>
+                    </div>
+                    <div class="cld__risk-kpi">
+                      <span class="cld__risk-kpi-label">Score</span>
+                      <div class="cld__score-bar">
+                        <div class="cld__score-track">
+                          <div
+                            class="cld__score-fill"
+                            [style.width.%]="detail()!.kpi.riskScore"
+                          ></div>
+                        </div>
+                        <span class="cld__score-val">{{ detail()!.kpi.riskScore }}/100</span>
+                      </div>
+                    </div>
+                    @if (detail()!.pdScore != null) {
+                      <div class="cld__risk-kpi">
+                        <span class="cld__risk-kpi-label">PD (défaut)</span>
+                        <span class="cld__risk-kpi-value">{{ detail()!.pdScore }}%</span>
+                      </div>
+                    }
+                    @if (detail()!.lgdScore != null) {
+                      <div class="cld__risk-kpi">
+                        <span class="cld__risk-kpi-label">LGD (perte)</span>
+                        <span class="cld__risk-kpi-value">{{ detail()!.lgdScore }}%</span>
+                      </div>
+                    }
+                    <div class="cld__risk-kpi">
+                      <span class="cld__risk-kpi-label">Promesses rompues</span>
+                      <span
+                        class="cld__risk-kpi-value"
+                        [class.cld__text--overdue]="detail()!.kpi.brokenPromisesCount > 0"
+                      >{{ detail()!.kpi.brokenPromisesCount }}</span>
+                    </div>
+                    <div class="cld__risk-kpi">
+                      <span class="cld__risk-kpi-label">Retard moyen</span>
+                      <span class="cld__risk-kpi-value">{{ detail()!.kpi.averageDaysLate }}&nbsp;j</span>
+                    </div>
+                    <div class="cld__risk-kpi">
+                      <span class="cld__risk-kpi-label">Total dette</span>
+                      <span class="cld__risk-kpi-value">{{ displayTotalDebt() }}</span>
+                    </div>
+                    <div class="cld__risk-kpi">
+                      <span class="cld__risk-kpi-label">Total impayé</span>
+                      <span class="cld__risk-kpi-value cld__text--overdue">{{ displayOverdueAmount() }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Dossiers de recouvrement -->
+                <div class="cld__card">
+                  <h3 class="cld__card-title">
+                    Dossiers de recouvrement
+                    <span class="cld__card-badge">{{ detail()!.kpi.activeCasesCount }}</span>
+                  </h3>
+                  <dl class="cld__dl">
+                    <dt>Dossiers actifs</dt>  <dd>{{ detail()!.kpi.activeCasesCount }}</dd>
+                    <dt>Retard moyen</dt>     <dd>{{ detail()!.kpi.averageDaysLate }}&nbsp;jours</dd>
+                  </dl>
+                  <button type="button" class="cld__see-more" (click)="activeTab.set('dossiers')">
+                    Voir les dossiers <span aria-hidden="true">→</span>
+                  </button>
+                </div>
+
+                <!-- Dernières interactions -->
+                <div class="cld__card">
+                  <h3 class="cld__card-title">
+                    Dernières interactions
+                    <span class="cld__card-badge">{{ detail()!.interactions.length }}</span>
+                  </h3>
+                  @if (detail()!.interactions.length === 0) {
+                    <p class="cld__card-empty">Aucune interaction enregistrée.</p>
+                  } @else {
+                    <ul class="cld__interaction-list">
+                      @for (i of detail()!.interactions.slice(0, 3); track i.interactionId) {
+                        <li class="cld__interaction-item">
+                          <span class="cld__interaction-icon" aria-hidden="true">{{ channelIcon(i.channel) }}</span>
+                          <div class="cld__interaction-body">
+                            <span class="cld__interaction-label">{{ i.actionLabel }}</span>
+                            <span class="cld__interaction-meta">
+                              {{ formatDate(i.interactionDate) }} · {{ i.agentName }}
+                              @if (i.outcome) { · {{ i.outcome }} }
+                            </span>
+                          </div>
+                          @if (i.hasPromise) {
+                            <span class="cld__badge cld__badge--promise" title="Promesse enregistrée">🤝</span>
+                          }
+                        </li>
+                      }
+                    </ul>
+                    @if (detail()!.interactions.length > 3) {
+                      <button type="button" class="cld__see-more" (click)="activeTab.set('interactions')">
+                        Voir {{ detail()!.interactions.length - 3 }} interaction(s) de plus <span aria-hidden="true">→</span>
+                      </button>
+                    }
+                  }
+                </div>
+
+                <!-- Documents récents -->
+                <div class="cld__card">
+                  <h3 class="cld__card-title">
+                    Documents récents
+                    <span class="cld__card-badge">{{ detail()!.documents.length }}</span>
+                  </h3>
+                  @if (detail()!.documents.length === 0) {
+                    <p class="cld__card-empty">Aucun document disponible.</p>
+                  } @else {
+                    <ul class="cld__doc-list">
+                      @for (doc of detail()!.documents.slice(0, 3); track doc.documentId) {
+                        <li class="cld__doc-item">
+                          <span class="cld__doc-icon" aria-hidden="true">📄</span>
+                          <div class="cld__doc-body">
+                            <span class="cld__doc-label">{{ doc.documentLabel }}</span>
+                            <span class="cld__doc-meta">
+                              {{ formatDate(doc.uploadedAt) }} · {{ formatFileSize(doc.fileSize) }}
+                            </span>
+                          </div>
+                        </li>
+                      }
+                    </ul>
+                    @if (detail()!.documents.length > 3) {
+                      <button type="button" class="cld__see-more" (click)="activeTab.set('documents')">
+                        Voir {{ detail()!.documents.length - 3 }} document(s) de plus <span aria-hidden="true">→</span>
+                      </button>
+                    }
+                  }
+                </div>
+
+              </div>
+            </div>
+          }
+
+          <!-- Informations générales ─────────────────────────────────────────── -->
+          @case ('infos') {
+            <div class="cld__tab-pane">
+              <div class="cld__info-grid">
+
+                <div class="cld__card">
+                  <h3 class="cld__card-title">Identité</h3>
+                  <dl class="cld__dl">
+                    <dt>Raison sociale</dt>  <dd>{{ detail()!.debtorName }}</dd>
+                    <dt>Forme juridique</dt> <dd>{{ detail()!.legalForm || '—' }}</dd>
+                    <dt>Type client</dt>     <dd>{{ clientTypeLabel(detail()!.clientType) }}</dd>
+                    <dt>Segment métier</dt>  <dd>{{ detail()!.segment || '—' }}</dd>
+                    <dt>Référence</dt>       <dd class="cld__mono">{{ detail()!.debtorId }}</dd>
+                    @if (detail()!.ice) { <dt>ICE</dt> <dd class="cld__mono">{{ detail()!.ice }}</dd> }
+                    @if (detail()!.cin) { <dt>CIN</dt> <dd class="cld__mono">{{ detail()!.cin }}</dd> }
+                    <dt>Statut</dt>
+                    <dd>
+                      <span class="cld__badge cld__badge--status-{{ statusModifier(detail()!.status) }}">
+                        {{ statusLabel(detail()!.status) }}
+                      </span>
+                    </dd>
+                  </dl>
+                </div>
+
+                <div class="cld__card">
+                  <h3 class="cld__card-title">Contacts &amp; Adresse</h3>
+                  <dl class="cld__dl">
+                    <dt>Interlocuteur</dt> <dd>{{ detail()!.contactPersonName || '—' }}</dd>
+                    <dt>Téléphone</dt>     <dd>{{ displayPhone() }}</dd>
+                    <dt>E-mail</dt>        <dd>{{ displayEmail() }}</dd>
+                    <dt>Adresse</dt>       <dd>{{ detail()!.address    || '—' }}</dd>
+                    <dt>Ville</dt>         <dd>{{ detail()!.city       || '—' }}</dd>
+                    <dt>Code postal</dt>   <dd>{{ detail()!.postalCode || '—' }}</dd>
+                    <dt>Pays</dt>          <dd>{{ detail()!.country    || '—' }}</dd>
+                  </dl>
+                  @if (!canViewContacts()) {
+                    <p class="cld__masked-hint">🔒 Contacts masqués — droit CLIENT_CONTACT_VIEW requis.</p>
+                  }
+                </div>
+
+              </div>
+            </div>
+          }
+
+          <!-- Contrats & dettes ──────────────────────────────────────────────── -->
+          @case ('contrats') {
+            <div class="cld__tab-pane">
+              <h3 class="cld__tab-section-title">Contrats ({{ detail()!.contracts.length }})</h3>
+              <table class="cld__table">
+                <thead>
+                  <tr>
+                    <th>Référence</th>
+                    <th>Type produit</th>
+                    <th>Créancier</th>
+                    <th class="cld__table-th--r">Montant initial</th>
+                    <th class="cld__table-th--r">Encours</th>
+                    <th class="cld__table-th--r">Impayé</th>
+                    <th>Début</th>
+                    <th>Statut</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (c of detail()!.contracts; track c.contractId) {
+                    <tr>
+                      <td class="cld__mono">{{ c.contractReference }}</td>
+                      <td>{{ c.productType }}</td>
+                      <td>{{ c.creditorLabel }}</td>
+                      <td class="cld__table-td--r">{{ maskContractAmount(c.originalAmount) }}</td>
+                      <td class="cld__table-td--r">{{ maskContractAmount(c.outstandingAmount) }}</td>
+                      <td class="cld__table-td--r cld__text--overdue">{{ maskContractAmount(c.overdueAmount) }}</td>
+                      <td>{{ formatDate(c.startDate) }}</td>
+                      <td>
+                        <span class="cld__contract-status cld__contract-status--{{ contractModifier(c.status) }}">
+                          {{ contractStatusLabel(c.status) }}
+                        </span>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+
+              <h3 class="cld__tab-section-title cld__tab-section-title--mt">
+                Dettes ({{ detail()!.debts.length }})
+              </h3>
+              <table class="cld__table">
+                <thead>
+                  <tr>
+                    <th>Contrat</th>
+                    <th>Créancier</th>
+                    <th class="cld__table-th--r">Montant</th>
+                    <th>Échéance</th>
+                    <th class="cld__table-th--r">Retard</th>
+                    <th>Statut</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (d of detail()!.debts; track d.debtId) {
+                    <tr>
+                      <td class="cld__mono">{{ d.contractReference }}</td>
+                      <td>{{ d.creditorLabel }}</td>
+                      <td class="cld__table-td--r cld__text--overdue">{{ maskContractAmount(d.amount) }}</td>
+                      <td>{{ formatDate(d.dueDate) }}</td>
+                      <td
+                        class="cld__table-td--r"
+                        [class.cld__text--overdue]="d.daysLate > 60"
+                      >{{ d.daysLate }}&nbsp;j</td>
+                      <td>
+                        <span class="cld__contract-status cld__contract-status--{{ contractModifier(d.status) }}">
+                          {{ debtStatusLabel(d.status) }}
+                        </span>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+
+          <!-- Interactions ────────────────────────────────────────────────────── -->
+          @case ('interactions') {
+            <div class="cld__tab-pane">
+              @if (detail()!.interactions.length === 0) {
+                <p class="cld__card-empty">Aucune interaction enregistrée.</p>
+              } @else {
+                <ul class="cld__timeline">
+                  @for (i of detail()!.interactions; track i.interactionId) {
+                    <li class="cld__tl-item">
+                      <span class="cld__tl-dot" aria-hidden="true">{{ channelIcon(i.channel) }}</span>
+                      <div class="cld__tl-body">
+                        <div class="cld__tl-header">
+                          <strong class="cld__tl-label">{{ i.actionLabel }}</strong>
+                          <span class="cld__tl-date">{{ formatDate(i.interactionDate) }}</span>
+                          @if (i.hasPromise) {
+                            <span class="cld__badge cld__badge--promise">Promesse</span>
+                          }
+                        </div>
+                        <div class="cld__tl-meta">
+                          Agent&nbsp;: {{ i.agentName }}
+                          @if (i.outcome) { &nbsp;·&nbsp;{{ i.outcome }} }
+                        </div>
+                      </div>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          }
+
+          <!-- Documents ───────────────────────────────────────────────────────── -->
+          @case ('documents') {
+            <div class="cld__tab-pane">
+              @if (detail()!.documents.length === 0) {
+                <p class="cld__card-empty">Aucun document disponible.</p>
+              } @else {
+                <table class="cld__table">
+                  <thead>
+                    <tr>
+                      <th>Document</th>
+                      <th>Type</th>
+                      <th>Déposé le</th>
+                      <th>Par</th>
+                      <th class="cld__table-th--r">Taille</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (doc of detail()!.documents; track doc.documentId) {
+                      <tr>
+                        <td>📄 {{ doc.documentLabel }}</td>
+                        <td>{{ doc.documentType }}</td>
+                        <td>{{ formatDate(doc.uploadedAt) }}</td>
+                        <td>{{ doc.uploadedBy }}</td>
+                        <td class="cld__table-td--r">{{ formatFileSize(doc.fileSize) }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              }
+            </div>
+          }
+
+          <!-- Garanties ───────────────────────────────────────────────────────── -->
+          @case ('garanties') {
+            <div class="cld__tab-pane">
+              @if (detail()!.guarantees.length === 0) {
+                <p class="cld__card-empty">Aucune garantie enregistrée.</p>
+              } @else {
+                <table class="cld__table">
+                  <thead>
+                    <tr>
+                      <th>Type</th>
+                      <th>Description</th>
+                      <th class="cld__table-th--r">Valeur estimée</th>
+                      <th>Enregistrement</th>
+                      <th>Statut</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (g of detail()!.guarantees; track g.guaranteeId) {
+                      <tr>
+                        <td>{{ guaranteeTypeLabel(g.guaranteeType) }}</td>
+                        <td>{{ g.description }}</td>
+                        <td class="cld__table-td--r">
+                          @if (g.estimatedValue) {
+                            {{ maskContractAmount(g.estimatedValue) }}
+                          } @else { — }
+                        </td>
+                        <td>{{ g.registrationDate ? formatDate(g.registrationDate) : '—' }}</td>
+                        <td>{{ g.status }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              }
+            </div>
+          }
+
+          <!-- Placeholder tabs (Dossiers, Historique) ─────────────────────────── -->
+          @default {
+            <div class="cld__placeholder">
+              <p>Contenu disponible dans une prochaine version.</p>
+            </div>
+          }
+
+        }
+      </div>
+
+    }
+
+  }
+
+</div>

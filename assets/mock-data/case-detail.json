@@ -1,0 +1,242 @@
+{
+  "caseId": "CASE-001",
+  "caseReference": "MC-2026-001",
+  "debtorId": "DBT-001",
+  "debtorName": "Atlas Retail SA",
+  "creditorId": "CRED-001",
+  "creditorLabel": "Banque Atlas",
+  "phase": "LEGAL",
+  "status": "OPEN",
+  "priority": "CRITICAL",
+  "categoryCode": "LEGAL_PROCEEDINGS",
+  "categoryLabel": "Procédure contentieuse",
+  "overdueAmount": 1513000,
+  "totalDebtAmount": 1961000,
+  "daysLate": 102,
+  "openDate": "2025-11-10",
+  "lastActionDate": "2026-07-28",
+  "agentId": "AGT-001",
+  "agentName": "Marie Dupont",
+  "contractReference": "CTR-001-2024",
+  "hasActivePromise": false,
+  "hasActivePaymentPlan": true,
+  "nextActionLabel": "Audience au tribunal",
+  "nextActionDate": "2026-09-15",
+  "dmnDecision": {
+    "segment": "RISK",
+    "nextBestAction": "PHONE_CALL",
+    "nextBestActionReason": "Dossier à risque élevé en phase contentieuse — contact direct recommandé avant l'audience du 15/09/2026",
+    "score": 78,
+    "computedAt": "2026-08-01T08:30:00"
+  },
+  "debts": [
+    {
+      "debtId": "DEBT-001-01",
+      "contractReference": "CTR-001-2024",
+      "amount": 185000,
+      "dueDate": "2026-07-15",
+      "daysLate": 15,
+      "status": "OVERDUE"
+    },
+    {
+      "debtId": "DEBT-001-02",
+      "contractReference": "CTR-024-2020",
+      "amount": 1250000,
+      "dueDate": "2026-01-01",
+      "daysLate": 280,
+      "status": "LEGAL"
+    },
+    {
+      "debtId": "DEBT-001-03",
+      "contractReference": "CTR-039-2025",
+      "amount": 78000,
+      "dueDate": "2026-07-20",
+      "daysLate": 12,
+      "status": "OVERDUE"
+    }
+  ],
+  "interactions": [
+    {
+      "interactionId": "INT-001-01",
+      "channel": "PHONE",
+      "actionLabel": "Appel téléphonique sortant",
+      "interactionDate": "2026-07-25",
+      "agentName": "Marie Dupont",
+      "outcome": "Pas de réponse",
+      "hasPromise": false
+    },
+    {
+      "interactionId": "INT-001-02",
+      "channel": "LETTER",
+      "actionLabel": "Envoi courrier 1er rappel",
+      "interactionDate": "2026-07-28",
+      "agentName": "Marie Dupont",
+      "outcome": "Envoyé",
+      "hasPromise": false
+    },
+    {
+      "interactionId": "INT-001-03",
+      "channel": "PHONE",
+      "actionLabel": "Appel de relance",
+      "interactionDate": "2026-07-15",
+      "agentName": "Omar Tazi",
+      "outcome": "Accord verbal partiel",
+      "hasPromise": false
+    },
+    {
+      "interactionId": "INT-001-04",
+      "channel": "EMAIL",
+      "actionLabel": "Email de mise en demeure",
+      "interactionDate": "2026-05-20",
+      "agentName": "Marie Dupont",
+      "outcome": "Lu – accusé de lecture",
+      "hasPromise": false
+    },
+    {
+      "interactionId": "INT-001-05",
+      "channel": "PHONE",
+      "actionLabel": "Appel de relance",
+      "interactionDate": "2026-04-10",
+      "agentName": "Marie Dupont",
+      "outcome": "Promesse de paiement",
+      "hasPromise": true,
+      "promiseAmount": 300000,
+      "promiseDate": "2026-04-30"
+    }
+  ],
+  "documents": [
+    {
+      "documentId": "DOC-001-01",
+      "documentType": "CONTRAT",
+      "documentLabel": "Contrat de crédit CTR-001-2024",
+      "uploadedAt": "2024-03-15",
+      "uploadedBy": "AGT-001",
+      "fileSize": 245760,
+      "mimeType": "application/pdf"
+    },
+    {
+      "documentId": "DOC-001-02",
+      "documentType": "MISE_EN_DEMEURE",
+      "documentLabel": "Mise en demeure 2026-05-20",
+      "uploadedAt": "2026-05-20",
+      "uploadedBy": "AGT-001",
+      "fileSize": 102400,
+      "mimeType": "application/pdf"
+    },
+    {
+      "documentId": "DOC-001-03",
+      "documentType": "JUGEMENT",
+      "documentLabel": "Ordonnance de saisie-arrêt",
+      "uploadedAt": "2026-06-10",
+      "uploadedBy": "AGT-001",
+      "fileSize": 512000,
+      "mimeType": "application/pdf"
+    },
+    {
+      "documentId": "DOC-001-04",
+      "documentType": "GARANTIE",
+      "documentLabel": "Acte hypothèque – Local commercial Casablanca",
+      "uploadedAt": "2020-06-15",
+      "uploadedBy": "AGT-003",
+      "fileSize": 389120,
+      "mimeType": "application/pdf"
+    }
+  ],
+  "paymentPlan": {
+    "totalAmount": 1513000,
+    "installmentCount": 6,
+    "frequency": "MONTHLY",
+    "firstInstallmentDate": "2026-09-01",
+    "derogation": true,
+    "derogationReason": "Accord superviseur J. Martin – difficulté temporaire de trésorerie",
+    "installments": [
+      { "installmentNumber": 1, "dueDate": "2026-09-01", "amount": 252167, "status": "SCHEDULED" },
+      { "installmentNumber": 2, "dueDate": "2026-10-01", "amount": 252167, "status": "SCHEDULED" },
+      { "installmentNumber": 3, "dueDate": "2026-11-01", "amount": 252167, "status": "SCHEDULED" },
+      { "installmentNumber": 4, "dueDate": "2026-12-01", "amount": 252167, "status": "SCHEDULED" },
+      { "installmentNumber": 5, "dueDate": "2027-01-01", "amount": 252167, "status": "SCHEDULED" },
+      { "installmentNumber": 6, "dueDate": "2027-02-01", "amount": 252165, "status": "SCHEDULED" }
+    ]
+  },
+  "legalInfo": {
+    "legalPhase": "EXECUTION",
+    "status": "IN_PROGRESS",
+    "lawyerName": "Me. Hamid Tazi",
+    "courtName": "Tribunal de Commerce de Casablanca",
+    "filingDate": "2026-03-10",
+    "hearingDate": "2026-09-15",
+    "debtAmount": 1513000,
+    "legalFees": 45000,
+    "events": [
+      {
+        "eventId": "EVT-L001-01",
+        "eventType": "FILING",
+        "eventLabel": "Dépôt de la plainte",
+        "eventDate": "2026-03-10",
+        "description": "Assignation en justice déposée au Tribunal de Commerce de Casablanca",
+        "performedBy": "Me. Hamid Tazi"
+      },
+      {
+        "eventId": "EVT-L001-02",
+        "eventType": "HEARING_SCHEDULED",
+        "eventLabel": "Audience fixée",
+        "eventDate": "2026-04-05",
+        "description": "1ère audience fixée au 15/09/2026",
+        "performedBy": "Tribunal de Commerce de Casablanca"
+      },
+      {
+        "eventId": "EVT-L001-03",
+        "eventType": "SEIZURE_ORDER",
+        "eventLabel": "Ordonnance de saisie conservatoire",
+        "eventDate": "2026-06-10",
+        "description": "Saisie conservatoire accordée sur les comptes bancaires du débiteur",
+        "performedBy": "Me. Hamid Tazi",
+        "documentId": "DOC-001-03"
+      }
+    ]
+  },
+  "history": [
+    {
+      "entryId": "HIST-001-01",
+      "entryDate": "2026-08-01T09:15:00",
+      "actor": "Marie Dupont",
+      "action": "Mise à jour phase → LEGAL",
+      "details": "Passage en phase contentieuse suite à l'échec des relances amiables"
+    },
+    {
+      "entryId": "HIST-001-02",
+      "entryDate": "2026-07-28T14:00:00",
+      "actor": "Système",
+      "action": "Envoi courrier recommandé",
+      "details": "Courrier 1er rappel envoyé automatiquement (règle R-AMIABLE-3)"
+    },
+    {
+      "entryId": "HIST-001-03",
+      "entryDate": "2026-06-10T11:30:00",
+      "actor": "Me. Hamid Tazi",
+      "action": "Ordonnance de saisie reçue",
+      "details": "Saisie conservatoire accordée – document téléversé"
+    },
+    {
+      "entryId": "HIST-001-04",
+      "entryDate": "2026-05-20T10:00:00",
+      "actor": "Marie Dupont",
+      "action": "Envoi mise en demeure",
+      "details": "Email de mise en demeure envoyé au débiteur"
+    },
+    {
+      "entryId": "HIST-001-05",
+      "entryDate": "2026-04-10T09:00:00",
+      "actor": "Marie Dupont",
+      "action": "Promesse de paiement enregistrée",
+      "details": "300 000 MAD promise pour le 30/04/2026 — non honorée"
+    },
+    {
+      "entryId": "HIST-001-06",
+      "entryDate": "2025-11-10T08:00:00",
+      "actor": "Système",
+      "action": "Dossier ouvert",
+      "details": "Création automatique suite au premier impayé détecté"
+    }
+  ]
+}

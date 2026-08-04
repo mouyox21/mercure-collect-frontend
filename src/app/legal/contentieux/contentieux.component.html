@@ -1,0 +1,284 @@
+<div class="cx">
+
+  @switch (viewState()) {
+
+    @case ('loading') {
+      <div class="cx__state-wrap">
+        <mc-skeleton-loader variant="list" [rows]="8" />
+      </div>
+    }
+
+    @case ('error') {
+      <div class="cx__state-wrap">
+        <mc-error-state
+          message="Impossible de charger les dossiers contentieux."
+          (retry)="load()"
+        />
+      </div>
+    }
+
+    @case ('forbidden') {
+      <div class="cx__state-wrap">
+        <mc-forbidden-state />
+      </div>
+    }
+
+    @case ('success') {
+
+      @if (dataDate()) {
+        <mc-stale-data-banner
+          [message]="'Données au ' + dataDate()"
+          (refresh)="load()" />
+      }
+
+      <!-- Page header ──────────────────────────────────────────────────────── -->
+      <div class="cx__page-header">
+        <div class="cx__page-header-left">
+          <h1 class="cx__page-title">Contentieux</h1>
+          <span class="cx__page-count">{{ filteredItems().length }} dossier(s)</span>
+        </div>
+      </div>
+
+      <!-- Amiable-relances global banner ──────────────────────────────────── -->
+      <div class="cx__relance-banner" role="alert">
+        <span class="cx__relance-icon" aria-hidden="true">🚫</span>
+        <span>Les relances amiables automatiques sont <strong>bloquées</strong> pour tous les dossiers en phase contentieuse.</span>
+      </div>
+
+      <!-- Filters ─────────────────────────────────────────────────────────── -->
+      <div class="cx__filters">
+
+        <div class="cx__filter-field">
+          <label class="cx__filter-label" for="f-status">Statut juridique</label>
+          <select
+            id="f-status"
+            class="cx__filter-select"
+            (change)="filterStatus.set($any($event.target).value)"
+          >
+            <option value="">Tous les statuts</option>
+            @for (opt of statusOptions; track opt.value) {
+              <option [value]="opt.value" [selected]="filterStatus() === opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="cx__filter-field">
+          <label class="cx__filter-label" for="f-phase">Phase</label>
+          <select
+            id="f-phase"
+            class="cx__filter-select"
+            (change)="filterPhase.set($any($event.target).value)"
+          >
+            <option value="">Toutes les phases</option>
+            @for (opt of phaseOptions; track opt.value) {
+              <option [value]="opt.value" [selected]="filterPhase() === opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="cx__filter-field">
+          <label class="cx__filter-label" for="f-lawyer">Avocat</label>
+          <select
+            id="f-lawyer"
+            class="cx__filter-select"
+            (change)="filterLawyer.set($any($event.target).value)"
+          >
+            <option value="">Tous les avocats</option>
+            @for (opt of lawyerOptions(); track opt.value) {
+              <option [value]="opt.value" [selected]="filterLawyer() === opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+
+        @if (filterStatus() || filterPhase() || filterLawyer()) {
+          <button
+            type="button"
+            class="cx__filter-clear"
+            (click)="filterStatus.set(''); filterPhase.set(''); filterLawyer.set('')"
+          >
+            ✕ Réinitialiser
+          </button>
+        }
+
+      </div>
+
+      <!-- Main layout ─────────────────────────────────────────────────────── -->
+      <div class="cx__layout" [class.cx__layout--split]="selectedCase()">
+
+        <!-- DataGrid ─────────────────────────────────────────────────────── -->
+        <div class="cx__grid">
+          @if (filteredItems().length === 0) {
+            <div class="cx__state-wrap">
+              <mc-empty-state message="Aucun dossier contentieux ne correspond aux filtres sélectionnés." />
+            </div>
+          } @else {
+          <mc-data-grid
+            [rows]="rows()"
+            [columns]="columns"
+            [totalItems]="filteredItems().length"
+            [pageSize]="25"
+            [rowClickable]="true"
+            (rowClick)="onRowClick($event)"
+          />
+          }
+        </div>
+
+        <!-- Detail panel ──────────────────────────────────────────────────── -->
+        @if (selectedCase()) {
+          <aside class="cx__detail" aria-label="Détail du dossier contentieux">
+
+            <!-- Detail header ──────────────────────────────────────────────── -->
+            <div class="cx__detail-header">
+              <div class="cx__detail-title-group">
+                <h2 class="cx__detail-ref">{{ selectedCase()!.caseReference }}</h2>
+                <span class="cx__detail-debtor">{{ selectedCase()!.debtorName }}</span>
+              </div>
+              <div class="cx__detail-header-actions">
+                <button
+                  type="button"
+                  class="cx__detail-link-btn"
+                  title="Ouvrir le dossier"
+                  (click)="navigateToDossier(selectedCase()!.caseId)"
+                >
+                  <span aria-hidden="true">↗</span> Dossier
+                </button>
+                <button
+                  type="button"
+                  class="cx__close-btn"
+                  aria-label="Fermer le panneau"
+                  (click)="closeDetail()"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <!-- Phase & status badges ──────────────────────────────────────── -->
+            <div class="cx__detail-badges">
+              <span class="cx__badge cx__badge--phase">{{ phaseLabel(selectedCase()!.phase) }}</span>
+              <span class="cx__badge cx__badge--status">{{ statusLabel(selectedCase()!.status) }}</span>
+            </div>
+
+            <!-- Relances amiables blocking ─────────────────────────────────── -->
+            <div class="cx__block-notice">
+              <span class="cx__block-icon" aria-hidden="true">🚫</span>
+              <div>
+                <strong>Relances amiables bloquées</strong>
+                <p class="cx__block-desc">Ce dossier est en phase contentieuse. Toute relance amiable (appel, SMS, email, courrier) est automatiquement suspendue.</p>
+              </div>
+            </div>
+
+            <!-- Financial summary ──────────────────────────────────────────── -->
+            <section class="cx__detail-section" aria-label="Synthèse financière">
+              <h3 class="cx__detail-section-title">Synthèse financière</h3>
+              <div class="cx__detail-rows">
+                <div class="cx__detail-row">
+                  <span class="cx__detail-row-label">Montant de la dette</span>
+                  <span class="cx__detail-row-value cx__detail-row-value--amount">{{ formatAmount(selectedCase()!.debtAmount) }}</span>
+                </div>
+                <div class="cx__detail-row">
+                  <span class="cx__detail-row-label">Frais juridiques</span>
+                  <span class="cx__detail-row-value">{{ formatAmount(selectedCase()!.legalFees ?? 0) }}</span>
+                </div>
+                <div class="cx__detail-row cx__detail-row--total">
+                  <span class="cx__detail-row-label"><strong>Total</strong></span>
+                  <span class="cx__detail-row-value cx__detail-row-value--amount"><strong>{{ formatAmount(selectedCase()!.debtAmount + (selectedCase()!.legalFees ?? 0)) }}</strong></span>
+                </div>
+              </div>
+            </section>
+
+            <!-- Partners ──────────────────────────────────────────────────── -->
+            <section class="cx__detail-section" aria-label="Partenaires juridiques">
+              <h3 class="cx__detail-section-title">Intervenants</h3>
+              <div class="cx__partners">
+
+                <div class="cx__partner">
+                  <span class="cx__partner-role">⚖️ Avocat</span>
+                  <span class="cx__partner-name">{{ selectedCase()!.lawyerName ?? '—' }}</span>
+                  @if (selectedCase()!.lawyerId) {
+                    <span class="cx__partner-id">{{ selectedCase()!.lawyerId }}</span>
+                  }
+                </div>
+
+                @if (selectedCase()!.bailiffName) {
+                  <div class="cx__partner">
+                    <span class="cx__partner-role">📌 Huissier</span>
+                    <span class="cx__partner-name">{{ selectedCase()!.bailiffName }}</span>
+                    @if (selectedCase()!.bailiffId) {
+                      <span class="cx__partner-id">{{ selectedCase()!.bailiffId }}</span>
+                    }
+                  </div>
+                }
+
+                @if (selectedCase()!.courtName) {
+                  <div class="cx__partner">
+                    <span class="cx__partner-role">🏛️ Tribunal</span>
+                    <span class="cx__partner-name">{{ selectedCase()!.courtName }}</span>
+                  </div>
+                }
+
+              </div>
+            </section>
+
+            <!-- Key dates ─────────────────────────────────────────────────── -->
+            <section class="cx__detail-section" aria-label="Dates clés">
+              <h3 class="cx__detail-section-title">Dates clés</h3>
+              <div class="cx__detail-rows">
+                @if (selectedCase()!.filingDate) {
+                  <div class="cx__detail-row">
+                    <span class="cx__detail-row-label">Date de dépôt</span>
+                    <span class="cx__detail-row-value">{{ formatDate(selectedCase()!.filingDate!) }}</span>
+                  </div>
+                }
+                @if (selectedCase()!.hearingDate) {
+                  <div class="cx__detail-row">
+                    <span class="cx__detail-row-label">Prochaine audience</span>
+                    <span class="cx__detail-row-value cx__detail-row-value--highlight">{{ formatDate(selectedCase()!.hearingDate!) }}</span>
+                  </div>
+                }
+                @if (selectedCase()!.judgmentDate) {
+                  <div class="cx__detail-row">
+                    <span class="cx__detail-row-label">Date de jugement</span>
+                    <span class="cx__detail-row-value">{{ formatDate(selectedCase()!.judgmentDate!) }}</span>
+                  </div>
+                }
+              </div>
+            </section>
+
+            <!-- Legal timeline ────────────────────────────────────────────── -->
+            <section class="cx__detail-section" aria-label="Chronologie juridique">
+              <h3 class="cx__detail-section-title">Chronologie juridique</h3>
+              <ol class="cx__timeline">
+                @for (evt of selectedCase()!.events; track evt.eventId) {
+                  <li class="cx__event">
+                    <div class="cx__event-marker" aria-hidden="true">{{ eventTypeIcon(evt.eventType) }}</div>
+                    <div class="cx__event-body">
+                      <div class="cx__event-header">
+                        <span class="cx__event-label">{{ evt.eventLabel }}</span>
+                        <span class="cx__event-date">{{ formatDate(evt.eventDate) }}</span>
+                      </div>
+                      @if (evt.description) {
+                        <p class="cx__event-desc">{{ evt.description }}</p>
+                      }
+                      @if (evt.performedBy) {
+                        <span class="cx__event-actor">Par : {{ evt.performedBy }}</span>
+                      }
+                      @if (evt.documentId) {
+                        <span class="cx__event-doc">📄 Réf. doc : {{ evt.documentId }}</span>
+                      }
+                    </div>
+                  </li>
+                }
+              </ol>
+            </section>
+
+          </aside>
+        }
+
+      </div><!-- .cx__layout -->
+
+    }
+
+  }<!-- @switch -->
+
+</div>

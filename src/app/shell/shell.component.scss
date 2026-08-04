@@ -1,0 +1,34 @@
+:host {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.shell {
+  &__main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--layout-margin);
+  }
+
+  // Mobile overlay (only shown at < 1280px via @if + sidebar class)
+  &__overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: calc(var(--z-sidebar) - 1);
+
+    @media (min-width: 1280px) {
+      display: none; // overlay never shown on desktop
+    }
+  }
+}

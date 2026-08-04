@@ -1,0 +1,162 @@
+{
+  "items": [
+    {
+      "decisionId": "DEC-001",
+      "caseId": "CASE-001", "caseReference": "MC-2026-001",
+      "decisionType": "NEXT_BEST_ACTION",
+      "decisionDate": "2026-07-28T09:00:00",
+      "segment": "STANDARD",
+      "nextBestAction": "REMINDER_LETTER",
+      "reasonCode": "NBA_FIRST_CONTACT",
+      "reasonLabel": "Premier contact – envoi courrier recommandé",
+      "score": 55,
+      "inputPayload": {
+        "daysLate": 15,
+        "overdueAmount": 185000,
+        "segment": "STANDARD",
+        "previousActions": [],
+        "brokenPromises": 0,
+        "riskScore": 45
+      },
+      "outputPayload": {
+        "nextBestAction": "REMINDER_LETTER",
+        "channel": "LETTER",
+        "urgency": "LOW",
+        "confidence": 0.82
+      }
+    },
+    {
+      "decisionId": "DEC-002",
+      "caseId": "CASE-007", "caseReference": "MC-2026-007",
+      "decisionType": "NEXT_BEST_ACTION",
+      "decisionDate": "2026-07-15T10:30:00",
+      "segment": "HIGH_RISK",
+      "nextBestAction": "PHONE_CALL_INTENSIVE",
+      "reasonCode": "NBA_HIGH_RISK_STANDARD",
+      "reasonLabel": "Segment haut risque – relance téléphonique intensive",
+      "score": 74,
+      "inputPayload": {
+        "daysLate": 52,
+        "overdueAmount": 445000,
+        "segment": "HIGH_RISK",
+        "previousActions": ["EMAIL", "PHONE"],
+        "brokenPromises": 0,
+        "riskScore": 68
+      },
+      "outputPayload": {
+        "nextBestAction": "PHONE_CALL_INTENSIVE",
+        "channel": "PHONE",
+        "urgency": "HIGH",
+        "confidence": 0.79,
+        "alternativeAction": "FIELD_VISIT"
+      },
+      "agentId": "AGT-001",
+      "agentFeedback": "Accord – appel effectué avec succès, promesse verbale obtenue",
+      "agentFeedbackDate": "2026-07-15T14:00:00"
+    },
+    {
+      "decisionId": "DEC-003",
+      "caseId": "CASE-014", "caseReference": "MC-2026-014",
+      "decisionType": "NEXT_BEST_ACTION",
+      "decisionDate": "2026-07-01T08:00:00",
+      "segment": "BROKEN_PROMISE",
+      "nextBestAction": "FORMAL_NOTICE",
+      "reasonCode": "NBA_BROKEN_PROMISE_ESCALATE",
+      "reasonLabel": "Promesse rompue – mise en demeure recommandée",
+      "score": 82,
+      "inputPayload": {
+        "daysLate": 95,
+        "overdueAmount": 385000,
+        "segment": "BROKEN_PROMISE",
+        "previousActions": ["PHONE", "EMAIL", "PROMISE"],
+        "brokenPromises": 1,
+        "riskScore": 78
+      },
+      "outputPayload": {
+        "nextBestAction": "FORMAL_NOTICE",
+        "channel": "LETTER_AR",
+        "urgency": "HIGH",
+        "confidence": 0.88
+      }
+    },
+    {
+      "decisionId": "DEC-004",
+      "caseId": "CASE-018", "caseReference": "MC-2026-018",
+      "decisionType": "NEXT_BEST_ACTION",
+      "decisionDate": "2026-07-20T09:00:00",
+      "segment": "CRITICAL",
+      "nextBestAction": "ESCALATION_PRE_LEGAL",
+      "reasonCode": "NBA_CRITICAL_PRE_LEGAL",
+      "reasonLabel": "Dossier critique – passage pré-contentieux recommandé",
+      "score": 94,
+      "inputPayload": {
+        "daysLate": 145,
+        "overdueAmount": 567000,
+        "segment": "CRITICAL",
+        "previousActions": ["PHONE", "EMAIL", "PROMISE", "FORMAL_NOTICE"],
+        "brokenPromises": 2,
+        "riskScore": 91
+      },
+      "outputPayload": {
+        "nextBestAction": "ESCALATION_PRE_LEGAL",
+        "channel": "ESCALATION",
+        "urgency": "CRITICAL",
+        "confidence": 0.95,
+        "recommendedDeadline": "2026-08-05"
+      }
+    },
+    {
+      "decisionId": "DEC-005",
+      "caseId": "CASE-021", "caseReference": "MC-2026-021",
+      "decisionType": "NEXT_BEST_ACTION",
+      "decisionDate": "2026-06-10T10:00:00",
+      "segment": "PRE_LEGAL",
+      "nextBestAction": "FORMAL_NOTICE_AR",
+      "reasonCode": "NBA_PRE_LEGAL_NOTICE",
+      "reasonLabel": "Pré-contentieux – envoi mise en demeure AR obligatoire",
+      "score": 88,
+      "inputPayload": {
+        "daysLate": 210,
+        "overdueAmount": 890000,
+        "segment": "PRE_LEGAL",
+        "previousActions": ["PHONE", "EMAIL", "FORMAL_NOTICE", "FIELD_VISIT"],
+        "brokenPromises": 0,
+        "riskScore": 86
+      },
+      "outputPayload": {
+        "nextBestAction": "FORMAL_NOTICE_AR",
+        "channel": "LETTER_AR",
+        "urgency": "CRITICAL",
+        "confidence": 0.91
+      }
+    },
+    {
+      "decisionId": "DEC-006",
+      "caseId": "CASE-029", "caseReference": "MC-2026-029",
+      "decisionType": "NEXT_BEST_ACTION",
+      "decisionDate": "2026-07-17T11:00:00",
+      "segment": "STANDARD",
+      "nextBestAction": "OUTBOUND_CALL",
+      "reasonCode": "NBA_STANDARD_CALL",
+      "reasonLabel": "Relance standard – appel téléphonique recommandé",
+      "score": 62,
+      "inputPayload": {
+        "daysLate": 48,
+        "overdueAmount": 145000,
+        "segment": "STANDARD",
+        "previousActions": ["EMAIL"],
+        "brokenPromises": 0,
+        "riskScore": 54
+      },
+      "outputPayload": {
+        "nextBestAction": "OUTBOUND_CALL",
+        "channel": "PHONE",
+        "urgency": "NORMAL",
+        "confidence": 0.76
+      },
+      "agentId": "AGT-002",
+      "agentFeedback": "Désaccord – client préfère contact email uniquement",
+      "agentFeedbackDate": "2026-07-17T15:30:00"
+    }
+  ]
+}
