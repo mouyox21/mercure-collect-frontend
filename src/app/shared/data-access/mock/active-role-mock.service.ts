@@ -8,7 +8,7 @@ import { RoleProfile } from '../permission.types';
 const ROLE_TO_PROFILE: Record<UserRole, RoleProfile> = {
   AGENT:      'agent',
   SUPERVISOR: 'superviseur',
-  MANAGER:    'superviseur', // no dedicated profile yet — inherits supervisor rights
+  MANAGER:    'manager',
   ADMIN:      'administrateur',
 };
 

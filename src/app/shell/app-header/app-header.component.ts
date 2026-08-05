@@ -13,7 +13,7 @@ import { NotificationCenterComponent } from '../notification-center/notification
 const PROTECTED_PREFIXES: Array<{ prefix: string; right: PermissionCode }> = [
   { prefix: '/superviseur', right: 'CASE_ASSIGN' },
   { prefix: '/contentieux', right: 'LEGAL_CASE_VIEW' },
-  { prefix: '/rapports',    right: 'REPORT_EXPORT' },
+  { prefix: '/rapports',    right: 'REPORT_VIEW' },
   { prefix: '/parametrages', right: 'SETTINGS_MANAGE' },
 ];
 

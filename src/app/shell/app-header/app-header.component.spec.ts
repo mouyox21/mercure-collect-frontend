@@ -3,6 +3,8 @@ import { provideRouter } from '@angular/router';
 import { AppHeaderComponent } from './app-header.component';
 import { PermissionService } from '../../shared/data-access/permission.service';
 import { MockPermissionService } from '../../shared/data-access/mock/permission-mock.service';
+import { ActiveRoleService } from '../../shared/data-access/active-role.service';
+import { MockActiveRoleService } from '../../shared/data-access/mock/active-role-mock.service';
 import { UserService } from '../../shared/data-access/user.service';
 import { MockUserService } from '../../shared/data-access/mock/user-mock.service';
 import { CreditorService } from '../../shared/data-access/creditor.service';
@@ -23,6 +25,7 @@ describe('AppHeaderComponent', () => {
       providers: [
         provideRouter([]),
         { provide: PermissionService,   useClass: MockPermissionService   },
+        { provide: ActiveRoleService,   useClass: MockActiveRoleService   },
         { provide: UserService,         useClass: MockUserService         },
         { provide: CreditorService,     useClass: MockCreditorService     },
         { provide: NotificationService, useClass: MockNotificationService },

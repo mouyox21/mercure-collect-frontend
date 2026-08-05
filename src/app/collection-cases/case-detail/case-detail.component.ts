@@ -7,6 +7,7 @@ import {
   ActionModalType,
   ActionSubmitEvent,
   CaseContextDto,
+  ModalFormValue,
   TimelineEvent,
   ViewState,
 } from '../../shared/ui/ui.types';
@@ -14,6 +15,7 @@ import {
   ActionModalComponent,
   ErrorStateComponent,
   ForbiddenStateComponent,
+  ModalFormComponent,
   PromiseListComponent,
   SkeletonLoaderComponent,
   SuccessToastComponent,
@@ -49,6 +51,7 @@ const NBA_TO_ACTION_TYPE: Record<string, ActionModalType> = {
     ErrorStateComponent,
     ForbiddenStateComponent,
     ActionModalComponent,
+    ModalFormComponent,
     PromiseListComponent,
     TimelineComponent,
     SuccessToastComponent,
@@ -67,12 +70,13 @@ export class CaseDetailComponent implements OnInit {
   readonly viewState       = signal<ViewState>('loading');
   readonly caseDetail      = signal<CollectionCaseDetailDto | null>(null);
   readonly activeTab       = signal<TabId>('synthese');
-  readonly actionModalOpen = signal(false);
-  readonly preselectedType = signal<ActionModalType | null>(null);
-  readonly timeline        = signal<TimelineEvent[]>([]);
-  readonly showToast       = signal(false);
-  readonly toastMsg        = signal('');
-  readonly closureBlocked  = signal(false);
+  readonly actionModalOpen  = signal(false);
+  readonly closureModalOpen = signal(false);
+  readonly preselectedType  = signal<ActionModalType | null>(null);
+  readonly timeline         = signal<TimelineEvent[]>([]);
+  readonly showToast        = signal(false);
+  readonly toastMsg         = signal('');
+  readonly closureBlocked   = signal(false);
 
   readonly canAction      = computed(() => this.permSvc.hasRight('ACTION_CREATE'));
   readonly canPromise     = computed(() => this.permSvc.hasRight('PROMISE_CREATE'));
@@ -172,6 +176,12 @@ export class CaseDetailComponent implements OnInit {
       return;
     }
     this.closureBlocked.set(false);
+    this.closureModalOpen.set(true);
+  }
+
+  onCloseConfirmed(_value: ModalFormValue): void {
+    this.closureModalOpen.set(false);
+    this.caseDetail.update(d => d ? { ...d, status: 'CLOSED' } : d);
     this.showSuccess('Dossier clôturé avec succès.');
   }
 

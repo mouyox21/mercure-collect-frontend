@@ -25,7 +25,7 @@ export type ActionType =
 export type TimelineChannel = 'telephone' | 'sms' | 'email' | 'lettre' | 'reunion';
 export type TimelineEventType = 'action' | 'promesse' | 'echeancier' | 'note';
 
-export type ModalUsage = 'action' | 'promesse' | 'echeancier' | 'document' | 'escalade';
+export type ModalUsage = 'action' | 'promesse' | 'echeancier' | 'document' | 'escalade' | 'cloture';
 
 export interface TimelineEvent {
   readonly id: string;

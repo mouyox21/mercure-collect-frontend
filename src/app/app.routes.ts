@@ -42,7 +42,7 @@ export const routes: Routes = [
       {
         path: 'rapports',
         canActivate: [roleGuard],
-        data: { breadcrumb: 'Rapports', requiredRight: 'REPORT_EXPORT' },
+        data: { breadcrumb: 'Rapports', requiredRight: 'REPORT_VIEW' },
         loadChildren: () =>
           import('./reporting/reporting.routes').then(m => m.REPORTING_ROUTES),
       },

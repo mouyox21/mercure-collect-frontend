@@ -65,6 +65,6 @@ import { environment } from '../../../environments/environment';
 })
 export class PermissionDebugComponent {
   protected readonly svc      = inject(PermissionService);
-  protected readonly profiles: RoleProfile[] = ['agent', 'superviseur', 'administrateur'];
+  protected readonly profiles: RoleProfile[] = ['agent', 'superviseur', 'manager', 'administrateur'];
   protected readonly visible  = !environment.production;
 }

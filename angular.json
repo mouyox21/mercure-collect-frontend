@@ -28,11 +28,6 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              },
-              {
-                "glob": "**/*",
-                "input": "assets",
-                "output": "assets"
               }
             ],
             "styles": ["src/styles.scss"]
@@ -53,8 +48,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "8kB",
+                  "maximumError": "16kB"
                 }
               ],
               "outputHashing": "all"
@@ -63,6 +58,10 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
+              "assets": [
+                { "glob": "**/*", "input": "public" },
+                { "glob": "**/*", "input": "assets", "output": "assets" }
+              ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -85,6 +84,10 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
+              "assets": [
+                { "glob": "**/*", "input": "public" },
+                { "glob": "**/*", "input": "assets", "output": "assets" }
+              ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",

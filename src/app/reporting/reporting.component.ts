@@ -22,16 +22,16 @@ interface ReportItem {
 }
 
 const REPORT_CATALOGUE: ReportItem[] = [
-  { id: 'RPT-001', icon: '📊', title: 'Performance de recouvrement',  roles: ['agent', 'superviseur', 'administrateur'] },
-  { id: 'RPT-002', icon: '🤝', title: 'Taux de promesses tenues',     roles: ['agent', 'superviseur', 'administrateur'] },
-  { id: 'RPT-003', icon: '⏱️', title: 'Aging des créances',            roles: ['superviseur', 'administrateur'] },
-  { id: 'RPT-004', icon: '👥', title: 'Performance équipe',            roles: ['superviseur', 'administrateur'] },
-  { id: 'RPT-005', icon: '🔺', title: 'Suivi des escalades',           roles: ['superviseur', 'administrateur'] },
-  { id: 'RPT-006', icon: '🤖', title: 'Analyse IA / DMN',              roles: ['superviseur', 'administrateur'] },
+  { id: 'RPT-001', icon: '📊', title: 'Performance de recouvrement',  roles: ['agent', 'superviseur', 'manager', 'administrateur'] },
+  { id: 'RPT-002', icon: '🤝', title: 'Taux de promesses tenues',     roles: ['agent', 'superviseur', 'manager', 'administrateur'] },
+  { id: 'RPT-003', icon: '⏱️', title: 'Aging des créances',            roles: ['superviseur', 'manager', 'administrateur'] },
+  { id: 'RPT-004', icon: '👥', title: 'Performance équipe',            roles: ['superviseur', 'manager', 'administrateur'] },
+  { id: 'RPT-005', icon: '🔺', title: 'Suivi des escalades',           roles: ['superviseur', 'manager', 'administrateur'] },
+  { id: 'RPT-006', icon: '🤖', title: 'Analyse IA / DMN',              roles: ['superviseur', 'manager', 'administrateur'] },
   { id: 'RPT-007', icon: '🏦', title: 'Encours par créancier',         roles: ['administrateur'] },
   { id: 'RPT-008', icon: '📥', title: 'Imports & rejets',              roles: ['administrateur'] },
   { id: 'RPT-009', icon: '🔍', title: 'Audit des actions',             roles: ['administrateur'] },
-  { id: 'RPT-010', icon: '⚖️', title: 'Contentieux actifs',            roles: ['superviseur', 'administrateur'] },
+  { id: 'RPT-010', icon: '⚖️', title: 'Contentieux actifs',            roles: ['superviseur', 'manager', 'administrateur'] },
 ];
 
 @Component({
@@ -123,10 +123,14 @@ export class ReportingComponent implements OnInit {
 
   readonly topKpis   = computed(() => this.kpis().slice(0, 5));
   readonly chartKpis = computed(() => this.kpis());
+
+  // REPORT_VIEW  — accès à l'écran, catalogue et dashboards
+  readonly canView   = computed(() => this.permissionSvc.hasRight('REPORT_VIEW'));
+  // REPORT_EXPORT — boutons PDF/Excel/CSV (droit plus restrictif, indépendant)
   readonly canExport = computed(() => this.permissionSvc.hasRight('REPORT_EXPORT'));
 
   ngOnInit(): void {
-    if (!this.permissionSvc.hasRight('REPORT_EXPORT')) {
+    if (!this.canView()) {
       this.viewState.set('forbidden');
       return;
     }

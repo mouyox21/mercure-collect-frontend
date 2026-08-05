@@ -69,6 +69,15 @@ const MODAL_CONFIGS: Record<ModalUsage, ModalConfig> = {
     commentaireRequired: true,
     submitLabel: 'Escalader',
   },
+  cloture: {
+    title: 'Confirmer la clôture du dossier',
+    showDate: false,
+    showAmount: false,
+    showCanal: false,
+    motifRequired: true,
+    commentaireRequired: false,
+    submitLabel: 'Confirmer la clôture',
+  },
 };
 
 const CANAL_OPTIONS = ['Téléphone', 'SMS', 'E-mail', 'Lettre', 'Réunion'] as const;

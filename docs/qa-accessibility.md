@@ -17,7 +17,7 @@ Date : 2026-08-03 — session QA accessibility.
 | Landmarks (1.3.6) | ✗ 1 cas | ✓ Corrigé |
 | Formulaires — état invalide (3.3.1) | ✗ Absent | ✓ Corrigé |
 | Icônes décoratives (1.3.3) | ✗ 8 flèches | ✓ Corrigé |
-| Drag & drop Kanban (2.1.1) | ✗ Connue | ⚠ Limitation documentée |
+| Drag & drop Kanban (2.1.1) | ✗ Connue | ✓ Corrigé — clavier DnD implémenté |
 
 ---
 
@@ -122,9 +122,44 @@ protected onEscape(): void {
 
 `ModalFormComponent.focusFirstElement()` place le focus sur le premier élément focusable à l'ouverture. Escape ferme la modale. Conforme.
 
-### 2.5 KanbanBoard — drag & drop souris uniquement
+### 2.5 KanbanBoard — navigation clavier complète ✓ (résolu 2026-08-05)
 
-Le drag & drop natif HTML5 n'est pas accessible au clavier. **Limitation documentée** : le Kanban est une vue complémentaire ; la vue Groupe/Liste du DataGrid doit être la vue primaire pour les utilisateurs de clavier et de technologies d'assistance. Une implémentation de DnD clavier (flèches + Espace pour saisir/déposer) est recommandée pour une version future.
+**Solution implémentée** : mécanisme de déplacement alternatif au drag & drop souris, conditionnel à `dragDropEnabled=true` (même condition que le DnD souris).
+
+**Architecture d'accessibilité** :
+
+| Élément | Rôle / Attribut | Valeur |
+|---------|----------------|--------|
+| `.kanban__sr-only` (premier enfant) | `aria-live="polite"` + `aria-atomic="true"` | Région d'annonces live — annonce chaque changement d'état |
+| `.kanban__column` | `role="group"` + `aria-label` | Nom de la colonne |
+| `.kanban__cards` | `role="list"` | Liste sémantique de dossiers |
+| `.kanban__card-wrap` | `role="listitem"` + `tabindex="0"` (si DnD) | Focus target quand DnD activé |
+| `.kanban__card-wrap` | `aria-label` (si DnD) | Description complète du dossier (+ "en cours de déplacement vers X" en mode grab) |
+| `mc-case-card` article | `[tabIndex]` input → `-1` si DnD activé | Retiré de l'ordre de tabulation quand le card-wrap est le focus target |
+
+**Flux clavier (quand `dragDropEnabled=true`)** :
+
+| Touche | Contexte | Action |
+|--------|----------|--------|
+| `Tab` / `Shift+Tab` | Toujours | Navigation séquentielle entre card-wraps et boutons colonnes |
+| `Espace` | Focus sur carte, pas en mode déplacement | **Active le mode déplacement** + annonce via `aria-live` |
+| `Entrée` | Focus sur carte, pas en mode déplacement | **Ouvre le dossier** (équivalent clic, émet `cardSelected`) |
+| `←` / `→` | Carte en mode déplacement | Déplace vers colonne précédente/suivante + annonce |
+| `Entrée` ou `Espace` | Carte en mode déplacement | **Confirme le déplacement** → émet `rowMoved` |
+| `Échap` | Anywhere dans le composant (HostListener) | **Annule le mode déplacement** — la carte reste à sa position d'origine |
+
+**États visuels** :
+- `.kanban__card-wrap--moving` : outline dashed sur la carte saisie
+- `.kanban__column--keyboard-target` : highlight bordure sur la colonne cible
+- Focus visible (`:focus-visible`) sur le card-wrap quand tabindex=0
+
+**Compatibilité** : le drag & drop souris fonctionne à l'identique. Les deux mécanismes coexistent.
+
+**Fichiers modifiés** :
+- `case-card.component.ts/.html` : ajout input `tabIndex` (défaut `0`) — rétrocompatible
+- `kanban-board.component.ts` : signaux `keyboardMoveCard/SourceKey/TargetKey/liveMessage`, méthodes `onCardKeydown()`, `onKeyboardMoveEscape()` (HostListener), helpers privés
+- `kanban-board.component.html` : `role="group/list/listitem"`, `aria-live`, `tabindex`, `aria-label` dynamiques
+- `kanban-board.component.scss` : `__sr-only`, `__card-wrap--moving`, `__column--keyboard-target`, `:focus-visible` sur card-wrap
 
 ---
 
@@ -234,11 +269,12 @@ Patron appliqué : `<span aria-hidden="true">→</span>` pour les caractères d�
 | `kanban__empty` muted text | `kanban-board.component.scss` | Basse | Idem |
 | `kpi-card__title` uppercase 14px sur fond card | `kpi-card.component.scss` | Basse | Déjà `--color-text-secondary` (4.77:1 ✓ — vérifier avec outil) |
 | DataGrid — groupe header `--color-text-secondary` sur navy-light | `data-grid.component.scss` | Basse | Légèrement sous AA à 12px — ok en 600 (gras) |
-| Kanban DnD — non accessible clavier | `kanban-board.component.ts/.html` | Haute | Implémenter clavier DnD (Espace + flèches) ou proposer alternative dédiée |
+| ~~Kanban DnD — non accessible clavier~~ | `kanban-board.component.ts/.html` | ~~Haute~~ | **Résolu 2026-08-05** — voir §2.5 |
 | `aria-describedby` sur champs formulaire (erreurs persistantes) | `modal-form.component.html` | Moyenne | Rendre les conteneurs d'erreur toujours présents (vides), les lier via `aria-describedby` |
 | Focus trap modal — retour au déclencheur à la fermeture | `modal-form.component.ts` | Moyenne | Sauvegarder `document.activeElement` avant ouverture, le restaurer à `closeModal()` |
 | Ordre de tabulation dans le drawer Dashboard Agent | `dashboard.component.html` | Basse | Vérifier que le focus entre dans le drawer à l'ouverture |
 
 ---
 
-*Généré le 2026-08-03 — session QA accessibility*
+*Généré le 2026-08-03 — session QA accessibility*  
+*Mise à jour 2026-08-05 — KanbanBoard keyboard DnD implémenté (§2.5 résolu)*

@@ -592,6 +592,14 @@
     />
   }
 
+  <!-- Closure confirmation modal ──────────────────────────────────────────── -->
+  <mc-modal-form
+    [open]="closureModalOpen()"
+    usage="cloture"
+    (submitted)="onCloseConfirmed($event)"
+    (closed)="closureModalOpen.set(false)"
+  />
+
   <!-- Toast ──────────────────────────────────────────────────────────────── -->
   @if (showToast()) {
     <mc-success-toast

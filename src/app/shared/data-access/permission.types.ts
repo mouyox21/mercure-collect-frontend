@@ -13,11 +13,12 @@ export type PermissionCode =
   | 'LEGAL_CASE_VIEW'
   | 'LEGAL_CASE_MANAGE'
   | 'ESCALATION_CREATE'
+  | 'REPORT_VIEW'
   | 'REPORT_EXPORT'
   | 'SETTINGS_MANAGE'
   | 'AUDIT_VIEW';
 
-export type RoleProfile = 'agent' | 'superviseur' | 'administrateur';
+export type RoleProfile = 'agent' | 'superviseur' | 'manager' | 'administrateur';
 
 export const ALL_PERMISSIONS: readonly PermissionCode[] = [
   'DASHBOARD_VIEW',
@@ -34,6 +35,7 @@ export const ALL_PERMISSIONS: readonly PermissionCode[] = [
   'LEGAL_CASE_VIEW',
   'LEGAL_CASE_MANAGE',
   'ESCALATION_CREATE',
+  'REPORT_VIEW',
   'REPORT_EXPORT',
   'SETTINGS_MANAGE',
   'AUDIT_VIEW',
@@ -64,6 +66,20 @@ export const ROLE_PERMISSIONS: Record<RoleProfile, ReadonlySet<PermissionCode>> 
     'PAYMENT_PLAN_APPROVE',
     'LEGAL_CASE_VIEW',
     'ESCALATION_CREATE',
+    'REPORT_VIEW',
+    'REPORT_EXPORT',
+  ]),
+  // Manager = vision consolidée multi-portefeuilles, pilotage stratégique.
+  // Pas de contact client direct, pas d'édition opérationnelle, pas d'accès admin/contentieux.
+  manager: new Set<PermissionCode>([
+    'DASHBOARD_VIEW',
+    'CASE_VIEW',
+    'CASE_ASSIGN',
+    'CLIENT_VIEW',
+    'CLIENT_FINANCIAL_VIEW',
+    'PAYMENT_PLAN_APPROVE',
+    'ESCALATION_CREATE',
+    'REPORT_VIEW',
     'REPORT_EXPORT',
   ]),
   administrateur: new Set<PermissionCode>(ALL_PERMISSIONS as PermissionCode[]),

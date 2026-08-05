@@ -1,9 +1,19 @@
 <div class="kanban">
+  <!-- AT live region — announces keyboard DnD state changes -->
+  <div
+    class="kanban__sr-only"
+    aria-live="polite"
+    aria-atomic="true"
+  >{{ liveMessage() }}</div>
+
   <div class="kanban__board">
     @for (col of columns(); track col.key) {
       <div
         class="kanban__column"
+        role="group"
+        [attr.aria-label]="col.label"
         [class.kanban__column--drag-over]="dragOverKey() === col.key"
+        [class.kanban__column--keyboard-target]="isKeyboardTarget(col.key)"
         (dragover)="onDragOver($event, col.key)"
         (dragleave)="onDragLeave(col.key)"
         (drop)="onDrop($event, col.key)"
@@ -30,19 +40,25 @@
         </div>
 
         @if (!col.collapsed) {
-          <div class="kanban__cards">
+          <div class="kanban__cards" role="list">
             @if (col.cards.length === 0) {
               <p class="kanban__empty">Aucun dossier</p>
             } @else {
               @for (card of col.cards; track trackCard($index, card)) {
                 <div
                   class="kanban__card-wrap"
+                  role="listitem"
+                  [attr.tabindex]="dragDropEnabled() ? 0 : null"
+                  [attr.aria-label]="dragDropEnabled() ? cardAriaLabel(card) : null"
+                  [class.kanban__card-wrap--moving]="isCardMoving(card)"
                   [attr.draggable]="dragDropEnabled() ? 'true' : null"
                   (dragstart)="onDragStart($event, card.row, col.key)"
                   (dragend)="onDragEnd()"
+                  (keydown)="onCardKeydown($event, card, col.key)"
                 >
                   <mc-case-card
                     [case]="card.caseData"
+                    [tabIndex]="dragDropEnabled() ? -1 : 0"
                     (selected)="cardSelected.emit($event)"
                   />
                 </div>

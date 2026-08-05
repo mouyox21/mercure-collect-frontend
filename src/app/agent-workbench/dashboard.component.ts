@@ -1,6 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { AgentWorkbenchDto, AgentWorkbenchService } from '../shared/data-access/agent-workbench.service';
 import { CollectionCaseService } from '../shared/data-access/collection-case.service';
+import { PermissionService } from '../shared/data-access/permission.service';
 import { CollectionCaseDetailDto } from '../shared/data-access/models/collection-case.model';
 import {
   ViewState, ModalUsage, ModalFormValue,
@@ -49,6 +50,7 @@ type ActiveView = 'groupe' | 'liste' | 'kanban';
 export class DashboardComponent implements OnInit {
   private readonly workbenchSvc = inject(AgentWorkbenchService);
   private readonly caseSvc      = inject(CollectionCaseService);
+  private readonly permSvc      = inject(PermissionService);
 
   // ── ViewState ─────────────────────────────────────────────────────────────
   readonly viewState    = signal<ViewState>('loading');
@@ -98,7 +100,10 @@ export class DashboardComponent implements OnInit {
     { key: 'priority',          label: 'Priorité',         sortable: false, width: '100px',
       cellFn: (row) => this.priorityText(String(row['priority'])) },
     { key: 'lastActionLabel',   label: 'Dernière action',  sortable: false },
-    { key: 'mainPhone',         label: 'Téléphone',        sortable: false, width: '130px' },
+    { key: 'mainPhone',         label: 'Téléphone',        sortable: false, width: '130px',
+      cellFn: (row) => this.permSvc.hasRight('CLIENT_CONTACT_VIEW')
+        ? (String(row['mainPhone'] ?? '') || '—')
+        : '•••' },
   ];
 
   // ── Computed ──────────────────────────────────────────────────────────────

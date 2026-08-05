@@ -3,12 +3,15 @@ import { provideRouter } from '@angular/router';
 import { AppSidebarComponent } from './app-sidebar.component';
 import { PermissionService } from '../../shared/data-access/permission.service';
 import { MockPermissionService } from '../../shared/data-access/mock/permission-mock.service';
+import { ActiveRoleService } from '../../shared/data-access/active-role.service';
+import { MockActiveRoleService } from '../../shared/data-access/mock/active-role-mock.service';
 import { UserService } from '../../shared/data-access/user.service';
 import { MockUserService } from '../../shared/data-access/mock/user-mock.service';
+import { UserRole } from '../../shared/data-access/user-role.types';
 
 describe('AppSidebarComponent', () => {
   let fixture: ComponentFixture<AppSidebarComponent>;
-  let permissions: MockPermissionService;
+  let activeRole: MockActiveRoleService;
 
   function host(): HTMLElement { return fixture.nativeElement as HTMLElement; }
 
@@ -18,16 +21,25 @@ describe('AppSidebarComponent', () => {
       providers: [
         provideRouter([]),
         { provide: PermissionService, useClass: MockPermissionService },
+        { provide: ActiveRoleService, useClass: MockActiveRoleService },
         { provide: UserService,       useClass: MockUserService       },
       ],
     }).compileComponents();
 
-    permissions = TestBed.inject(PermissionService) as MockPermissionService;
+    activeRole = TestBed.inject(ActiveRoleService) as MockActiveRoleService;
   });
+
+  function setRole(role: UserRole): void { activeRole.setRole(role); }
 
   function create(): void {
     fixture = TestBed.createComponent(AppSidebarComponent);
     fixture.detectChanges();
+  }
+
+  /** All visible nav labels (common + contextual). */
+  function allLabels(): string[] {
+    return [...host().querySelectorAll('.sidebar__label, .sidebar__ctx-label')]
+      .map(el => el.textContent?.trim() ?? '');
   }
 
   it('should display the brand name', () => {
@@ -36,65 +48,65 @@ describe('AppSidebarComponent', () => {
   });
 
   it('should display the role badge for agent', () => {
-    permissions.setProfile('agent');
+    setRole('AGENT');
     create();
-    expect(host().querySelector('.sidebar__role-badge')?.textContent?.trim()).toBe('agent');
+    expect(host().querySelector('.sidebar__role-badge')?.textContent?.trim()).toBe('Agent');
   });
 
   it('should display the role badge for superviseur', () => {
-    permissions.setProfile('superviseur');
+    setRole('SUPERVISOR');
     create();
-    expect(host().querySelector('.sidebar__role-badge')?.textContent?.trim()).toBe('superviseur');
+    expect(host().querySelector('.sidebar__role-badge')?.textContent?.trim()).toBe('Superviseur');
   });
 
   it('should show Dashboard link when user has DASHBOARD_VIEW', () => {
-    permissions.setProfile('agent');
+    setRole('AGENT');
     create();
-    const labels = [...host().querySelectorAll('.sidebar__label')].map(el => el.textContent?.trim());
-    expect(labels).toContain('Dashboard');
+    expect(allLabels()).toContain('Dashboard');
   });
 
-  it('should hide Rapports link when agent lacks REPORT_EXPORT', () => {
-    permissions.setProfile('agent');
+  it('should not show Rapports-route items for agent (lacks REPORT_VIEW)', () => {
+    setRole('AGENT');
     create();
-    const labels = [...host().querySelectorAll('.sidebar__label')].map(el => el.textContent?.trim());
-    expect(labels).not.toContain('Rapports');
+    // Agent has no contextual menu → no Performance / Reporting links to /rapports.
+    expect(allLabels()).not.toContain('Performance');
+    expect(allLabels()).not.toContain('Reporting');
   });
 
-  it('should show Rapports link when superviseur has REPORT_EXPORT', () => {
-    permissions.setProfile('superviseur');
+  it('should show Rapports-route items for manager (has REPORT_VIEW)', () => {
+    setRole('MANAGER');
     create();
-    const labels = [...host().querySelectorAll('.sidebar__label')].map(el => el.textContent?.trim());
-    expect(labels).toContain('Rapports');
+    const ctxLabels = [...host().querySelectorAll('.sidebar__ctx-label')]
+      .map(el => el.textContent?.trim() ?? '');
+    expect(ctxLabels).toContain('Performance');
+    expect(ctxLabels).toContain('Reporting');
   });
 
-  it('should hide Paramétrages when agent lacks SETTINGS_MANAGE', () => {
-    permissions.setProfile('agent');
+  it('should hide Paramétrage when agent lacks SETTINGS_MANAGE', () => {
+    setRole('AGENT');
     create();
-    const labels = [...host().querySelectorAll('.sidebar__label')].map(el => el.textContent?.trim());
-    expect(labels).not.toContain('Paramétrages');
+    expect(allLabels()).not.toContain('Paramétrage');
   });
 
   it('should show all nav items when administrateur', () => {
-    permissions.setProfile('administrateur');
+    setRole('ADMIN');
     create();
-    const labels = [...host().querySelectorAll('.sidebar__label')].map(el => el.textContent?.trim());
+    const labels = allLabels();
     expect(labels).toContain('Dashboard');
     expect(labels).toContain('Dossiers');
     expect(labels).toContain('Clients');
-    expect(labels).toContain('Rapports');
-    expect(labels).toContain('Paramétrages');
+    expect(labels).toContain('Paramétrage');
   });
 
   it('should display agent initials and name', () => {
-    permissions.setProfile('agent');
+    setRole('AGENT');
     create();
     expect(host().querySelector('.sidebar__avatar')?.textContent?.trim()).toBe('MD');
     expect(host().querySelector('.sidebar__agent-name')?.textContent?.trim()).toBe('Marie Dupont');
   });
 
   it('should display superviseur initials and name', () => {
-    permissions.setProfile('superviseur');
+    setRole('SUPERVISOR');
     create();
     expect(host().querySelector('.sidebar__avatar')?.textContent?.trim()).toBe('JM');
     expect(host().querySelector('.sidebar__agent-name')?.textContent?.trim()).toBe('Jean Martin');

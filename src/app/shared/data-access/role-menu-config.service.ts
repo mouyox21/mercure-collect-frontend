@@ -38,9 +38,9 @@ const MENU_CONFIG: Record<UserRole, RoleMenuEntry[]> = {
   MANAGER: [
     { label: 'Vue manager',   icon: 'trending-up',    route: '/superviseur/dashboard',     requiredRight: 'CASE_ASSIGN' },
     { label: 'Portefeuilles', icon: 'briefcase',      route: '/superviseur/portefeuilles', requiredRight: 'CASE_ASSIGN' },
-    { label: 'Performance',   icon: 'trophy',         route: '/rapports', queryParams: { vue: 'performance' }, requiredRight: 'REPORT_EXPORT' },
+    { label: 'Performance',   icon: 'trophy',         route: '/rapports', queryParams: { vue: 'performance' }, requiredRight: 'REPORT_VIEW' },
     { label: 'Décisions',     icon: 'check-circle',   route: '/superviseur/escalades',                        requiredRight: 'ESCALATION_CREATE' },
-    { label: 'Reporting',     icon: 'clipboard-list', route: '/rapports', queryParams: { vue: 'reporting'  },  requiredRight: 'REPORT_EXPORT' },
+    { label: 'Reporting',     icon: 'clipboard-list', route: '/rapports', queryParams: { vue: 'reporting'  },  requiredRight: 'REPORT_VIEW' },
   ],
   ADMIN: [
     { label: 'Paramétrage',        icon: 'cog',               route: '/parametrages',                 requiredRight: 'SETTINGS_MANAGE' },

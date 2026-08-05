@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  dataSource: 'mock' as const,
+  dataSource: 'mock' as 'mock' | 'api',
   apiBaseUrl: '',
   supersetEmbedUrl: '',
 };

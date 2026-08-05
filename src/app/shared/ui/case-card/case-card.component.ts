@@ -10,8 +10,9 @@ import { StatusBadgeComponent } from '../status-badge/status-badge.component';
   styleUrl: './case-card.component.scss',
 })
 export class CaseCardComponent {
-  readonly case = input.required<CaseData>();
-  readonly variant = input<CaseVariant>('standard');
+  readonly case      = input.required<CaseData>();
+  readonly variant   = input<CaseVariant>('standard');
+  readonly tabIndex  = input<number>(0);
 
   readonly selected = output<CaseData>();
 
