@@ -1,154 +1,92 @@
 @if (open()) {
-  <div
-    class="modal-overlay"
-    role="presentation"
-    (click)="onOverlayClick($event)"
-  >
-    <div
-      #dialogEl
-      class="modal"
-      role="dialog"
-      aria-modal="true"
-      [attr.aria-label]="config().title"
-    >
-      <header class="modal__header">
-        <h2 class="modal__title">{{ config().title }}</h2>
-        <button
-          class="modal__close"
-          type="button"
-          aria-label="Fermer"
-          (click)="closeModal()"
-        >
-          ✕
-        </button>
-      </header>
+<div class="modal-overlay" role="presentation" (click)="onOverlayClick($event)">
+  <div #dialogEl class="modal" role="dialog" aria-modal="true" [attr.aria-label]="config().title">
+    <header class="modal__header">
+      <h2 class="modal__title">{{ config().title }}</h2>
+      <button class="modal__close" type="button" aria-label="Fermer" (click)="closeModal()">
+        ✕
+      </button>
+    </header>
 
-      <form
-        class="modal__body"
-        [formGroup]="form"
-        (ngSubmit)="onSubmit()"
-        novalidate
-      >
-        @if (config().showCanal) {
-          <div class="modal__field">
-            <label class="modal__label" for="canal">Canal <span aria-hidden="true">*</span></label>
-            <select
-              id="canal"
-              class="modal__select"
-              [class.modal__select--error]="hasError('canal')"
-              formControlName="canal"
-              aria-required="true"
-              [attr.aria-invalid]="hasError('canal') ? 'true' : null"
-            >
-              <option value="" disabled>Sélectionner un canal</option>
-              @for (opt of canalOptions; track opt) {
-                <option [value]="opt">{{ opt }}</option>
-              }
-            </select>
-            @if (hasError('canal')) {
-              <span class="modal__error" role="alert">Le canal est requis.</span>
-            }
-          </div>
-        }
-
-        @if (config().showDate) {
-          <div class="modal__field">
-            <label class="modal__label" for="date">Date <span aria-hidden="true">*</span></label>
-            <input
-              id="date"
-              class="modal__input"
-              [class.modal__input--error]="hasError('date')"
-              type="date"
-              formControlName="date"
-              aria-required="true"
-              [attr.aria-invalid]="hasError('date') ? 'true' : null"
-            />
-            @if (hasError('date')) {
-              <span class="modal__error" role="alert">La date est requise.</span>
-            }
-          </div>
-        }
-
-        @if (config().showAmount) {
-          <div class="modal__field">
-            <label class="modal__label" for="montant">Montant (€) <span aria-hidden="true">*</span></label>
-            <input
-              id="montant"
-              class="modal__input"
-              [class.modal__input--error]="hasError('montant')"
-              type="number"
-              min="0.01"
-              step="0.01"
-              formControlName="montant"
-              aria-required="true"
-              [attr.aria-invalid]="hasError('montant') ? 'true' : null"
-              placeholder="0,00"
-            />
-            @if (hasError('montant')) {
-              <span class="modal__error" role="alert">Le montant est requis et doit être positif.</span>
-            }
-          </div>
-        }
-
-        @if (config().motifRequired || usage() === 'escalade' || usage() === 'document') {
-          <div class="modal__field">
-            <label class="modal__label" for="motif">
-              Motif <span aria-hidden="true">*</span>
-            </label>
-            <input
-              id="motif"
-              class="modal__input"
-              [class.modal__input--error]="hasError('motif')"
-              type="text"
-              formControlName="motif"
-              [attr.aria-required]="config().motifRequired"
-              [attr.aria-invalid]="hasError('motif') ? 'true' : null"
-              placeholder="Indiquez le motif"
-            />
-            @if (hasError('motif')) {
-              <span class="modal__error" role="alert">Le motif est requis.</span>
-            }
-          </div>
-        }
-
-        <div class="modal__field">
-          <label class="modal__label" for="commentaire">
-            Commentaire
-            @if (config().commentaireRequired) {
-              <span aria-hidden="true"> *</span>
-            }
-          </label>
-          <textarea
-            id="commentaire"
-            class="modal__textarea"
-            [class.modal__textarea--error]="hasError('commentaire')"
-            formControlName="commentaire"
-            [attr.aria-required]="config().commentaireRequired"
-            [attr.aria-invalid]="hasError('commentaire') ? 'true' : null"
-            rows="4"
-            placeholder="Saisissez un commentaire…"
-          ></textarea>
-          @if (hasError('commentaire')) {
-            <span class="modal__error" role="alert">Le commentaire est requis.</span>
+    <form class="modal__body" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      @if (config().showCanal) {
+      <div class="modal__field">
+        <label class="modal__label" for="canal">Canal <span aria-hidden="true">*</span></label>
+        <select id="canal" class="modal__select" [class.modal__select--error]="hasError('canal')"
+          formControlName="canal" aria-required="true" [attr.aria-invalid]="hasError('canal') ? 'true' : null">
+          <option value="" disabled>Sélectionner un canal</option>
+          @for (opt of canalOptions; track opt) {
+          <option [value]="opt">{{ opt }}</option>
           }
-        </div>
+        </select>
+        @if (hasError('canal')) {
+        <span class="modal__error" role="alert">Le canal est requis.</span>
+        }
+      </div>
+      }
 
-        <footer class="modal__footer">
-          <button
-            class="modal__btn modal__btn--secondary"
-            type="button"
-            (click)="closeModal()"
-          >
-            Annuler
-          </button>
-          <button
-            class="modal__btn modal__btn--primary"
-            type="submit"
-          >
-            {{ config().submitLabel }}
-          </button>
-        </footer>
-      </form>
-    </div>
+      @if (config().showDate) {
+      <div class="modal__field">
+        <label class="modal__label" for="date">Date <span aria-hidden="true">*</span></label>
+        <input id="date" class="modal__input" [class.modal__input--error]="hasError('date')" type="date"
+          formControlName="date" aria-required="true" [attr.aria-invalid]="hasError('date') ? 'true' : null" />
+        @if (hasError('date')) {
+        <span class="modal__error" role="alert">La date est requise.</span>
+        }
+      </div>
+      }
+
+      @if (config().showAmount) {
+      <div class="modal__field">
+        <label class="modal__label" for="montant">Montant (MAD) <span aria-hidden="true">*</span></label>
+        <input id="montant" class="modal__input" [class.modal__input--error]="hasError('montant')" type="number"
+          min="0.01" step="0.01" formControlName="montant" aria-required="true"
+          [attr.aria-invalid]="hasError('montant') ? 'true' : null" placeholder="0,00" />
+        @if (hasError('montant')) {
+        <span class="modal__error" role="alert">Le montant est requis et doit être positif.</span>
+        }
+      </div>
+      }
+
+      @if (config().motifRequired || usage() === 'escalade' || usage() === 'document') {
+      <div class="modal__field">
+        <label class="modal__label" for="motif">
+          Motif <span aria-hidden="true">*</span>
+        </label>
+        <input id="motif" class="modal__input" [class.modal__input--error]="hasError('motif')" type="text"
+          formControlName="motif" [attr.aria-required]="config().motifRequired"
+          [attr.aria-invalid]="hasError('motif') ? 'true' : null" placeholder="Indiquez le motif" />
+        @if (hasError('motif')) {
+        <span class="modal__error" role="alert">Le motif est requis.</span>
+        }
+      </div>
+      }
+
+      <div class="modal__field">
+        <label class="modal__label" for="commentaire">
+          Commentaire
+          @if (config().commentaireRequired) {
+          <span aria-hidden="true"> *</span>
+          }
+        </label>
+        <textarea id="commentaire" class="modal__textarea" [class.modal__textarea--error]="hasError('commentaire')"
+          formControlName="commentaire" [attr.aria-required]="config().commentaireRequired"
+          [attr.aria-invalid]="hasError('commentaire') ? 'true' : null" rows="4"
+          placeholder="Saisissez un commentaire…"></textarea>
+        @if (hasError('commentaire')) {
+        <span class="modal__error" role="alert">Le commentaire est requis.</span>
+        }
+      </div>
+
+      <footer class="modal__footer">
+        <button class="modal__btn modal__btn--secondary" type="button" (click)="closeModal()">
+          Annuler
+        </button>
+        <button class="modal__btn modal__btn--primary" type="submit">
+          {{ config().submitLabel }}
+        </button>
+      </footer>
+    </form>
   </div>
+</div>
 }
