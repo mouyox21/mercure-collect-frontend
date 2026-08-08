@@ -109,7 +109,9 @@
     gap: 2px;
   }
 
-  &__link {
+  // Shared link style — used by both the common nav (Dashboard/Dossiers/Clients)
+  // and every contextual block (Administration, Espace Superviseur, Espace Manager).
+  &__nav-link {
     display: flex;
     align-items: center;
     gap: var(--space-3);
@@ -132,13 +134,7 @@
     }
   }
 
-  &__icon {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-  }
-
-  &__label {
+  &__nav-label {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -149,57 +145,6 @@
     margin: var(--space-2) var(--space-4);
     border: none;
     border-top: 1px solid rgba(255, 255, 255, 0.10);
-  }
-
-  &__section-title {
-    padding: var(--space-1) var(--space-4) var(--space-1);
-    font-size: 10px;
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.38);
-  }
-
-  &__ctx-nav {
-    // thin scrollbar if items overflow
-  }
-
-  &__ctx-menu {
-    list-style: none;
-    margin: 0;
-    padding: 0 var(--space-2);
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  &__ctx-link {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    padding: var(--space-3) var(--space-3);
-    border-radius: var(--radius-btn);
-    color: rgba(255, 255, 255, 0.70);
-    text-decoration: none;
-    font-size: var(--font-size-body-sm);
-    font-weight: var(--font-weight-medium);
-    transition: background var(--transition-fast), color var(--transition-fast);
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
-    }
-
-    &--active {
-      background: rgba(255, 255, 255, 0.16);
-      color: #fff;
-    }
-  }
-
-  &__ctx-label {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
   // ── Footer ────────────────────────────────────────────────────────────────────

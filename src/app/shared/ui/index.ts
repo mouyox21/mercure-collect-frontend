@@ -19,3 +19,8 @@ export { StaleDataBannerComponent } from './stale-data-banner/stale-data-banner.
 export { SuccessToastComponent } from './success-toast/success-toast.component';
 export { PromiseModalComponent } from './promise-modal/promise-modal.component';
 export { PromiseListComponent  } from './promise-list/promise-list.component';
+export { IconComponent } from './icon/icon.component';
+export type { IconName } from './icon/icon.component';
+export { CountBadgeComponent } from './count-badge/count-badge.component';
+export { SideNavPanelComponent } from './side-nav-panel/side-nav-panel.component';
+export type { SideNavItem } from './side-nav-panel/side-nav-panel.component';

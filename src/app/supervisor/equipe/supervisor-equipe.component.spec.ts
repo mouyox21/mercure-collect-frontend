@@ -278,7 +278,7 @@ describe('Navigation — Sidebar "Équipe" (rôle SUPERVISOR)', () => {
     fixture = TestBed.createComponent(AppSidebarComponent);
     fixture.detectChanges();
 
-    const labels = [...host().querySelectorAll('.sidebar__ctx-label')]
+    const labels = [...host().querySelectorAll('.sidebar__ctx-nav .snp__label')]
       .map(el => el.textContent?.trim());
     expect(labels).toContain('Équipe');
   });
@@ -288,7 +288,7 @@ describe('Navigation — Sidebar "Équipe" (rôle SUPERVISOR)', () => {
     fixture = TestBed.createComponent(AppSidebarComponent);
     fixture.detectChanges();
 
-    const links = [...host().querySelectorAll<HTMLAnchorElement>('.sidebar__ctx-link')];
+    const links = [...host().querySelectorAll<HTMLAnchorElement>('.sidebar__ctx-nav .snp__item')];
     const equipeLink = links.find(a => a.textContent?.includes('Équipe'));
     expect(equipeLink).toBeTruthy();
     expect(equipeLink!.getAttribute('href')).toBe('/superviseur/equipe');
@@ -308,7 +308,7 @@ describe('Navigation — Sidebar "Équipe" (rôle SUPERVISOR)', () => {
     fixture = TestBed.createComponent(AppSidebarComponent);
     fixture.detectChanges();
 
-    const labels = [...host().querySelectorAll('.sidebar__ctx-label')]
+    const labels = [...host().querySelectorAll('.sidebar__ctx-nav .snp__label')]
       .map(el => el.textContent?.trim());
     expect(labels).not.toContain('Équipe');
   });

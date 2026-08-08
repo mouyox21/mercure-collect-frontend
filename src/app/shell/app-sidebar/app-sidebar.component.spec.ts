@@ -1,5 +1,6 @@
+import { Component } from '@angular/core';
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { AppSidebarComponent } from './app-sidebar.component';
 import { PermissionService } from '../../shared/data-access/permission.service';
 import { MockPermissionService } from '../../shared/data-access/mock/permission-mock.service';
@@ -36,9 +37,9 @@ describe('AppSidebarComponent', () => {
     fixture.detectChanges();
   }
 
-  /** All visible nav labels (common + contextual). */
+  /** All visible nav labels (common nav uses .sidebar__nav-label; contextual panel uses .snp__label). */
   function allLabels(): string[] {
-    return [...host().querySelectorAll('.sidebar__label, .sidebar__ctx-label')]
+    return [...host().querySelectorAll('.sidebar__nav-label, .snp__label')]
       .map(el => el.textContent?.trim() ?? '');
   }
 
@@ -76,7 +77,7 @@ describe('AppSidebarComponent', () => {
   it('should show Rapports-route items for manager (has REPORT_VIEW)', () => {
     setRole('MANAGER');
     create();
-    const ctxLabels = [...host().querySelectorAll('.sidebar__ctx-label')]
+    const ctxLabels = [...host().querySelectorAll('.sidebar__ctx-nav .snp__label')]
       .map(el => el.textContent?.trim() ?? '');
     expect(ctxLabels).toContain('Performance');
     expect(ctxLabels).toContain('Reporting');
@@ -115,5 +116,64 @@ describe('AppSidebarComponent', () => {
   it('should render a profile button', () => {
     create();
     expect(host().querySelector('.sidebar__profile')).toBeTruthy();
+  });
+});
+
+// ── Navigation test: single active item in "Administration" block (anomalie #10) ──
+
+@Component({ standalone: true, template: '' })
+class DummyRouteComponent {}
+
+describe('AppSidebarComponent — active state (ADMIN, /parametrages/*)', () => {
+  let fixture: ComponentFixture<AppSidebarComponent>;
+  let activeRole: MockActiveRoleService;
+  let router: Router;
+
+  function host(): HTMLElement { return fixture.nativeElement as HTMLElement; }
+
+  function activeCtxLabels(): string[] {
+    return [...host().querySelectorAll('.sidebar__ctx-nav .snp__item--active .snp__label')]
+      .map(el => el.textContent?.trim() ?? '');
+  }
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [AppSidebarComponent],
+      providers: [
+        provideRouter([
+          { path: 'parametrages', pathMatch: 'full', redirectTo: 'parametrages/referentiels' },
+          { path: 'parametrages/referentiels',       component: DummyRouteComponent },
+          { path: 'parametrages/regles-workflows',   component: DummyRouteComponent },
+          { path: 'parametrages/imports',            component: DummyRouteComponent },
+          { path: 'parametrages/audit',              component: DummyRouteComponent },
+        ]),
+        { provide: PermissionService, useClass: MockPermissionService },
+        { provide: ActiveRoleService, useClass: MockActiveRoleService },
+        { provide: UserService,       useClass: MockUserService       },
+      ],
+    }).compileComponents();
+
+    activeRole = TestBed.inject(ActiveRoleService) as MockActiveRoleService;
+    router     = TestBed.inject(Router);
+    activeRole.setRole('ADMIN');
+    fixture = TestBed.createComponent(AppSidebarComponent);
+    fixture.detectChanges();
+  });
+
+  it('activates only "Référentiels" (not "Paramétrage") on /parametrages/referentiels', async () => {
+    await router.navigateByUrl('/parametrages/referentiels');
+    fixture.detectChanges();
+
+    const active = activeCtxLabels();
+    expect(active).toEqual(['Référentiels']);
+    expect(active).not.toContain('Paramétrage');
+  });
+
+  it('activates only "Audit" on /parametrages/audit', async () => {
+    await router.navigateByUrl('/parametrages/audit');
+    fixture.detectChanges();
+
+    const active = activeCtxLabels();
+    expect(active).toEqual(['Audit']);
   });
 });

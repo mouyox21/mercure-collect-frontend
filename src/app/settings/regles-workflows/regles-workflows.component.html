@@ -3,42 +3,19 @@
   <!-- ── Left nav ── -->
   <aside class="rw__nav" aria-label="Navigation règles et workflows">
 
-    <h2 class="rw__nav-title">Packages DMN</h2>
-    <ul class="rw__nav-list" role="list">
-      @for (dt of DECISION_TYPES; track dt.key) {
-        <li
-          class="rw__nav-item"
-          [class.rw__nav-item--active]="activeTab() === dt.key"
-          role="button"
-          tabindex="0"
-          (click)="setActiveTab(dt.key)"
-          (keydown.enter)="setActiveTab(dt.key)">
-          <span class="rw__nav-icon" aria-hidden="true">{{ dt.icon }}</span>
-          <span class="rw__nav-label">{{ dt.label }}</span>
-          @if (viewState() === 'success') {
-            <span class="rw__nav-count">{{ countByType(dt.key) }}</span>
-          }
-        </li>
-      }
-    </ul>
+    <mc-side-nav-panel
+      title="Packages DMN"
+      [items]="decisionNavItems()"
+      [activeKey]="activeTab()"
+      (itemSelected)="setActiveTab($event)" />
 
     <div class="rw__nav-divider" role="separator"></div>
 
-    <h2 class="rw__nav-title">Diagrammes</h2>
-    <ul class="rw__nav-list" role="list">
-      @for (wf of WORKFLOW_DEFS; track wf.key) {
-        <li
-          class="rw__nav-item"
-          [class.rw__nav-item--active]="activeTab() === wf.key"
-          role="button"
-          tabindex="0"
-          (click)="setActiveTab(wf.key)"
-          (keydown.enter)="setActiveTab(wf.key)">
-          <span class="rw__nav-icon" aria-hidden="true">{{ wf.icon }}</span>
-          <span class="rw__nav-label">{{ wf.label }}</span>
-        </li>
-      }
-    </ul>
+    <mc-side-nav-panel
+      title="Diagrammes"
+      [items]="workflowNavItems()"
+      [activeKey]="activeTab()"
+      (itemSelected)="setActiveTab($event)" />
 
   </aside>
 
@@ -52,9 +29,12 @@
       @if (wf) {
 
         <div class="rw__content-header">
-          <div>
-            <h1 class="rw__content-title">{{ wf.icon }} {{ wf.label }}</h1>
-            <p class="rw__content-sub">{{ wf.description }}</p>
+          <div class="rw__content-title-row">
+            <mc-icon [name]="wf.icon" />
+            <div>
+              <h1 class="rw__content-title">{{ wf.label }}</h1>
+              <p class="rw__content-sub">{{ wf.description }}</p>
+            </div>
           </div>
         </div>
 
