@@ -2,21 +2,11 @@
 
   <!-- ── Sidebar nav (domaines) ── -->
   <aside class="ref__nav" aria-label="Domaines référentiels">
-    <h2 class="ref__nav-title">Domaines</h2>
-    <ul class="ref__nav-list" role="list">
-      @for (d of DOMAINS; track d.key) {
-        <li
-          class="ref__nav-item"
-          [class.ref__nav-item--active]="activeDomain() === d.key"
-          role="button"
-          tabindex="0"
-          (click)="selectDomain(d.key)"
-          (keydown.enter)="selectDomain(d.key)">
-          <span class="ref__nav-icon" aria-hidden="true">{{ d.icon }}</span>
-          <span class="ref__nav-label">{{ d.label }}</span>
-        </li>
-      }
-    </ul>
+    <mc-side-nav-panel
+      title="Domaines"
+      [items]="navItems()"
+      [activeKey]="activeDomain()"
+      (itemSelected)="selectDomain($event)" />
   </aside>
 
   <!-- ── Main content ── -->

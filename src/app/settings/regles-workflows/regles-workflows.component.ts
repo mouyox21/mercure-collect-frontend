@@ -10,11 +10,15 @@ import {
   ErrorStateComponent,
   EmptyStateComponent,
   ForbiddenStateComponent,
+  SideNavPanelComponent,
+  SideNavItem,
+  IconComponent,
 } from '../../shared/ui';
+import { IconName } from '../../shared/data-access/icon-registry';
 
 // ── Nav + workflow types ──────────────────────────────────────────────────────
 
-interface NavEntry { key: string; label: string; icon: string; }
+interface NavEntry { key: string; label: string; icon: IconName; }
 
 interface WfStep { label: string; sublabel?: string; type: 'start' | 'process' | 'decision' | 'end'; }
 
@@ -27,17 +31,17 @@ interface WorkflowDef extends NavEntry {
 }
 
 const DECISION_TYPES: NavEntry[] = [
-  { key: 'ALL',              label: 'Tous les packages',       icon: '📦' },
-  { key: 'SEGMENTATION',     label: 'Segmentation & Scoring',  icon: '🎯' },
-  { key: 'NEXT_BEST_ACTION', label: 'Prochaine action (NBA)',  icon: '⚡' },
-  { key: 'ESCALATION',       label: "Règles d'escalade",       icon: '🔺' },
+  { key: 'ALL',              label: 'Tous les packages',       icon: 'cube' },
+  { key: 'SEGMENTATION',     label: 'Segmentation & Scoring',  icon: 'chart-pie' },
+  { key: 'NEXT_BEST_ACTION', label: 'Prochaine action (NBA)',  icon: 'bolt' },
+  { key: 'ESCALATION',       label: "Règles d'escalade",       icon: 'exclamation-triangle' },
 ];
 
 const WORKFLOW_DEFS: WorkflowDef[] = [
   {
     key: 'DOSSIER_LIFECYCLE',
     label: 'Cycle de vie dossier',
-    icon: '🗂️',
+    icon: 'folder',
     description: "Traitement complet d'un dossier de recouvrement, de la création à la clôture ou au transfert en contentieux.",
     mainFlow: [
       { label: 'Création dossier', type: 'start' },
@@ -59,7 +63,7 @@ const WORKFLOW_DEFS: WorkflowDef[] = [
   {
     key: 'ESCALATION_FLOW',
     label: "Flux d'escalade",
-    icon: '🔺',
+    icon: 'exclamation-triangle',
     description: 'Déclenchement et traitement des escalades vers le superviseur suite aux règles DMN.',
     mainFlow: [
       { label: 'Dossier à risque',        type: 'start' },
@@ -82,7 +86,7 @@ const WORKFLOW_DEFS: WorkflowDef[] = [
   {
     key: 'PAYMENT_VALIDATION',
     label: 'Validation échéancier',
-    icon: '📅',
+    icon: 'calendar-days',
     description: 'Circuit de validation des plans de paiement selon les seuils définis dans les règles DMN.',
     mainFlow: [
       { label: 'Demande échéancier', type: 'start' },
@@ -105,7 +109,7 @@ const WORKFLOW_DEFS: WorkflowDef[] = [
   {
     key: 'LEGAL_PROCESS',
     label: 'Processus contentieux',
-    icon: '⚖️',
+    icon: 'scale',
     description: "Traitement des dossiers transférés en phase contentieuse jusqu'au jugement ou règlement.",
     mainFlow: [
       { label: 'Phase pré-légale', type: 'start' },
@@ -159,7 +163,15 @@ function sortByVersionDesc(a: DmnPackageDto, b: DmnPackageDto): number {
 @Component({
   selector: 'mc-settings-regles-workflows',
   standalone: true,
-  imports: [DataGridComponent, SkeletonLoaderComponent, ErrorStateComponent, EmptyStateComponent, ForbiddenStateComponent],
+  imports: [
+    DataGridComponent,
+    SkeletonLoaderComponent,
+    ErrorStateComponent,
+    EmptyStateComponent,
+    ForbiddenStateComponent,
+    SideNavPanelComponent,
+    IconComponent,
+  ],
   templateUrl: './regles-workflows.component.html',
   styleUrl:    './regles-workflows.component.scss',
 })
@@ -167,9 +179,7 @@ export class ParametragesReglesWorkflowsComponent implements OnInit {
   private readonly settingsSvc = inject(SettingsService);
   private readonly permSvc     = inject(PermissionService);
 
-  readonly DECISION_TYPES = DECISION_TYPES;
-  readonly WORKFLOW_DEFS  = WORKFLOW_DEFS;
-  readonly COLUMNS        = COLUMNS;
+  readonly COLUMNS = COLUMNS;
 
   // ── State ───────────────────────────────────────────────────────────────────
   readonly activeTab   = signal('ALL');
@@ -200,6 +210,24 @@ export class ParametragesReglesWorkflowsComponent implements OnInit {
     () =>
       [...DECISION_TYPES, ...WORKFLOW_DEFS].find(e => e.key === this.activeTab())?.label ??
       this.activeTab()
+  );
+
+  /** "Packages DMN" nav items — badge shows live count per decision type. */
+  readonly decisionNavItems = computed<SideNavItem[]>(() => {
+    if (this.viewState() !== 'success') {
+      return DECISION_TYPES.map(dt => ({ key: dt.key, label: dt.label, icon: dt.icon }));
+    }
+    return DECISION_TYPES.map(dt => ({
+      key:   dt.key,
+      label: dt.label,
+      icon:  dt.icon,
+      badge: this.countByType(dt.key),
+    }));
+  });
+
+  /** "Diagrammes" nav items — read-only workflow references, no count badge. */
+  readonly workflowNavItems = computed<SideNavItem[]>(() =>
+    WORKFLOW_DEFS.map(wf => ({ key: wf.key, label: wf.label, icon: wf.icon }))
   );
 
   readonly filtered = computed<DmnPackageDto[]>(() => {

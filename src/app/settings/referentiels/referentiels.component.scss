@@ -16,52 +16,6 @@
     align-self: flex-start;
   }
 
-  &__nav-title {
-    font-size: 0.6875rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #9ca3af;
-    margin: 0 0 0.5rem 0.25rem;
-  }
-
-  &__nav-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.125rem;
-  }
-
-  &__nav-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0.625rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    font-size: 0.8125rem;
-    color: #374151;
-    transition: background 0.1s;
-
-    &:hover { background: #f3f4f6; }
-
-    &--active {
-      background: #eff6ff;
-      color: #1d4ed8;
-      font-weight: 500;
-    }
-
-    &:focus-visible {
-      outline: 2px solid #2563eb;
-      outline-offset: 1px;
-    }
-  }
-
-  &__nav-icon { font-size: 1rem; flex-shrink: 0; }
-  &__nav-label { flex: 1; }
-
   // ── Main content ────────────────────────────────────────────────
   &__content {
     flex: 1;

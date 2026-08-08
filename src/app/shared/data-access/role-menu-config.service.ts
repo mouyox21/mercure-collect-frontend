@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { UserRole, ROLE_LABELS, RoleMenuItem } from './user-role.types';
 import { PermissionCode } from './permission.types';
-import { SidebarIconName } from './sidebar-icons';
+import { IconName } from './icon-registry';
 
 export interface RoleMenuEntry extends RoleMenuItem {
-  readonly icon: SidebarIconName;
+  readonly icon: IconName;
   readonly requiredRight: PermissionCode;
   readonly queryParams?: Record<string, string>;
+  /** When true, routerLinkActive only matches the exact route — never its sub-routes. */
+  readonly exactMatch?: boolean;
 }
 
 export const ROLE_SECTION_TITLES: Record<UserRole, string> = {
@@ -43,7 +45,7 @@ const MENU_CONFIG: Record<UserRole, RoleMenuEntry[]> = {
     { label: 'Reporting',     icon: 'clipboard-list', route: '/rapports', queryParams: { vue: 'reporting'  },  requiredRight: 'REPORT_VIEW' },
   ],
   ADMIN: [
-    { label: 'Paramétrage',        icon: 'cog',               route: '/parametrages',                 requiredRight: 'SETTINGS_MANAGE' },
+    { label: 'Paramétrage',        icon: 'cog',               route: '/parametrages',                 requiredRight: 'SETTINGS_MANAGE', exactMatch: true },
     { label: 'Référentiels',       icon: 'book-open',          route: '/parametrages/referentiels',    requiredRight: 'SETTINGS_MANAGE' },
     { label: 'Règles & Workflows', icon: 'arrows-right-left',  route: '/parametrages/regles-workflows', requiredRight: 'SETTINGS_MANAGE' },
     { label: 'Imports',            icon: 'arrow-down-tray',    route: '/parametrages/imports',          requiredRight: 'SETTINGS_MANAGE' },

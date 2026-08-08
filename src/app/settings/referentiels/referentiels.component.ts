@@ -11,21 +11,24 @@ import {
   EmptyStateComponent,
   ForbiddenStateComponent,
   SuccessToastComponent,
+  SideNavPanelComponent,
+  SideNavItem,
 } from '../../shared/ui';
+import { IconName } from '../../shared/data-access/icon-registry';
 
 interface DomainEntry {
   key: string;
   label: string;
-  icon: string;
+  icon: IconName;
 }
 
 const DOMAINS: DomainEntry[] = [
-  { key: 'CREDITOR',        label: 'Créanciers',          icon: '🏦' },
-  { key: 'ACTION_CATEGORY', label: "Catégories d'action", icon: '📋' },
-  { key: 'CASE_STATUS',     label: 'Statuts dossier',     icon: '📌' },
-  { key: 'PRIORITY',        label: 'Priorités',           icon: '⚡' },
-  { key: 'PHASE',           label: 'Phases',              icon: '🔄' },
-  { key: 'CHANNEL',         label: 'Canaux',              icon: '📡' },
+  { key: 'CREDITOR',        label: 'Créanciers',          icon: 'building-library' },
+  { key: 'ACTION_CATEGORY', label: "Catégories d'action", icon: 'tag' },
+  { key: 'CASE_STATUS',     label: 'Statuts dossier',     icon: 'flag' },
+  { key: 'PRIORITY',        label: 'Priorités',           icon: 'bolt' },
+  { key: 'PHASE',           label: 'Phases',              icon: 'arrow-path' },
+  { key: 'CHANNEL',         label: 'Canaux',              icon: 'signal' },
 ];
 
 const COLUMNS: ColumnDef[] = [
@@ -46,6 +49,7 @@ const COLUMNS: ColumnDef[] = [
     EmptyStateComponent,
     ForbiddenStateComponent,
     SuccessToastComponent,
+    SideNavPanelComponent,
   ],
   templateUrl: './referentiels.component.html',
   styleUrl: './referentiels.component.scss',
@@ -54,7 +58,6 @@ export class ParametragesReferentielsComponent implements OnInit {
   private readonly settingsSvc = inject(SettingsService);
   private readonly permSvc     = inject(PermissionService);
 
-  readonly DOMAINS = DOMAINS;
   readonly COLUMNS = COLUMNS;
 
   // State
@@ -91,6 +94,17 @@ export class ParametragesReferentielsComponent implements OnInit {
   readonly activeDomainLabel = computed(
     () => DOMAINS.find(d => d.key === this.activeDomain())?.label ?? this.activeDomain()
   );
+
+  /** Domain nav items with a live count badge — mirrors "Tous les packages · N" in Règles & Workflows. */
+  readonly navItems = computed<SideNavItem[]>(() => {
+    const all = this.allItems();
+    return DOMAINS.map(d => ({
+      key:   d.key,
+      label: d.label,
+      icon:  d.icon,
+      badge: all.filter(r => r.domain === d.key).length,
+    }));
+  });
 
   readonly filtered = computed<ReferenceValueDto[]>(() =>
     this.allItems()

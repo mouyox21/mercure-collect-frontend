@@ -1,0 +1,39 @@
+<div class="snp" [class.snp--dark]="variant() === 'dark'">
+  @if (title()) {
+    <h2 class="snp__title">{{ title() }}</h2>
+  }
+  <ul class="snp__list" role="list">
+    @for (item of items(); track item.key) {
+      <li>
+        @if (item.route) {
+          <a
+            [routerLink]="item.route"
+            [queryParams]="item.queryParams"
+            [routerLinkActiveOptions]="linkActiveOptions(item)"
+            routerLinkActive="snp__item--active"
+            class="snp__item">
+            <mc-icon class="snp__icon" [name]="item.icon" />
+            <span class="snp__label">{{ item.label }}</span>
+            @if (item.badge !== undefined) {
+              <mc-count-badge [count]="item.badge" />
+            }
+          </a>
+        } @else {
+          <div
+            class="snp__item"
+            [class.snp__item--active]="activeKey() === item.key"
+            role="button"
+            tabindex="0"
+            (click)="select(item.key)"
+            (keydown.enter)="select(item.key)">
+            <mc-icon class="snp__icon" [name]="item.icon" />
+            <span class="snp__label">{{ item.label }}</span>
+            @if (item.badge !== undefined) {
+              <mc-count-badge [count]="item.badge" />
+            }
+          </div>
+        }
+      </li>
+    }
+  </ul>
+</div>
